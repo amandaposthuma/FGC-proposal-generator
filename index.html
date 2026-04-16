@@ -1182,7 +1182,7 @@ var FGC_CONFIG = {
         note: null
       },
       fsAnterior: {
-        title: "Financial Statements — Anos Anteriores",
+        title: "Financial Statements — Prior Years (Anos Anteriores)",
         items: [
           "Demonstrações Financeiras referentes a exercícios fiscais anteriores",
           "Annual Financial Return (AFR) — exercícios anteriores"
@@ -1799,7 +1799,7 @@ var FGC_CONFIG = {
         note: null
       },
       fsAnterior: {
-        title: "Financial Statements — Años Anteriores",
+        title: "Financial Statements — Prior Years (Años Anteriores)",
         items: [
           "Estados Financieros correspondientes a ejercicios fiscales anteriores",
           "Annual Financial Return (AFR) — ejercicios anteriores"
@@ -4280,13 +4280,13 @@ let reestruEntries = [{ label: '', companyName: '', desc: '', extraBullets: '', 
 // Custom US states (supports multiple)
 let customStates = [{ name: '', price: '', qty: 1, maintPrice: '' }];
 // Custom offshore formations
-let customOffshore = [{ label: '', price: '', qty: 1, maintPrice: '' }];
+let customOffshore = [{ label: '', price: '', qty: 1, maintPrice: '', scope: '' }];
 // Custom transfers
-let customTransfers = [{ label: '', price: '', qty: 1 }];
+let customTransfers = [{ label: '', price: '', qty: 1, scope: '' }];
 // Custom accounting/fiscal services
-let customAccounting = [{ label: '', price: '', qty: 1, payTerm: 'acceptance' }];
+let customAccounting = [{ label: '', price: '', qty: 1, payTerm: 'acceptance', scope: '' }];
 // Custom dissolutions
-let customDissolutions = [{ label: '', price: '', qty: 1 }];
+let customDissolutions = [{ label: '', price: '', qty: 1, scope: '' }];
 
 function setGender(g) {
   gender = g;
@@ -4424,6 +4424,10 @@ function removeCustomDissolution(i) { customDissolutions.splice(i,1); if(!custom
 function setCustomDissolutionLabel(i,v) { customDissolutions[i].label=v; debouncedUpdate(); }
 function setCustomDissolutionPrice(i,v) { customDissolutions[i].price=v===''?'':Number(v); debouncedUpdate(); }
 function setCustomDissolutionQty(i,v) { customDissolutions[i].qty=Math.max(1,parseInt(v)||1); debouncedUpdate(); }
+function setCustomDissolutionScope(i,v) { customDissolutions[i].scope=v; debouncedUpdate(); }
+function setCustomTransferScope(i,v) { customTransfers[i].scope=v; debouncedUpdate(); }
+function setCustomAccountingScope(i,v) { customAccounting[i].scope=v; debouncedUpdate(); }
+function setCustomOffshoreScope(i,v) { customOffshore[i].scope=v; debouncedUpdate(); }
 
 let state = {
   // Formation – PIC
@@ -4817,6 +4821,9 @@ function buildServiceToggle(svc) {
             <input type="number" class="qty-input" min="1" max="20" value="${o.qty}"
               oninput="setCustomOffshoreQty(${i},this.value)" onchange="setCustomOffshoreQty(${i},this.value)" onclick="event.stopPropagation()">
           </div>
+          <span class="bespoke-label">${lang==='en'?'Scope (one bullet per line)':lang==='es'?'Alcance (un bullet por línea)':'Escopo (um bullet por linha)'}</span>
+          <textarea class="bespoke-textarea" rows="3" placeholder="${lang==='en'?'One bullet per line...':lang==='es'?'Un bullet por línea...':'Um bullet por linha...'}"
+            oninput="setCustomOffshoreScope(${i},this.value)" onchange="setCustomOffshoreScope(${i},this.value)" onclick="event.stopPropagation()">${(o.scope||'').replace(/</g,'&lt;')}</textarea>
         </div>`).join('');
       bespokeHTML = `${entriesHTML}<div style="padding:6px 0 0;"><button onclick="event.stopPropagation();addCustomOffshore()" style="background:none;border:1px dashed rgba(7,18,16,0.25);border-radius:4px;padding:4px 10px;cursor:pointer;font-size:11px;color:rgba(7,18,16,0.55);width:100%;text-align:center;">${addLabel}</button></div>`;
     }
@@ -4849,6 +4856,9 @@ function buildServiceToggle(svc) {
             <input type="number" class="qty-input" min="1" max="20" value="${t.qty}"
               oninput="setCustomTransferQty(${i},this.value)" onchange="setCustomTransferQty(${i},this.value)" onclick="event.stopPropagation()">
           </div>
+          <span class="bespoke-label">${lang==='en'?'Scope (one bullet per line)':lang==='es'?'Alcance (un bullet por línea)':'Escopo (um bullet por linha)'}</span>
+          <textarea class="bespoke-textarea" rows="3" placeholder="${lang==='en'?'One bullet per line...':lang==='es'?'Un bullet por línea...':'Um bullet por linha...'}"
+            oninput="setCustomTransferScope(${i},this.value)" onchange="setCustomTransferScope(${i},this.value)" onclick="event.stopPropagation()">${(t.scope||'').replace(/</g,'&lt;')}</textarea>
         </div>`).join('');
       bespokeHTML = `${entriesHTML}<div style="padding:6px 0 0;"><button onclick="event.stopPropagation();addCustomTransfer()" style="background:none;border:1px dashed rgba(7,18,16,0.25);border-radius:4px;padding:4px 10px;cursor:pointer;font-size:11px;color:rgba(7,18,16,0.55);width:100%;text-align:center;">${addLabel}</button></div>`;
     }
@@ -4887,6 +4897,9 @@ function buildServiceToggle(svc) {
             <label style="font-size:11px;display:flex;align-items:center;gap:4px;cursor:pointer;"><input type="radio" name="custAcctPay${i}" value="acceptance" ${a.payTerm!=='year2'?'checked':''} onchange="setCustomAccountingPayTerm(${i},this.value)" onclick="event.stopPropagation()"> ${acceptLbl}</label>
             <label style="font-size:11px;display:flex;align-items:center;gap:4px;cursor:pointer;"><input type="radio" name="custAcctPay${i}" value="year2" ${a.payTerm==='year2'?'checked':''} onchange="setCustomAccountingPayTerm(${i},this.value)" onclick="event.stopPropagation()"> ${year2Lbl}</label>
           </div>
+          <span class="bespoke-label">${lang==='en'?'Scope (one bullet per line)':lang==='es'?'Alcance (un bullet por línea)':'Escopo (um bullet por linha)'}</span>
+          <textarea class="bespoke-textarea" rows="3" placeholder="${lang==='en'?'One bullet per line...':lang==='es'?'Un bullet por línea...':'Um bullet por linha...'}"
+            oninput="setCustomAccountingScope(${i},this.value)" onchange="setCustomAccountingScope(${i},this.value)" onclick="event.stopPropagation()">${(a.scope||'').replace(/</g,'&lt;')}</textarea>
         </div>`).join('');
       bespokeHTML = `${entriesHTML}<div style="padding:6px 0 0;"><button onclick="event.stopPropagation();addCustomAccounting()" style="background:none;border:1px dashed rgba(7,18,16,0.25);border-radius:4px;padding:4px 10px;cursor:pointer;font-size:11px;color:rgba(7,18,16,0.55);width:100%;text-align:center;">${addLabel}</button></div>`;
     }
@@ -4919,6 +4932,9 @@ function buildServiceToggle(svc) {
             <input type="number" class="qty-input" min="1" max="20" value="${d.qty}"
               oninput="setCustomDissolutionQty(${i},this.value)" onchange="setCustomDissolutionQty(${i},this.value)" onclick="event.stopPropagation()">
           </div>
+          <span class="bespoke-label">${lang==='en'?'Scope (one bullet per line)':lang==='es'?'Alcance (un bullet por línea)':'Escopo (um bullet por linha)'}</span>
+          <textarea class="bespoke-textarea" rows="3" placeholder="${lang==='en'?'One bullet per line...':lang==='es'?'Un bullet por línea...':'Um bullet por linha...'}"
+            oninput="setCustomDissolutionScope(${i},this.value)" onchange="setCustomDissolutionScope(${i},this.value)" onclick="event.stopPropagation()">${(d.scope||'').replace(/</g,'&lt;')}</textarea>
         </div>`).join('');
       bespokeHTML = `${entriesHTML}<div style="padding:6px 0 0;"><button onclick="event.stopPropagation();addCustomDissolution()" style="background:none;border:1px dashed rgba(7,18,16,0.25);border-radius:4px;padding:4px 10px;cursor:pointer;font-size:11px;color:rgba(7,18,16,0.55);width:100%;text-align:center;">${addLabel}</button></div>`;
     }
@@ -5222,9 +5238,9 @@ function generateProposal(triva) {
   // FS/AFR is primary for PIC entities but can be manually applied to US structures; TR is US-only
   const hasPICEntity  = hasPICForm || hasPICTrans;
   const hasUSEntity   = hasUSForm  || hasUSTrans;
-  const hasAccounting = (state.fs && (hasPICEntity || hasUSEntity)) || (state.tr && hasUSEntity) || (state.afr && hasPICEntity);
+  const hasAccounting = (state.fs && (hasPICEntity || hasUSEntity)) || (state.tr && (hasPICEntity || hasUSEntity)) || (state.afr && hasPICEntity);
   const has3rdPartyFS = state.fs3rd && (hasPICEntity || hasUSEntity);
-  const has3rdPartyTR = state.tr3rd && hasUSEntity;
+  const has3rdPartyTR = state.tr3rd && (hasPICEntity || hasUSEntity);
   const hasMaint      = hasFormation || hasTransfer;
   const hasApostila   = state.apostila;
   const hasMailing    = state.mailing;
@@ -5301,7 +5317,7 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
       if (!o.label.trim()) return;
       const q = Math.max(o.qty || 1, 1);
       const unit = (o.price !== '' && o.price != null) ? Number(o.price) : null;
-      sec1Items.push({ key:'customOffshore', label: (q>1?q+'x ':'')+o.label.trim(), amount: unit !== null ? unit*q : null, pay: L.payOnAcceptance, group:'pic', qty:q, offshoreLabel: o.label.trim() });
+      sec1Items.push({ key:'customOffshore', label: (q>1?q+'x ':'')+o.label.trim(), amount: unit !== null ? unit*q : null, pay: L.payOnAcceptance, group:'pic', qty:q, offshoreLabel: o.label.trim(), customScope: o.scope||'' });
     });
   }
   // Custom transfer
@@ -5310,7 +5326,7 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
       if (!t.label.trim()) return;
       const q = Math.max(t.qty || 1, 1);
       const unit = (t.price !== '' && t.price != null) ? Number(t.price) : null;
-      sec1Items.push({ key:'customTransfer', label: (q>1?q+'x ':'')+t.label.trim(), amount: unit !== null ? unit*q : null, pay: L.payOnAcceptance, group:'pic', qty:q });
+      sec1Items.push({ key:'customTransfer', label: (q>1?q+'x ':'')+t.label.trim(), amount: unit !== null ? unit*q : null, pay: L.payOnAcceptance, group:'pic', qty:q, customScope: t.scope||'' });
     });
   }
 
@@ -5389,9 +5405,9 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
   // (hasPICEntity and hasUSEntity already declared above)
   // FS is split into two fee-table rows to match master proposals (DF + AFR)
   const fsLabels = {
-    pt: { df: 'Preparação das Demonstrações Financeiras', afr: 'Preparação do Annual Financial Return (AFR)' },
-    es: { df: 'Preparación de Estados Financieros', afr: 'Preparación del Annual Financial Return (AFR)' },
-    en: { df: 'Financial Statements Preparation', afr: 'Annual Financial Return (AFR) Filing' },
+    pt: { df: 'Demonstrações Financeiras', afr: 'Annual Financial Return (AFR)' },
+    es: { df: 'Estados Financieros', afr: 'Annual Financial Return (AFR)' },
+    en: { df: 'Financial Statements', afr: 'Annual Financial Return (AFR)' },
   };
   const hasBVIEntity = state.bvi || state.transBVI || state.transBVIRA;
   const bviQty = maintQty('bvi','transBVI','transBVIRA');
@@ -5414,14 +5430,14 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
     const fs3rdPrice = priceOverrides['fs3rd'] !== undefined ? priceOverrides['fs3rd'] * fs3rdQ : null;
     secAcctItems.push({ key:'fs3rd', label: (fs3rdQ>1?fs3rdQ+'x ':'')+{ pt: 'Demonstrações Financeiras por Terceiros', es: 'Estados Financieros por Terceros', en: 'Financial Statements (Third Party)' }[lang], amount: fs3rdPrice, pay: '', group: hasPICEntity ? 'pic' : 'us' });
   }
-  if (state.tr && hasUSEntity) {
-    // Use user-set qty if explicitly provided; otherwise derive from US entity count
-    const trQtyAuto = Math.max(usQty, 1);
+  if (state.tr && (hasPICEntity || hasUSEntity)) {
+    // Use user-set qty if explicitly provided; otherwise derive from entity count
+    const trQtyAuto = hasUSEntity ? Math.max(usQty, 1) : Math.max(bviQty, 1);
     const trQtyFinal = qty['tr'] !== undefined ? qty['tr'] : trQtyAuto;
-    secAcctItems.push({ key:'tr', label: (trQtyFinal>1?trQtyFinal+'x ':'')+termTitle('tr'), amount: getPrice('tr', FGC_CONFIG.services.tr.price)*trQtyFinal, pay: L.payFromYear2, group:'us' });
+    secAcctItems.push({ key:'tr', label: (trQtyFinal>1?trQtyFinal+'x ':'')+termTitle('tr'), amount: getPrice('tr', FGC_CONFIG.services.tr.price)*trQtyFinal, pay: L.payFromYear2, group: hasUSEntity ? 'us' : 'pic' });
   }
   // TR by third party — include scope item; show price if user entered one
-  if (state.tr3rd && hasUSEntity) {
+  if (state.tr3rd && (hasPICEntity || hasUSEntity)) {
     const tr3rdQ = qty['tr3rd'] !== undefined ? qty['tr3rd'] : 1;
     const tr3rdPrice = priceOverrides['tr3rd'] !== undefined ? priceOverrides['tr3rd'] * tr3rdQ : null;
     secAcctItems.push({ key:'tr3rd', label: (tr3rdQ>1?tr3rdQ+'x ':'')+{ pt: 'Tax Return por Terceiros', es: 'Tax Return por Terceros', en: 'Tax Return (Third Party)' }[lang], amount: tr3rdPrice, pay: '', group:'us' });
@@ -5436,14 +5452,14 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
   // Prior-year FS (PIC entities; allow for US-only too when user selects it)
   if (state.fsAnterior && (hasPICEntity || hasUSEntity)) {
     const q = getQty('fsAnterior');
-    secAcctItems.push({ key:'fsAnterior', label: (q>1?q+'x ':'')+{ pt: 'Preparação de Demonstrações Financeiras - Anos Anteriores', es: 'Preparación de Estados Financieros - Años Anteriores', en: 'Financial Statements Preparation - Prior Years' }[lang], amount: getPrice('fsAnterior', FGC_CONFIG.services.fsAnterior.price)*q, pay: L.payOnAcceptance, group: hasPICEntity ? 'pic' : 'us', qty:q });
+    secAcctItems.push({ key:'fsAnterior', label: (q>1?q+'x ':'')+{ pt: 'Demonstrações Financeiras - Anos Anteriores', es: 'Estados Financieros - Años Anteriores', en: 'Financial Statements - Prior Years' }[lang], amount: getPrice('fsAnterior', FGC_CONFIG.services.fsAnterior.price)*q, pay: L.payOnAcceptance, group: hasPICEntity ? 'pic' : 'us', qty:q });
     // For BVI entities: also show AFR row for prior-year FS
     if (hasBVIEntity) {
-      secAcctItems.push({ key:'fsAnteriorAfr', label: (q>1?q+'x ':'')+{ pt: 'Preparação do Annual Financial Return (AFR) — Anos Anteriores', es: 'Preparación del Annual Financial Return (AFR) — Años Anteriores', en: 'Annual Financial Return (AFR) Filing — Prior Years' }[lang], amount: null, pay: L.payOnAcceptance, shareRef: true, group:'pic' });
+      secAcctItems.push({ key:'fsAnteriorAfr', label: (q>1?q+'x ':'')+{ pt: 'Annual Financial Return (AFR) — Anos Anteriores', es: 'Annual Financial Return (AFR) — Años Anteriores', en: 'Annual Financial Return (AFR) — Prior Years' }[lang], amount: null, pay: L.payOnAcceptance, shareRef: true, group:'pic' });
     }
   }
   // Prior-year TR (US entities only)
-  if (state.trAnterior && hasUSEntity) {
+  if (state.trAnterior && (hasPICEntity || hasUSEntity)) {
     const q = getQty('trAnterior');
     secAcctItems.push({ key:'trAnterior', label: (q>1?q+'x ':'')+{ pt: 'Tax Return - Anos Anteriores', es: 'Tax Return - Años Anteriores', en: 'Tax Return - Prior Years' }[lang], amount: getPrice('trAnterior', FGC_CONFIG.services.trAnterior.price)*q, pay: L.payOnAcceptance, group:'us', qty:q });
   }
@@ -5456,7 +5472,7 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
       const unit = (a.price !== '' && a.price != null) ? Number(a.price) : null;
       const payTerm = a.payTerm === 'year2' ? L2.payFromYear2 : L2.payOnAcceptance;
       const recurring = a.payTerm === 'year2';
-      secAcctItems.push({ key:'customAccounting', label: (q>1?q+'x ':'')+a.label.trim(), amount: unit !== null ? unit*q : null, pay: payTerm, recurring, qty:q });
+      secAcctItems.push({ key:'customAccounting', label: (q>1?q+'x ':'')+a.label.trim(), amount: unit !== null ? unit*q : null, pay: payTerm, recurring, qty:q, customScope: a.scope||'' });
     });
   }
   // Transfer prior-year services (declared here, after secAcctItems exists)
@@ -5485,7 +5501,7 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
       if (!d.label.trim()) return;
       const q = Math.max(d.qty || 1, 1);
       const unit = (d.price !== '' && d.price != null) ? Number(d.price) : null;
-      sec3Items.push({ key:'customDissolution', label: (q>1?q+'x ':'')+d.label.trim(), amount: unit !== null ? unit*q : null, pay: L.payOnAcceptance, qty:q });
+      sec3Items.push({ key:'customDissolution', label: (q>1?q+'x ':'')+d.label.trim(), amount: unit !== null ? unit*q : null, pay: L.payOnAcceptance, qty:q, customScope: d.scope||'' });
     });
   }
   // Restructuring: one entry per company
@@ -5742,6 +5758,16 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
         termsHTML += buildTermsSection(`${ref} — ${_custMaintTitle}`, _custMaintItems, _custMaintNote, null, null);
         return;
       }
+      // Custom bespoke items — render scope if provided
+      if (['customOffshore','customTransfer','customAccounting','customDissolution'].includes(it.key)) {
+        if (!it.customScope || !it.customScope.trim()) return;
+        const bullets = it.customScope.split('\n').map(l => l.trim()).filter(Boolean);
+        if (bullets.length === 0) return;
+        const ref = `${secTermsNum}.${++termsSub}`;
+        it.termsRef = ref;
+        termsHTML += buildTermsSection(`${ref} — ${it.label}`, bullets.map(b => highlightPlaceholders(b)), null, null, null);
+        return;
+      }
       const m = getTerm(it.key);
       if (m) {
         const ref = `${secTermsNum}.${++termsSub}`;
@@ -5872,8 +5898,7 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
           <div class="row-amount">${amountStr}</div>
         </td>
         <td>
-          <div class="row-payment">${it.pay.split('\n')[0]}</div>
-          ${it.pay.includes('\n') ? it.pay.split('\n').slice(1).map(l => `<div class="row-anual">${l}</div>`).join('') : ''}
+          ${(()=>{ const dp = (it.recurring && it.pay === L.payOnAcceptance) ? L.payFromYear2 : it.pay; return `<div class="row-payment">${dp.split('\n')[0]}</div>${dp.includes('\n') ? dp.split('\n').slice(1).map(l=>'<div class="row-anual">'+l+'</div>').join('') : ''}`; })()}
         </td>
       </tr>
     `;
@@ -6351,10 +6376,10 @@ function resetProposal() {
   maintPriceOverrides = {};
   reestruEntries = [{ label: '', companyName: '', desc: '', extraBullets: '', price: '', qty: 1 }];
   customStates       = [{ name: '', price: '', qty: 1, maintPrice: '' }];
-  customOffshore     = [{ label: '', price: '', qty: 1, maintPrice: '' }];
-  customTransfers    = [{ label: '', price: '', qty: 1 }];
-  customAccounting   = [{ label: '', price: '', qty: 1, payTerm: 'acceptance' }];
-  customDissolutions = [{ label: '', price: '', qty: 1 }];
+  customOffshore     = [{ label: '', price: '', qty: 1, maintPrice: '', scope: '' }];
+  customTransfers    = [{ label: '', price: '', qty: 1, scope: '' }];
+  customAccounting   = [{ label: '', price: '', qty: 1, payTerm: 'acceptance', scope: '' }];
+  customDissolutions = [{ label: '', price: '', qty: 1, scope: '' }];
   // Clear form fields
   document.getElementById('f-client').value = '';
   document.getElementById('f-email').value = '';
