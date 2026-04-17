@@ -1191,7 +1191,7 @@ var FGC_CONFIG = {
         note: null
       },
       trAnterior: {
-        title: "Tax Return — Anos Anteriores",
+        title: "Tax Return — Prior Years (Anos Anteriores)",
         items: [
           "Lançamentos contábeis referentes a exercícios fiscais anteriores, com base nos documentos fornecidos",
           "Entrega e submissão dos Tax Returns relativos aos exercícios anteriores aos órgãos competentes"
@@ -1808,7 +1808,7 @@ var FGC_CONFIG = {
         note: null
       },
       trAnterior: {
-        title: "Tax Return — Años Anteriores",
+        title: "Tax Return — Prior Years (Años Anteriores)",
         items: [
           "Asientos contables correspondientes a ejercicios fiscales anteriores, con base en los documentos proporcionados",
           "Entrega y presentación de los Tax Returns relativos a los ejercicios anteriores ante los órganos competentes"
@@ -5348,9 +5348,9 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
     if (transRAKey && state[transRAKey]) q += 1;
     return Math.max(q, 0);
   }
-  // Helper: determine maintenance pay term — driven by sidebar toggle (default: Na Aceitação)
+  // Helper: maintenance always shows as recurring in the fee table
   function maintPayTerm() {
-    return state.maintPayTiming === 'year2' ? L.payFromYear2 : L.payOnAcceptance;
+    return L.payFromYear2;
   }
   // Helper: get maintenance unit price, respecting manual override
   function maintUnitPrice(mk) {
@@ -5400,13 +5400,26 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
     secMaintItems.push({ key:'mailing', label: (mailingQ>1?mailingQ+'x ':'')+termTitle('mailing'), amount: getPrice('mailing', FGC_CONFIG.services.mailing.price)*mailingQ, pay: mailingPay, year2only: true });
   }
 
+  // When "Na Aceitação" is selected: add a current-year row after each recurring maintenance item
+  if (state.maintPayTiming !== 'year2') {
+    const cyLabel = { pt: ' – Ano corrente', es: ' – Año corriente', en: ' – Current Year' }[lang];
+    const augmented = [];
+    secMaintItems.forEach(it => {
+      augmented.push(it);
+      if (it.recurring) {
+        augmented.push({ key: it.key + 'CY', label: it.label + cyLabel, amount: it.amount, pay: L.payOnAcceptance, recurring: false, group: it.group, shareRef: true });
+      }
+    });
+    secMaintItems = augmented;
+  }
+
   // Accounting items (separate section)
   // FS/AFR is primary for PIC entities but usable for US structures; TR is US-specific.
   // (hasPICEntity and hasUSEntity already declared above)
   // FS is split into two fee-table rows to match master proposals (DF + AFR)
   const fsLabels = {
-    pt: { df: 'Demonstrações Financeiras', afr: 'Annual Financial Return (AFR)' },
-    es: { df: 'Estados Financieros', afr: 'Annual Financial Return (AFR)' },
+    pt: { df: 'Financial Statements (Demonstrações Financeiras)', afr: 'Annual Financial Return (AFR)' },
+    es: { df: 'Financial Statements (Estados Financieros)', afr: 'Annual Financial Return (AFR)' },
     en: { df: 'Financial Statements', afr: 'Annual Financial Return (AFR)' },
   };
   const hasBVIEntity = state.bvi || state.transBVI || state.transBVIRA;
@@ -5452,7 +5465,7 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
   // Prior-year FS (PIC entities; allow for US-only too when user selects it)
   if (state.fsAnterior && (hasPICEntity || hasUSEntity)) {
     const q = getQty('fsAnterior');
-    secAcctItems.push({ key:'fsAnterior', label: (q>1?q+'x ':'')+{ pt: 'Demonstrações Financeiras - Anos Anteriores', es: 'Estados Financieros - Años Anteriores', en: 'Financial Statements - Prior Years' }[lang], amount: getPrice('fsAnterior', FGC_CONFIG.services.fsAnterior.price)*q, pay: L.payOnAcceptance, group: hasPICEntity ? 'pic' : 'us', qty:q });
+    secAcctItems.push({ key:'fsAnterior', label: (q>1?q+'x ':'')+{ pt: 'Financial Statements (Demonstrações Financeiras) – Anos Anteriores', es: 'Financial Statements (Estados Financieros) – Años Anteriores', en: 'Financial Statements – Prior Years' }[lang], amount: getPrice('fsAnterior', FGC_CONFIG.services.fsAnterior.price)*q, pay: L.payOnAcceptance, group: hasPICEntity ? 'pic' : 'us', qty:q });
     // For BVI entities: also show AFR row for prior-year FS
     if (hasBVIEntity) {
       secAcctItems.push({ key:'fsAnteriorAfr', label: (q>1?q+'x ':'')+{ pt: 'Annual Financial Return (AFR) — Anos Anteriores', es: 'Annual Financial Return (AFR) — Años Anteriores', en: 'Annual Financial Return (AFR) — Prior Years' }[lang], amount: null, pay: L.payOnAcceptance, shareRef: true, group:'pic' });
@@ -5461,7 +5474,7 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
   // Prior-year TR (US entities only)
   if (state.trAnterior && (hasPICEntity || hasUSEntity)) {
     const q = getQty('trAnterior');
-    secAcctItems.push({ key:'trAnterior', label: (q>1?q+'x ':'')+{ pt: 'Tax Return - Anos Anteriores', es: 'Tax Return - Años Anteriores', en: 'Tax Return - Prior Years' }[lang], amount: getPrice('trAnterior', FGC_CONFIG.services.trAnterior.price)*q, pay: L.payOnAcceptance, group:'us', qty:q });
+    secAcctItems.push({ key:'trAnterior', label: (q>1?q+'x ':'')+{ pt: 'Tax Return (Declaração de Imposto de Renda) – Anos Anteriores', es: 'Tax Return (Declaración de Impuesto a la Renta) – Años Anteriores', en: 'Tax Return – Prior Years' }[lang], amount: getPrice('trAnterior', FGC_CONFIG.services.trAnterior.price)*q, pay: L.payOnAcceptance, group:'us', qty:q });
   }
   // Custom accounting/fiscal services
   if (state.customAccounting) {
@@ -5898,7 +5911,8 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
           <div class="row-amount">${amountStr}</div>
         </td>
         <td>
-          ${(()=>{ const dp = (it.recurring && it.pay === L.payOnAcceptance) ? L.payFromYear2 : it.pay; return `<div class="row-payment">${dp.split('\n')[0]}</div>${dp.includes('\n') ? dp.split('\n').slice(1).map(l=>'<div class="row-anual">'+l+'</div>').join('') : ''}`; })()}
+          <div class="row-payment">${it.pay.split('\n')[0]}</div>
+          ${it.pay.includes('\n') ? it.pay.split('\n').slice(1).map(l => `<div class="row-anual">${l}</div>`).join('') : ''}
         </td>
       </tr>
     `;
