@@ -5773,9 +5773,9 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
       }
       // Custom bespoke items — render scope if provided
       if (['customOffshore','customTransfer','customAccounting','customDissolution'].includes(it.key)) {
-        if (!it.customScope || !it.customScope.trim()) return;
+        if (!it.customScope || !it.customScope.trim()) { it.noRef = true; return; }
         const bullets = it.customScope.split('\n').map(l => l.trim()).filter(Boolean);
-        if (bullets.length === 0) return;
+        if (bullets.length === 0) { it.noRef = true; return; }
         const ref = `${secTermsNum}.${++termsSub}`;
         it.termsRef = ref;
         termsHTML += buildTermsSection(`${ref} — ${it.label}`, bullets.map(b => highlightPlaceholders(b)), null, null, null);
@@ -5905,7 +5905,7 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
       <tr>
         <td>
           <div class="row-label">${it.label}</div>
-          <div class="row-ref">${L.colRef} ${it.termsRef || it.num}</div>
+          ${!it.noRef ? `<div class="row-ref">${L.colRef} ${it.termsRef || it.num}</div>` : ''}
         </td>
         <td>
           <div class="row-amount">${amountStr}</div>
