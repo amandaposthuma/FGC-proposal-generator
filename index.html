@@ -1116,7 +1116,6 @@ var FGC_CONFIG = {
           "Gestão do processo de notarização e apostilamento junto ao órgão competente",
           "Envio dos documentos ao cliente final, via courier ou FedEx"
         ],
-        note: "O prazo estimado é de 10 a 15 dias úteis, contados a partir da conclusão da formação da empresa. Entretanto, este prazo pode variar, pois está sujeito aos prazos estipulados pelos órgãos governamentais competentes."
       },
       mailing: {
         title: "Mailing Address (Opcional)",
@@ -5251,6 +5250,7 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
   const hasNoTemplate = state.dcbe;
   const hasDissolution = state.dissolucaoBVI || state.dissolucaoBahamas || state.dissolucaoCayman || state.dissolucaoNevis || state.dissolucaoFL || state.dissolucaoDE || state.dissolucaoNY || state.dissolucaoSD || state.dissolucaoWI || state.dissolucaoMN || hasCustomDissol;
   const isDissolutionOnly = hasDissolution && !hasFormation && !hasTransfer && !hasSuccession && !hasAccounting && !hasApostila && !hasMailing && !has3rdPartyFS && !has3rdPartyTR && !state.dcbe;
+  const isNotarizationOnly = hasApostila && !hasFormation && !hasTransfer && !hasSuccession && !hasAccounting && !hasMailing && !has3rdPartyFS && !has3rdPartyTR && !state.dcbe && !hasDissolution;
   const hasAnyService = hasFormation || hasTransfer || hasSuccession || hasAccounting || hasApostila || hasMailing || hasStandalone || has3rdPartyFS || has3rdPartyTR || hasCustomAcct;
 
   if (!hasAnyService) {
@@ -5489,10 +5489,14 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
     });
   }
   // Transfer prior-year services (declared here, after secAcctItems exists)
-  if (state.transFS)
-    secAcctItems.push({ key:'priorFS', label: (lang==='en'?'Financial Statements Preparation - Prior Year (FS)':lang==='es'?'Preparación de Estados Financieros - Año Anterior (FS)':'Preparação de Demonstrações Financeiras - Ano Anterior (FS)'), amount: getPrice('transFS', FGC_CONFIG.services.transFS.price), pay: L.payOnAcceptance, group:'pic' });
+  if (state.transFS) {
+    secAcctItems.push({ key:'priorFS', label: { pt: 'Financial Statements (Demonstrações Financeiras) – Anos Anteriores', es: 'Financial Statements (Estados Financieros) – Años Anteriores', en: 'Financial Statements – Prior Years' }[lang], amount: getPrice('transFS', FGC_CONFIG.services.transFS.price), pay: L.payOnAcceptance, group:'pic' });
+    if (hasBVIEntity) {
+      secAcctItems.push({ key:'priorFSAfr', label: { pt: 'Annual Financial Return (AFR) — Anos Anteriores', es: 'Annual Financial Return (AFR) — Años Anteriores', en: 'Annual Financial Return (AFR) — Prior Years' }[lang], amount: null, pay: L.payOnAcceptance, shareRef: true, group:'pic' });
+    }
+  }
   if (state.transTR)
-    secAcctItems.push({ key:'priorTR', label: (lang==='en'?'Prior Year Tax Return (TR)':lang==='es'?'Tax Return Año Anterior (TR)':'Tax Return Ano Anterior (TR)'), amount: getPrice('transTR', FGC_CONFIG.services.transTR.price), pay: L.payOnAcceptance, group:'us' });
+    secAcctItems.push({ key:'priorTR', label: { pt: 'Tax Return (Declaração de Imposto de Renda) – Anos Anteriores', es: 'Tax Return (Declaración de Impuesto a la Renta) – Años Anteriores', en: 'Tax Return – Prior Years' }[lang], amount: getPrice('transTR', FGC_CONFIG.services.transTR.price), pay: L.payOnAcceptance, group:'us' });
 
   // Section III (dissolution / standalone)
   let sec3Items = [];
@@ -5851,7 +5855,11 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
     }[lang]);
   }
   if (hasApostila) {
-    timelinesItems.push({
+    timelinesItems.push(isNotarizationOnly ? {
+      pt: "O prazo estimado para notarização e apostilamento é de 10 a 15 dias úteis. Este prazo pode variar conforme os prazos estipulados pelos órgãos governamentais competentes.",
+      es: "El plazo estimado para notarización y apostillado es de 10 a 15 días hábiles. Este plazo puede variar según los plazos establecidos por las autoridades gubernamentales competentes.",
+      en: "Estimated timeframe for notarization and apostille is 10 to 15 business days. This timeline may vary as it is subject to timelines set by the competent government authorities.",
+    }[lang] : {
       pt: "O prazo estimado para notarização e apostilamento é de 10 a 15 dias úteis, contados a partir da conclusão da formação da empresa. Este prazo pode variar conforme os prazos estipulados pelos órgãos governamentais competentes.",
       es: "El plazo estimado para notarización y apostillado es de 10 a 15 días hábiles, contados desde la conclusión de la formación de la empresa. Este plazo puede variar según los plazos establecidos por las autoridades gubernamentales competentes.",
       en: "Estimated timeframe for notarization and apostille is 10 to 15 business days from completion of company formation. This timeline may vary as it is subject to timelines set by the competent government authorities.",
@@ -6165,6 +6173,15 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
           const trKeywords = { pt: 'Preparação de Tax Return final', es: 'Preparación de Tax Return final', en: 'Preparation of final Tax Return' };
           notIncItems = notIncItems.filter(i => i !== trKeywords[lang]);
         }
+        // Notarization-only proposals: remove items irrelevant to standalone notarization
+        if (isNotarizationOnly) {
+          const removeForNotarization = {
+            pt: ['Elaboração de atas (aportes, redução de capital, entre outros)', 'Certificados (Good Standing, Incumbency)', 'Reestruturações'],
+            es: ['Elaboración de actas (aportes, reducción de capital, entre otros)', 'Certificados (Good Standing, Incumbency)', 'Reestructuraciones'],
+            en: ['Preparation of minutes (capital contributions, capital reductions, among others)', 'Certificates (Good Standing, Incumbency)', 'Restructurings'],
+          };
+          notIncItems = notIncItems.filter(i => !removeForNotarization[lang].includes(i));
+        }
         return `
       <div class="doc-section">
         <div class="doc-section-header">III. ${clauseSet.notIncluded.title}</div>
@@ -6178,7 +6195,18 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
         <div class="doc-section-header">${secTCHeader}</div>
         <div class="terms-section">
           <div class="terms-section-heading">${secTCNum}.1 — ${clauseSet.payment.title}</div>
-          <ul class="terms-list">${payText ? payText.replace(/\. /g, '.|').split('|').filter(Boolean).map(s => '<li>' + s + '</li>').join('') : ''}${clauseSet.payment.items.map(i => '<li>' + i + '</li>').join('')}</ul>
+          <ul class="terms-list">${payText ? payText.replace(/\. /g, '.|').split('|').filter(Boolean).map(s => '<li>' + s + '</li>').join('') : ''}${(() => {
+            const paymentKeywordsToRemove = {
+              pt: ['manutenção anuais', 'Demonstrações Financeiras, AFR e Tax Return'],
+              es: ['mantenimiento anual', 'Estados Financieros, AFR y Tax Return'],
+              en: ['annual maintenance fees', 'Financial Statements, AFR, and Tax Return'],
+            };
+            let payItems = clauseSet.payment.items;
+            if (isNotarizationOnly) {
+              payItems = payItems.filter(i => !paymentKeywordsToRemove[lang].some(kw => i.includes(kw)));
+            }
+            return payItems.map(i => '<li>' + i + '</li>').join('');
+          })()}</ul>
         </div>
         <div class="terms-section">
           <div class="terms-section-heading">${secTCNum}.2 — ${clauseSet.timelines.title}</div>
@@ -6256,8 +6284,8 @@ function updateEmailPanel() {
   if (state.will) services.push(emailTermTitle('will'));
   if (state.apostila) services.push(emailTermTitle('apostila'));
   if (state.mailing) services.push(emailTermTitle('mailing'));
-  if (state.transFS) services.push({ pt: 'Demonstrações Financeiras Ano Anterior (FS)', es: 'Estados Financieros Año Anterior (FS)', en: 'Prior Year Financial Statements (FS)' }[emailLang]);
-  if (state.transTR) services.push({ pt: 'Tax Return Ano Anterior (TR)', es: 'Tax Return Año Anterior (TR)', en: 'Prior Year Tax Return (TR)' }[emailLang]);
+  if (state.transFS) services.push({ pt: 'Financial Statements (Demonstrações Financeiras) – Anos Anteriores', es: 'Financial Statements (Estados Financieros) – Años Anteriores', en: 'Financial Statements – Prior Years' }[emailLang]);
+  if (state.transTR) services.push({ pt: 'Tax Return (Declaração de Imposto de Renda) – Anos Anteriores', es: 'Tax Return (Declaración de Impuesto a la Renta) – Años Anteriores', en: 'Tax Return – Prior Years' }[emailLang]);
   if (state.fs) services.push(emailTermTitle('fs'));
   if (state.tr) services.push(emailTermTitle('tr'));
   if (state.fs3rd) services.push({ pt: 'Demonstrações Financeiras por Terceiros', es: 'Estados Financieros por Terceros', en: 'Financial Statements (Third Party)' }[emailLang]);
