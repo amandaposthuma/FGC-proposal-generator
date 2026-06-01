@@ -6597,6 +6597,7 @@ function checkPW() {
   if (!pw) { errEl.textContent = 'Digite a senha.'; return; }
   if (btoa(unescape(encodeURIComponent(pw))) === CORRECT_PW_B64) {
     document.getElementById('pw-gate').classList.add('hidden');
+    if (!getCurrentUser()) showUserModal();
   } else {
     errEl.textContent = 'Senha incorreta. Tente novamente.';
     document.getElementById('pw-input').value = '';
@@ -6777,8 +6778,6 @@ document.addEventListener('DOMContentLoaded', () => {
   renderUI();
   renderAdvisorChips();
   updateDraftCountBadge();
-  // Show user identity modal if not yet set (after password is entered)
-  if (!getCurrentUser()) showUserModal();
   // Focus password input
   document.getElementById('pw-input').focus();
 });
