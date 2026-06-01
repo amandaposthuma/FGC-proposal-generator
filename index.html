@@ -699,12 +699,15 @@
   <div class="pw-box">
     <img class="pw-logo" id="pw-logo" alt="FGC.">
     <div class="pw-title">Proposal Generator</div>
-    <div class="pw-sub">Digite a senha para acessar</div>
+    <div class="pw-sub">Entre com seu usuário e senha</div>
     <div class="pw-field">
-      <input type="password" id="pw-input" placeholder="Senha" onkeydown="if(event.key==='Enter')checkPW()">
+      <input type="text" id="pw-username" placeholder="Usuário" onkeydown="if(event.key==='Enter')checkLogin()" autocomplete="username" autocapitalize="none">
+    </div>
+    <div class="pw-field">
+      <input type="password" id="pw-input" placeholder="Senha" onkeydown="if(event.key==='Enter')checkLogin()" autocomplete="current-password">
       <button class="pw-toggle" onclick="togglePWVisibility()" title="Mostrar/ocultar senha">👁</button>
     </div>
-    <button class="pw-btn" onclick="checkPW()">Entrar</button>
+    <button class="pw-btn" onclick="checkLogin()">Entrar</button>
     <div class="pw-error" id="pw-error"></div>
   </div>
 </div>
@@ -874,6 +877,18 @@
 // ═══════════════════════════════════════════════════════════════════
 
 var FGC_CONFIG = {
+
+  // ─────────────────────────────────────────────────────────────────
+  // 0. USERS — add/remove authorized users here
+  //    username: what they type to log in (lowercase, no spaces)
+  //    password: their personal password
+  //    display:  their name as it appears on draft records
+  // ─────────────────────────────────────────────────────────────────
+  users: [
+    { username: "meire",      password: "FGC2025!",   display: "Meire" },
+    { username: "secretaria", password: "Proposta1!",  display: "Secretaria" },
+    { username: "admin",      password: "FGCadmin1!",  display: "Admin" },
+  ],
 
   // ─────────────────────────────────────────────────────────────────
   // 1. SERVICES — prices for all service types
@@ -6590,16 +6605,20 @@ function togglePWVisibility() {
   inp.type = inp.type === 'password' ? 'text' : 'password';
 }
 
-function checkPW() {
+function checkLogin() {
+  const username = (document.getElementById('pw-username').value || '').trim().toLowerCase();
   const pw = document.getElementById('pw-input').value;
   const errEl = document.getElementById('pw-error');
   errEl.textContent = '';
-  if (!pw) { errEl.textContent = 'Digite a senha.'; return; }
-  if (btoa(unescape(encodeURIComponent(pw))) === CORRECT_PW_B64) {
+  if (!username) { errEl.textContent = 'Digite seu usuário.'; document.getElementById('pw-username').focus(); return; }
+  if (!pw) { errEl.textContent = 'Digite sua senha.'; document.getElementById('pw-input').focus(); return; }
+  const users = (FGC_CONFIG.users || []);
+  const match = users.find(u => u.username.toLowerCase() === username && u.password === pw);
+  if (match) {
+    setCurrentUser(match.display);
     document.getElementById('pw-gate').classList.add('hidden');
-    if (!getCurrentUser()) showUserModal();
   } else {
-    errEl.textContent = 'Senha incorreta. Tente novamente.';
+    errEl.textContent = 'Usuário ou senha incorretos.';
     document.getElementById('pw-input').value = '';
     document.getElementById('pw-input').focus();
   }
@@ -6778,8 +6797,8 @@ document.addEventListener('DOMContentLoaded', () => {
   renderUI();
   renderAdvisorChips();
   updateDraftCountBadge();
-  // Focus password input
-  document.getElementById('pw-input').focus();
+  // Focus username input
+  document.getElementById('pw-username').focus();
 });
 </script>
 </body>
