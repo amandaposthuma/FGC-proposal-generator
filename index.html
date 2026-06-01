@@ -6396,6 +6396,7 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
   document.getElementById('btn-new-proposal').style.display = '';
   updateTopbar();
   updateEmailPanel();
+  logProposalToNotion(triva);
 }
 
 // ═══════════════════════════════════════════════════════════════════
@@ -6622,6 +6623,35 @@ function checkLogin() {
     document.getElementById('pw-input').value = '';
     document.getElementById('pw-input').focus();
   }
+}
+
+// ═══════════════════════════════════════════════════════════════════
+//  NOTION AUDIT LOG
+// ═══════════════════════════════════════════════════════════════════
+const MAKE_WEBHOOK = 'https://hook.us2.make.com/8cx5wkgvxkqp5iqijupqs5ttyos8lxy5';
+
+function logProposalToNotion(triva) {
+  try {
+    const client = document.getElementById('f-client').value.trim() || '—';
+    const user = getCurrentUser() || 'Unknown';
+    const device = localStorage.getItem('fgc_device') || 'Unknown device';
+    const services = [];
+    Object.keys(state).forEach(k => { if (state[k]) services.push(k); });
+    const payload = {
+      client,
+      user,
+      device,
+      services: services.join(', ') || '—',
+      language: lang.toUpperCase(),
+      brand: triva ? 'Triva' : 'FGC',
+      generatedAt: new Date().toISOString(),
+    };
+    fetch(MAKE_WEBHOOK, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    }).catch(() => {});
+  } catch(e) {}
 }
 
 // ═══════════════════════════════════════════════════════════════════
