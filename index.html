@@ -718,11 +718,11 @@
 ═══════════════════════════════════════════════ -->
 <div id="user-modal-overlay">
   <div class="user-modal">
-    <div class="user-modal-title">Welcome to FGC Proposal Generator</div>
-    <div class="user-modal-desc">Enter your name or nickname so proposals can be tracked to the right person.</div>
-    <input type="text" id="user-modal-input" class="user-modal-input" placeholder="e.g. Maria, Front Desk, Amanda's iPhone" maxlength="60" onkeydown="if(event.key==='Enter') confirmUserName()">
-    <button class="user-modal-btn" onclick="confirmUserName()">Continue</button>
-    <div class="user-modal-note">Stored only on this computer · Never appears on proposals</div>
+    <div class="user-modal-title">Name this device</div>
+    <div class="user-modal-desc">Give this device a nickname so the proposal log shows where proposals were created.</div>
+    <input type="text" id="user-modal-input" class="user-modal-input" placeholder="e.g. Claudia's MacBook, Front Desk iPad" maxlength="60" onkeydown="if(event.key==='Enter') confirmDeviceName()">
+    <button class="user-modal-btn" onclick="confirmDeviceName()">Continue</button>
+    <div class="user-modal-note">Stored only on this device · Never appears on proposals</div>
   </div>
 </div>
 
@@ -6545,6 +6545,7 @@ function exportInteractivePDF() {
 //  RESET PROPOSAL
 // ═══════════════════════════════════════════════════════════════════
 function resetProposal() {
+  _proposalLogged = false;
   // Reset all service state
   Object.keys(state).forEach(k => { state[k] = false; });
   state.fsIncludeAFR = true;       // restore default
@@ -6618,6 +6619,7 @@ function checkLogin() {
   if (match) {
     setCurrentUser(match.display);
     document.getElementById('pw-gate').classList.add('hidden');
+    if (!getDeviceName()) showDeviceModal();
   } else {
     errEl.textContent = 'Usuário ou senha incorretos.';
     document.getElementById('pw-input').value = '';
@@ -6629,12 +6631,15 @@ function checkLogin() {
 //  NOTION AUDIT LOG
 // ═══════════════════════════════════════════════════════════════════
 const MAKE_WEBHOOK = 'https://hook.us2.make.com/8cx5wkgvxkqp5iqijupqs5ttyos8lxy5';
+let _proposalLogged = false;
 
 function logProposalToNotion(triva) {
+  if (_proposalLogged) return;
+  _proposalLogged = true;
   try {
     const client = document.getElementById('f-client').value.trim() || '—';
     const user = getCurrentUser() || 'Unknown';
-    const device = localStorage.getItem('fgc_device') || 'Unknown device';
+    const device = getDeviceName() || 'Unknown device';
     const services = [];
     Object.keys(state).forEach(k => { if (state[k]) services.push(k); });
     const payload = {
@@ -6663,14 +6668,17 @@ function getCurrentUser() {
 function setCurrentUser(name) {
   try { localStorage.setItem('fgc_user', name.trim()); } catch(e) {}
 }
-function confirmUserName() {
+function getDeviceName() {
+  try { return localStorage.getItem('fgc_device') || null; } catch(e) { return null; }
+}
+function confirmDeviceName() {
   const inp = document.getElementById('user-modal-input');
   const name = inp ? inp.value.trim() : '';
   if (!name) { if (inp) inp.focus(); return; }
-  setCurrentUser(name);
+  try { localStorage.setItem('fgc_device', name); } catch(e) {}
   document.getElementById('user-modal-overlay').classList.remove('open');
 }
-function showUserModal() {
+function showDeviceModal() {
   document.getElementById('user-modal-overlay').classList.add('open');
   setTimeout(() => { const inp = document.getElementById('user-modal-input'); if (inp) inp.focus(); }, 80);
 }
