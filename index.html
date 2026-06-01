@@ -6751,7 +6751,7 @@ function renderDraftsList() {
       </div>
       <div class="draft-card-actions">
         <button class="draft-btn draft-btn-load" onclick="loadDraft('${d.id}')">Load</button>
-        <button class="draft-btn draft-btn-sent${d.status==='sent'?' already-sent':''}" onclick="${d.status==='sent'?'void(0)':\"markDraftSent('\" + d.id + \"')\"}">${d.status==='sent'?'✓ Sent':'Mark Sent'}</button>
+        <button class="draft-btn draft-btn-sent${d.status==='sent'?' already-sent':''}" onclick="markDraftSent('${d.id}')">${d.status==='sent'?'✓ Sent':'Mark Sent'}</button>
         <button class="draft-btn draft-btn-delete" onclick="deleteDraft('${d.id}')">×</button>
       </div>
     `;
