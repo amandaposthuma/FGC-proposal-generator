@@ -6656,7 +6656,14 @@ function logProposalToNotion(triva) {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
-    }).catch(() => {});
+    }).catch(() => {
+      // Fallback: save locally if webhook fails so nothing is ever lost
+      try {
+        const failed = JSON.parse(localStorage.getItem('fgc_failed_logs') || '[]');
+        failed.push(payload);
+        localStorage.setItem('fgc_failed_logs', JSON.stringify(failed));
+      } catch(e) {}
+    });
   } catch(e) {}
 }
 
