@@ -6635,9 +6635,10 @@ let _proposalLogged = false;
 
 function logProposalToNotion(triva) {
   if (_proposalLogged) return;
+  const client = document.getElementById('f-client').value.trim();
+  if (!client) return; // never log without a client name
   _proposalLogged = true;
   try {
-    const client = document.getElementById('f-client').value.trim() || '—';
     const user = getCurrentUser() || 'Unknown';
     const device = getDeviceName() || 'Unknown device';
     const services = [];
