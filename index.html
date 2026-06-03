@@ -5367,7 +5367,7 @@ function debouncedUpdate() {
     // Skip if edit mode is active (user may have manually edited the proposal)
     const docEl = document.getElementById('proposal-doc');
     if (docEl && docEl.style.display !== 'none' && _lastTrivaMode !== null && !_editMode) {
-      generateProposal(_lastTrivaMode);
+      generateProposal(_lastTrivaMode, true);
     }
   }, 150);
 }
@@ -5417,10 +5417,12 @@ function updateTopbar() {
 // ═══════════════════════════════════════════════════════════════════
 //  PROPOSAL GENERATION
 // ═══════════════════════════════════════════════════════════════════
-function generateProposal(triva) {
+function generateProposal(triva, _fromDebounce) {
   // Track which branding mode was last used so debouncedUpdate() can re-generate correctly.
   // Store false (not undefined) for the regular case so null stays unambiguous as "no proposal yet".
   _lastTrivaMode = triva ? true : false;
+  // Flag so logProposalToNotion knows whether this was a manual button click or an auto-update
+  _generateIsManual = !_fromDebounce;
   const client = document.getElementById('f-client').value.trim() || '';
   const careOf = (document.getElementById('f-careof')?.value || '').trim();
   const extraLine = (document.getElementById('f-extra')?.value || '').trim();
@@ -6771,8 +6773,11 @@ function checkLogin() {
 // ═══════════════════════════════════════════════════════════════════
 const MAKE_WEBHOOK = 'https://hook.us2.make.com/8cx5wkgvxkqp5iqijupqs5ttyos8lxy5';
 let _lastLoggedClient = null;
+let _generateIsManual = false;
 
 function logProposalToNotion(triva) {
+  // Only log on explicit button click — not on auto-updates from debounce
+  if (!_generateIsManual) return;
   const client = document.getElementById('f-client').value.trim();
   if (!client) return; // never log without a client name
   // Deduplicate: only log once per unique client name per session
