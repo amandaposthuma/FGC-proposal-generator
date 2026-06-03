@@ -6610,7 +6610,7 @@ function exportInteractivePDF() {
 //  RESET PROPOSAL
 // ═══════════════════════════════════════════════════════════════════
 function resetProposal() {
-  _proposalLogged = false;
+  _lastLoggedClient = null;
   // Reset all service state
   Object.keys(state).forEach(k => { state[k] = false; });
   state.fsIncludeAFR = true;       // restore default
@@ -6696,13 +6696,14 @@ function checkLogin() {
 //  NOTION AUDIT LOG
 // ═══════════════════════════════════════════════════════════════════
 const MAKE_WEBHOOK = 'https://hook.us2.make.com/8cx5wkgvxkqp5iqijupqs5ttyos8lxy5';
-let _proposalLogged = false;
+let _lastLoggedClient = null;
 
 function logProposalToNotion(triva) {
-  if (_proposalLogged) return;
   const client = document.getElementById('f-client').value.trim();
   if (!client) return; // never log without a client name
-  _proposalLogged = true;
+  // Deduplicate: only log once per unique client name per session
+  if (_lastLoggedClient === client) return;
+  _lastLoggedClient = client;
   try {
     const user = getCurrentUser() || 'Unknown';
     const device = getDeviceName() || 'Unknown device';
