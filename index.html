@@ -540,12 +540,17 @@
   /* ── PRINT / PDF ── */
   @media print {
     * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+    /* When printing via exportInteractivePDF(), proposal-doc is moved into #print-wrap on body.
+       Hide everything except the print wrapper to guarantee no blank pages. */
+    body.printing > *:not(#print-wrap) { display: none !important; }
+    #print-wrap { position: static !important; }
+    /* Fallback for direct Ctrl+P (no .printing class) */
     #sidebar, #topbar, #email-panel { display: none !important; }
     #app { display: block; }
     #main { display: block; padding: 0; }
     #proposal-area { padding: 0; background: white; }
     #proposal-doc { box-shadow: none; max-width: 100%; margin: 0; }
-    #proposal-empty { display: none !important; }
+    #proposal-empty { display: none !important; height: 0 !important; min-height: 0 !important; overflow: hidden !important; }
     body { background: white; margin: 0; padding: 0; }
     .fee-table tbody tr:hover td { border-top: none !important; border-bottom: 1px solid var(--border-light) !important; border-left: none !important; border-right: none !important; }
     #edit-mode-banner { display: none !important; }
@@ -6677,8 +6682,23 @@ function exportInteractivePDF() {
     alert('Please generate a proposal first.');
     return;
   }
-  // Use the browser's native print dialog — select "Save as PDF"
-  // The @media print CSS handles margins, page breaks, and layout
+  // Move proposal-doc to a temporary print-only wrapper directly on body,
+  // hiding everything else — this is the only reliable way to prevent
+  // Chrome from generating a blank first page from hidden sidebar/empty elements.
+  const originalParent = proposalEl.parentNode;
+  const originalNext = proposalEl.nextSibling;
+  const printWrap = document.createElement('div');
+  printWrap.id = 'print-wrap';
+  printWrap.style.cssText = 'position:fixed;top:0;left:0;width:100%;z-index:99999;background:white;';
+  document.body.appendChild(printWrap);
+  printWrap.appendChild(proposalEl);
+  document.body.classList.add('printing');
+  window.onafterprint = function() {
+    originalParent.insertBefore(proposalEl, originalNext);
+    printWrap.remove();
+    document.body.classList.remove('printing');
+    window.onafterprint = null;
+  };
   window.print();
 }
 
