@@ -545,7 +545,6 @@
 
     /* 0.5 inch margins, no browser headers/footers */
     @page { margin: 12.7mm 10mm; size: A4; }
-    @page :first { margin-top: 6mm; }
     title { display: none; }
   }
 
@@ -3706,7 +3705,7 @@ const T = {
       "Recebimento e digitalização de correspondências oficiais",
       "Encaminhamento por e-mail ao cliente"
     ],
-    termsMailingNote: null,
+    termsMailingNote: "Em caso de transferência da titularidade ou administração da empresa, o cliente se responsabiliza por atualizar imediatamente o endereço oficial junto às autoridades competentes, assegurando que o endereço da FGC não seja mais utilizado após a conclusão da transferência. Caso o cliente não realize essa atualização no prazo de até 30 dias, a FGC se reserva o direito de, a seu exclusivo critério, transferir o endereço oficial da empresa para o endereço residencial ou comercial do cliente constante em nossos registros.",
 
     // Terms – FS / TR
     termsFSTitle: "Demonstrações Financeiras (FS) + AFR",
@@ -4053,7 +4052,7 @@ contact@fgcadvisors.com`;
     termsApostilaNote: "Servicio adicional típicamente incluido en las propuestas de constitución. Cotizado por separado cuando se solicita fuera de un proceso de constitución.",
     termsMailingTitle: "Dirección de Correspondencia FGC (Mailing Address)",
     termsMailingItems: ["Suministro de dirección de correspondencia en EE.UU.","Recepción y digitalización de correspondencia oficial","Reenvío por correo electrónico al cliente"],
-    termsMailingNote: null,
+    termsMailingNote: "En caso de transferencia de titularidad o administración de la empresa, el cliente se compromete a actualizar de inmediato la dirección oficial ante las autoridades competentes, garantizando que la dirección de FGC no sea utilizada tras la conclusión de la transferencia. Si el cliente no realiza esta actualización en el plazo de hasta 30 días, FGC se reserva el derecho de, a su exclusivo criterio, transferir la dirección oficial de la empresa a la dirección residencial o comercial del cliente que conste en nuestros registros.",
     termsFSTitle: "Estados Financieros (FS) + AFR",
     termsFSItems: ["Elaboración de los Estados Financieros (Financial Statements)","Preparación del Annual Financial Return (AFR) ante el Registro de BVI","Análisis y categorización de movimientos del período"],
     termsFSNote: null,
@@ -4314,7 +4313,7 @@ contact@fgcadvisors.com`;
     termsApostilaNote: "Additional service typically included in formation proposals. Quoted separately when requested outside a formation process.",
     termsMailingTitle: "FGC Mailing Address",
     termsMailingItems: ["Provision of a US mailing address","Receipt and scanning of official correspondence","Forwarding by email to the client"],
-    termsMailingNote: null,
+    termsMailingNote: "In the event of a transfer of ownership or management of the company, the client is responsible for immediately updating the official address with the relevant authorities, ensuring that FGC's address is no longer used following the completion of the transfer. Should the client fail to complete this update within 30 days, FGC reserves the right, at its sole discretion, to transfer the company's official address to the client's residential or business address on file with us.",
     termsFSTitle: "Financial Statements (FS) + AFR",
     termsFSItems: ["Preparation of Financial Statements","Preparation of the Annual Financial Return (AFR) with the BVI Registry","Analysis and categorization of period transactions"],
     termsFSNote: null,
@@ -5377,9 +5376,9 @@ function generateProposal(triva) {
   // FS/AFR is primary for PIC entities but can be manually applied to US structures; TR is US-only
   const hasPICEntity  = hasPICForm || hasPICTrans;
   const hasUSEntity   = hasUSForm  || hasUSTrans;
-  const hasAccounting = (state.fs && (hasPICEntity || hasUSEntity)) || (state.tr && (hasPICEntity || hasUSEntity)) || (state.afr && hasPICEntity);
-  const has3rdPartyFS = state.fs3rd && (hasPICEntity || hasUSEntity);
-  const has3rdPartyTR = state.tr3rd && (hasPICEntity || hasUSEntity);
+  const hasAccounting = state.fs || state.tr || (state.afr && hasPICEntity);
+  const has3rdPartyFS = state.fs3rd;
+  const has3rdPartyTR = state.tr3rd;
   const hasMaint      = hasFormation || hasTransfer;
   const hasApostila   = state.apostila;
   const hasMailing    = state.mailing;
@@ -5566,9 +5565,9 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
   const bviQty = maintQty('bvi','transBVI','transBVIRA');
   const usQty  = maintQty('fl','transFL','transFLRA') + maintQty('de','transDE','transDERA') + maintQty('ny','transNY',null) + maintQty('sd','transSD',null) + maintQty('wi','transWI',null) + maintQty('mn','transMN',null);
   let secAcctItems = [];
-  // FS: allow even when only US entities are present (user may manually select FS for US structures)
-  if (state.fs && (hasPICEntity || hasUSEntity)) {
-    // Use user-set qty if explicitly provided; otherwise derive from entity count
+  // FS: allowed standalone (no entity required) or alongside entities
+  if (state.fs) {
+    // Use user-set qty if explicitly provided; otherwise derive from entity count (or 1 for standalone)
     const fsQtyAuto = hasPICEntity ? Math.max(bviQty, 1) : 1;
     const fsQtyBase = qty['fs'] !== undefined ? qty['fs'] : fsQtyAuto;
     secAcctItems.push({ key:'fs', label: (fsQtyBase>1?fsQtyBase+'x ':'')+fsLabels[lang].df, amount: getPrice('fs', FGC_CONFIG.services.fs.price)*fsQtyBase, pay: L.payFromYear2, group: hasPICEntity ? 'pic' : 'us' });
@@ -5578,19 +5577,19 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
     }
   }
   // FS by third party — include scope item; show price if user entered one
-  if (state.fs3rd && (hasPICEntity || hasUSEntity)) {
+  if (state.fs3rd) {
     const fs3rdQ = qty['fs3rd'] !== undefined ? qty['fs3rd'] : 1;
     const fs3rdPrice = priceOverrides['fs3rd'] !== undefined ? priceOverrides['fs3rd'] * fs3rdQ : null;
     secAcctItems.push({ key:'fs3rd', label: (fs3rdQ>1?fs3rdQ+'x ':'')+{ pt: 'Demonstrações Financeiras por Terceiros', es: 'Estados Financieros por Terceros', en: 'Financial Statements (Third Party)' }[lang], amount: fs3rdPrice, pay: '', group: hasPICEntity ? 'pic' : 'us' });
   }
-  if (state.tr && (hasPICEntity || hasUSEntity)) {
-    // Use user-set qty if explicitly provided; otherwise derive from entity count
-    const trQtyAuto = hasUSEntity ? Math.max(usQty, 1) : Math.max(bviQty, 1);
+  if (state.tr) {
+    // Use user-set qty if explicitly provided; otherwise derive from entity count (or 1 for standalone)
+    const trQtyAuto = hasUSEntity ? Math.max(usQty, 1) : hasPICEntity ? Math.max(bviQty, 1) : 1;
     const trQtyFinal = qty['tr'] !== undefined ? qty['tr'] : trQtyAuto;
     secAcctItems.push({ key:'tr', label: (trQtyFinal>1?trQtyFinal+'x ':'')+termTitle('tr'), amount: getPrice('tr', FGC_CONFIG.services.tr.price)*trQtyFinal, pay: L.payFromYear2, group: hasUSEntity ? 'us' : 'pic' });
   }
   // TR by third party — include scope item; show price if user entered one
-  if (state.tr3rd && (hasPICEntity || hasUSEntity)) {
+  if (state.tr3rd) {
     const tr3rdQ = qty['tr3rd'] !== undefined ? qty['tr3rd'] : 1;
     const tr3rdPrice = priceOverrides['tr3rd'] !== undefined ? priceOverrides['tr3rd'] * tr3rdQ : null;
     secAcctItems.push({ key:'tr3rd', label: (tr3rdQ>1?tr3rdQ+'x ':'')+{ pt: 'Tax Return por Terceiros', es: 'Tax Return por Terceros', en: 'Tax Return (Third Party)' }[lang], amount: tr3rdPrice, pay: '', group:'us' });
@@ -5603,7 +5602,7 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
     secAcctItems.push({ key:'afr', label: (afrQtyFinal>1?afrQtyFinal+'x ':'')+termTitle('afr'), amount: getPrice('afr', FGC_CONFIG.services.afr.price)*afrQtyFinal, pay: L.payFromYear2, group:'pic' });
   }
   // Prior-year FS (PIC entities; allow for US-only too when user selects it)
-  if (state.fsAnterior && (hasPICEntity || hasUSEntity)) {
+  if (state.fsAnterior) {
     const q = getQty('fsAnterior');
     secAcctItems.push({ key:'fsAnterior', label: (q>1?q+'x ':'')+{ pt: 'Financial Statements (Demonstrações Financeiras) – Anos Anteriores', es: 'Financial Statements (Estados Financieros) – Años Anteriores', en: 'Financial Statements – Prior Years' }[lang], amount: getPrice('fsAnterior', FGC_CONFIG.services.fsAnterior.price)*q, pay: L.payOnAcceptance, group: hasPICEntity ? 'pic' : 'us', qty:q });
     // For BVI entities: also show AFR row for prior-year FS
@@ -5612,7 +5611,7 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
     }
   }
   // Prior-year TR (US entities only)
-  if (state.trAnterior && (hasPICEntity || hasUSEntity)) {
+  if (state.trAnterior) {
     const q = getQty('trAnterior');
     secAcctItems.push({ key:'trAnterior', label: (q>1?q+'x ':'')+{ pt: 'Tax Return (Declaração de Imposto de Renda) – Anos Anteriores', es: 'Tax Return (Declaración de Impuesto a la Renta) – Años Anteriores', en: 'Tax Return – Prior Years' }[lang], amount: getPrice('trAnterior', FGC_CONFIG.services.trAnterior.price)*q, pay: L.payOnAcceptance, group:'us', qty:q });
   }
@@ -6006,6 +6005,72 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
       en: "Estimated timeframe for notarization and apostille is 10 to 15 business days from completion of company formation. This timeline may vary as it is subject to timelines set by the competent government authorities.",
     }[lang]);
   }
+  // Offshore (BVI, Bahamas, Cayman, Nevis) dissolution prazos
+  if (state.dissolucaoBVI) {
+    timelinesItems.push({
+      pt: "O prazo estimado para a conclusão do processo de dissolução da BVI Company está sujeito à regularidade da empresa, à entrega de toda a documentação exigida e à aprovação pelo BVI Registry of Corporate Affairs.",
+      es: "El plazo estimado para la conclusión del proceso de disolución de la BVI Company está sujeto a la regularidad de la empresa, la entrega de toda la documentación requerida y la aprobación del BVI Registry of Corporate Affairs.",
+      en: "The estimated timeframe for completion of the BVI Company dissolution process is subject to the company's standing, submission of all required documentation, and approval by the BVI Registry of Corporate Affairs.",
+    }[lang]);
+  }
+  if (state.dissolucaoBahamas) {
+    timelinesItems.push({
+      pt: "O prazo estimado para a conclusão do processo de dissolução da Bahamas Company está sujeito à regularidade da empresa, à entrega de toda a documentação exigida e à aprovação pelo Registro de Bahamas.",
+      es: "El plazo estimado para la conclusión del proceso de disolución de la Bahamas Company está sujeto a la regularidad de la empresa, la entrega de toda la documentación requerida y la aprobación del Registro de Bahamas.",
+      en: "The estimated timeframe for completion of the Bahamas Company dissolution process is subject to the company's standing, submission of all required documentation, and approval by the Bahamas Registry.",
+    }[lang]);
+  }
+  if (state.dissolucaoCayman) {
+    timelinesItems.push({
+      pt: "O prazo estimado para a conclusão do processo de dissolução da Cayman Company está sujeito à regularidade da empresa, à entrega de toda a documentação exigida e à aprovação pelo Registro de Cayman.",
+      es: "El plazo estimado para la conclusión del proceso de disolución de la Cayman Company está sujeto a la regularidad de la empresa, la entrega de toda la documentación requerida y la aprobación del Registro de Cayman.",
+      en: "The estimated timeframe for completion of the Cayman Company dissolution process is subject to the company's standing, submission of all required documentation, and approval by the Cayman Registry.",
+    }[lang]);
+  }
+  if (state.dissolucaoNevis) {
+    timelinesItems.push({
+      pt: "O prazo estimado para a conclusão do processo de dissolução da Nevis Company está sujeito à regularidade da empresa, à entrega de toda a documentação exigida e à aprovação pelo Registro de Nevis.",
+      es: "El plazo estimado para la conclusión del proceso de disolución de la Nevis Company está sujeto a la regularidad de la empresa, la entrega de toda la documentación requerida y la aprobación del Registro de Nevis.",
+      en: "The estimated timeframe for completion of the Nevis Company dissolution process is subject to the company's standing, submission of all required documentation, and approval by the Nevis Registry.",
+    }[lang]);
+  }
+  // US state (NY, SD, WI, MN) dissolution prazos
+  if (state.dissolucaoNY) {
+    timelinesItems.push({
+      pt: "Estimamos um prazo de 3 a 5 dias úteis para a conclusão do processo de dissolução da New York LLC, contados a partir do recebimento dos termos de dissolução assinados pelo cliente.",
+      es: "Estimamos un plazo de 3 a 5 días hábiles para la conclusión del proceso de disolución de la New York LLC, contados desde la recepción de los términos de disolución firmados por el cliente.",
+      en: "We estimate a timeframe of 3 to 5 business days for completion of the New York LLC dissolution process, beginning upon receipt of the dissolution terms signed by the client.",
+    }[lang]);
+  }
+  if (state.dissolucaoSD) {
+    timelinesItems.push({
+      pt: "Estimamos um prazo de 3 a 5 dias úteis para a conclusão do processo de dissolução da South Dakota LLC, contados a partir do recebimento dos termos de dissolução assinados pelo cliente.",
+      es: "Estimamos un plazo de 3 a 5 días hábiles para la conclusión del proceso de disolución de la South Dakota LLC, contados desde la recepción de los términos de disolución firmados por el cliente.",
+      en: "We estimate a timeframe of 3 to 5 business days for completion of the South Dakota LLC dissolution process, beginning upon receipt of the dissolution terms signed by the client.",
+    }[lang]);
+  }
+  if (state.dissolucaoWI) {
+    timelinesItems.push({
+      pt: "Estimamos um prazo de 3 a 5 dias úteis para a conclusão do processo de dissolução da Wyoming LLC, contados a partir do recebimento dos termos de dissolução assinados pelo cliente.",
+      es: "Estimamos un plazo de 3 a 5 días hábiles para la conclusión del proceso de disolución de la Wyoming LLC, contados desde la recepción de los términos de disolución firmados por el cliente.",
+      en: "We estimate a timeframe of 3 to 5 business days for completion of the Wyoming LLC dissolution process, beginning upon receipt of the dissolution terms signed by the client.",
+    }[lang]);
+  }
+  if (state.dissolucaoMN) {
+    timelinesItems.push({
+      pt: "Estimamos um prazo de 3 a 5 dias úteis para a conclusão do processo de dissolução da Minnesota LLC, contados a partir do recebimento dos termos de dissolução assinados pelo cliente.",
+      es: "Estimamos un plazo de 3 a 5 días hábiles para la conclusión del proceso de disolución de la Minnesota LLC, contados desde la recepción de los términos de disolución firmados por el cliente.",
+      en: "We estimate a timeframe of 3 to 5 business days for completion of the Minnesota LLC dissolution process, beginning upon receipt of the dissolution terms signed by the client.",
+    }[lang]);
+  }
+  // Reestruturação prazo
+  if (hasReestru) {
+    timelinesItems.push({
+      pt: "O prazo para conclusão do processo de reestruturação societária será definido conforme a complexidade da demanda e confirmado após análise inicial do caso, estando condicionado à entrega de toda a documentação necessária.",
+      es: "El plazo para la conclusión del proceso de reestructuración societaria será definido conforme a la complejidad de la demanda y confirmado tras el análisis inicial del caso, estando condicionado a la entrega de toda la documentación necesaria.",
+      en: "The timeframe for completion of the corporate restructuring process will be determined based on the complexity of the matter and confirmed following the initial case review, subject to the submission of all required documentation.",
+    }[lang]);
+  }
   // FL dissolution prazo
   if (state.dissolucaoFL) {
     timelinesItems.push({
@@ -6215,6 +6280,7 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
       </div>
       `).join('')}
       <div style="font-size:10px;color:var(--text-light);margin-top:16px;">${L.sigValidity}</div>
+      ${getUser() ? `<div style="font-size:10px;color:var(--text-light);margin-top:4px;">${lang === 'en' ? 'Prepared by' : 'Responsável'}: ${getUser()}</div>` : ''}
     </div>
   `;
 
