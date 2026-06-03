@@ -186,6 +186,29 @@
 
   .sidebar-footer { flex-shrink: 0; padding: 16px 20px; border-top: 1px solid rgba(7,18,16,0.1); }
   .sidebar-footer-btns { display: flex; flex-direction: column; gap: 8px; }
+
+  /* ── BACKFILL LOG PANEL ── */
+  #backfill-panel {
+    display: none; position: fixed; bottom: 0; left: 0; width: 320px;
+    background: var(--white); border: 1px solid var(--border-light);
+    border-top: 2px solid var(--dark); border-bottom: none;
+    box-shadow: 0 -4px 16px rgba(7,18,16,0.12);
+    padding: 16px 18px 20px; z-index: 9999;
+  }
+  #backfill-panel.open { display: block; }
+  .backfill-title { font-size: 10px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: var(--dark); margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
+  .backfill-field { margin-bottom: 8px; }
+  .backfill-field label { font-size: 10px; font-weight: 600; color: var(--text-light); display: block; margin-bottom: 3px; letter-spacing: 0.3px; }
+  .backfill-field input, .backfill-field select { width: 100%; padding: 6px 8px; border: 1px solid var(--border); border-radius: 3px; font-family: var(--font); font-size: 12px; background: var(--white); color: var(--text); outline: none; }
+  .backfill-field input:focus, .backfill-field select:focus { border-color: var(--dark); }
+  .backfill-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .backfill-submit { width: 100%; margin-top: 10px; padding: 9px; background: var(--dark); color: #fff; border: none; font-family: var(--font); font-size: 11px; font-weight: 700; letter-spacing: 0.5px; cursor: pointer; border-radius: 3px; }
+  .backfill-submit:hover { opacity: 0.85; }
+  .backfill-retry { width: 100%; margin-top: 6px; padding: 7px; background: transparent; color: var(--dark); border: 1px solid var(--border); font-family: var(--font); font-size: 10px; font-weight: 600; cursor: pointer; border-radius: 3px; }
+  .backfill-retry:hover { background: rgba(7,18,16,0.04); }
+  .backfill-msg { font-size: 10px; margin-top: 8px; color: var(--text-light); text-align: center; min-height: 14px; }
+  #btn-log-backfill { background: none; border: none; font-size: 10px; font-weight: 600; color: rgba(7,18,16,0.35); cursor: pointer; padding: 0; letter-spacing: 0.2px; text-decoration: underline; margin-top: 4px; font-family: var(--font); }
+  #btn-log-backfill:hover { color: var(--dark); }
   #btn-generate, #btn-generate-triva {
     display: flex; align-items: center; justify-content: center; gap: 8px;
     width: 100%; padding: 12px; background: #000000; border: none;
@@ -835,7 +858,58 @@
         <span class="draft-count-badge" id="draft-count-badge">0</span>
       </button>
       <button id="btn-email-toggle" onclick="toggleEmailPanel()" data-key="btnEmail">Gerar Email</button>
+      <button id="btn-log-backfill" onclick="toggleBackfillPanel()">⚑ Registrar proposta manualmente</button>
     </div>
+  </div>
+
+  <!-- Backfill / retry log panel -->
+  <div id="backfill-panel">
+    <div class="backfill-title">
+      <span>Registrar no Log</span>
+      <span onclick="toggleBackfillPanel()" style="cursor:pointer;font-size:15px;font-weight:400;color:var(--text-light);">✕</span>
+    </div>
+    <div class="backfill-field">
+      <label>Nome do Cliente</label>
+      <input type="text" id="bf-client" placeholder="Ex: João Silva">
+    </div>
+    <div class="backfill-row">
+      <div class="backfill-field">
+        <label>Usuário</label>
+        <select id="bf-user">
+          <option value="Claudia">Claudia</option>
+          <option value="Fabiana">Fabiana</option>
+          <option value="Meire">Meire</option>
+        </select>
+      </div>
+      <div class="backfill-field">
+        <label>Data</label>
+        <input type="date" id="bf-date">
+      </div>
+    </div>
+    <div class="backfill-field">
+      <label>Serviços (resumo)</label>
+      <input type="text" id="bf-services" placeholder="Ex: bvi, fs, tr">
+    </div>
+    <div class="backfill-row">
+      <div class="backfill-field">
+        <label>Idioma</label>
+        <select id="bf-lang">
+          <option value="PT">PT</option>
+          <option value="EN">EN</option>
+          <option value="ES">ES</option>
+        </select>
+      </div>
+      <div class="backfill-field">
+        <label>Brand</label>
+        <select id="bf-brand">
+          <option value="FGC">FGC</option>
+          <option value="Triva">Triva</option>
+        </select>
+      </div>
+    </div>
+    <button class="backfill-submit" onclick="submitBackfill()">Enviar para Notion</button>
+    <button class="backfill-retry" onclick="retryFailedLogs()">↺ Reenviar logs com falha (<span id="bf-failed-count">0</span>)</button>
+    <div class="backfill-msg" id="bf-msg"></div>
   </div>
 </div>
 
@@ -6736,6 +6810,76 @@ function logProposalToNotion(triva) {
 // ═══════════════════════════════════════════════════════════════════
 //  USER IDENTITY  (Version June 1)
 // ═══════════════════════════════════════════════════════════════════
+// ── BACKFILL / RETRY LOG PANEL ──
+function toggleBackfillPanel() {
+  const panel = document.getElementById('backfill-panel');
+  panel.classList.toggle('open');
+  if (panel.classList.contains('open')) {
+    // Pre-fill date with today
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('bf-date').value = today;
+    // Pre-fill user from session
+    const u = getCurrentUser();
+    if (u) { const sel = document.getElementById('bf-user'); for (let o of sel.options) if (o.value === u) { sel.value = u; break; } }
+    // Update failed count
+    try {
+      const f = JSON.parse(localStorage.getItem('fgc_failed_logs') || '[]');
+      document.getElementById('bf-failed-count').textContent = f.length;
+    } catch(e) {}
+    document.getElementById('bf-msg').textContent = '';
+  }
+}
+
+function submitBackfill() {
+  const client = document.getElementById('bf-client').value.trim();
+  if (!client) { document.getElementById('bf-msg').textContent = 'Nome do cliente obrigatório.'; return; }
+  const payload = {
+    client,
+    user: document.getElementById('bf-user').value,
+    device: 'Manual backfill',
+    services: document.getElementById('bf-services').value.trim() || '—',
+    language: document.getElementById('bf-lang').value,
+    brand: document.getElementById('bf-brand').value,
+    generatedAt: new Date(document.getElementById('bf-date').value + 'T12:00:00').toISOString(),
+  };
+  const msg = document.getElementById('bf-msg');
+  msg.textContent = 'Enviando…';
+  fetch(MAKE_WEBHOOK, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  }).then(() => {
+    msg.textContent = '✓ Enviado com sucesso.';
+    document.getElementById('bf-client').value = '';
+    document.getElementById('bf-services').value = '';
+  }).catch(() => {
+    msg.textContent = '✗ Falha. Tente novamente.';
+  });
+}
+
+function retryFailedLogs() {
+  const msg = document.getElementById('bf-msg');
+  try {
+    const failed = JSON.parse(localStorage.getItem('fgc_failed_logs') || '[]');
+    if (failed.length === 0) { msg.textContent = 'Nenhum log com falha encontrado.'; return; }
+    msg.textContent = `Reenviando ${failed.length} registro(s)…`;
+    let sent = 0;
+    const remaining = [];
+    const sends = failed.map(payload =>
+      fetch(MAKE_WEBHOOK, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
+        .then(() => { sent++; })
+        .catch(() => { remaining.push(payload); })
+    );
+    Promise.all(sends).then(() => {
+      localStorage.setItem('fgc_failed_logs', JSON.stringify(remaining));
+      document.getElementById('bf-failed-count').textContent = remaining.length;
+      msg.textContent = `✓ ${sent} enviado(s). ${remaining.length > 0 ? remaining.length + ' ainda com falha.' : ''}`;
+    });
+  } catch(e) {
+    msg.textContent = '✗ Erro ao ler logs locais.';
+  }
+}
+
 function getCurrentUser() {
   try { return localStorage.getItem('fgc_user') || null; } catch(e) { return null; }
 }
