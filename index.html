@@ -773,6 +773,11 @@
     <button class="email-panel-close" onclick="toggleEmailPanel()">&times;</button>
   </div>
   <div class="email-panel-body">
+    <!-- Email type toggle -->
+    <div style="display:flex;gap:6px;margin-bottom:10px;">
+      <button class="email-lang-btn active" id="email-type-proposal" onclick="setEmailType('proposal')">Proposta</button>
+      <button class="email-lang-btn" id="email-type-thankyou" onclick="setEmailType('thankyou')">Agradecimento</button>
+    </div>
     <!-- Language follows proposal language automatically -->
     <textarea id="email-textarea" class="email-output" spellcheck="false"></textarea>
     <button class="email-copy-btn" onclick="copyEmail()">Copy to Clipboard</button>
@@ -3327,20 +3332,31 @@ var FGC_CONFIG = {
       subject: function(client) { return "FGC. | Proposta de Serviços | " + client; },
       body: function(client, services, serviceDescription) {
         var sal = (typeof getSalutation === 'function') ? getSalutation() : 'Prezado(a)';
-        return sal + " " + client + ",\n\nÉ com satisfação que encaminhamos nossa proposta conforme detalhado abaixo.\n\n" + services + "\n\nPara formalizar a contratação, pedimos que assine a proposta através do link do Adobe Acrobat.\n\nFicamos à disposição para esclarecimentos adicionais.\n\nAtenciosamente,\nMeire - FGC Client Relations\n+1 305 432 3009\ncontact@fgcadvisors.com";
+        return sal + " " + client + ",\n\nÉ com satisfação que encaminhamos nossa proposta conforme detalhado abaixo.\n\n" + services + "\n\nPara formalizar a contratação, acesse o link abaixo e assine diretamente pelo seu dispositivo:\n\n[LINK DE ASSINATURA]\n\nFicamos à disposição para esclarecimentos adicionais.\n\nAtenciosamente,\nMeire - FGC Client Relations\n+1 305 432 3009\ncontact@fgcadvisors.com";
+      },
+      thankYouBody: function(client) {
+        var sal = (typeof getSalutation === 'function') ? getSalutation() : 'Prezado(a)';
+        return sal + " " + client + ",\n\nObrigada por assinar nossa proposta de serviços! É um prazer tê-lo(a) como cliente.\n\nCaso queira uma cópia assinada para seus registros, você pode baixá-la pelo link abaixo:\n\n[LINK DO DOCUMENTO ASSINADO]\n\nFicamos à disposição para qualquer dúvida.\n\nAtenciosamente,\nMeire - FGC Client Relations\n+1 305 432 3009\ncontact@fgcadvisors.com";
       },
     },
     es: {
       subject: function(client) { return "FGC. | Propuesta de Servicios | " + client; },
       body: function(client, services, serviceDescription) {
         var sal = (typeof gender !== 'undefined' && gender === 'M') ? 'Estimado' : (gender === 'F') ? 'Estimada' : 'Estimado(a)';
-        return sal + " " + client + ",\n\nEs con satisfacción que le enviamos nuestra propuesta conforme detallado a continuación.\n\n" + services + "\n\nPara formalizar la contratación, le pedimos que firme la propuesta a través del enlace de Adobe Acrobat.\n\nQuedamos a disposición para cualquier aclaración adicional.\n\nAtentamente,\nMeire - FGC Client Relations\n+1 305 432 3009\ncontact@fgcadvisors.com";
+        return sal + " " + client + ",\n\nEs con satisfacción que le enviamos nuestra propuesta conforme detallado a continuación.\n\n" + services + "\n\nPara formalizar la contratación, acceda al enlace a continuación y firme directamente desde su dispositivo:\n\n[LINK DE FIRMA]\n\nQuedamos a disposición para cualquier aclaración adicional.\n\nAtentamente,\nMeire - FGC Client Relations\n+1 305 432 3009\ncontact@fgcadvisors.com";
+      },
+      thankYouBody: function(client) {
+        var sal = (typeof gender !== 'undefined' && gender === 'M') ? 'Estimado' : (gender === 'F') ? 'Estimada' : 'Estimado(a)';
+        return sal + " " + client + ",\n\n¡Gracias por firmar nuestra propuesta de servicios! Es un placer tenerle como cliente.\n\nSi desea una copia firmada para sus registros, puede descargarla desde el enlace a continuación:\n\n[LINK DEL DOCUMENTO FIRMADO]\n\nQuedamos a disposición para cualquier consulta.\n\nAtentamente,\nMeire - FGC Client Relations\n+1 305 432 3009\ncontact@fgcadvisors.com";
       },
     },
     en: {
       subject: function(client) { return "FGC. | Services Proposal | " + client; },
       body: function(client, services, serviceDescription) {
-        return "Dear " + client + ",\n\nWe are pleased to share our proposal as detailed below.\n\n" + services + "\n\nTo proceed, please sign the proposal via the Adobe Acrobat link.\n\nWe remain at your disposal if you have any questions.\n\nBest regards,\nMeire - FGC Client Relations\n+1 305 432 3009\ncontact@fgcadvisors.com";
+        return "Dear " + client + ",\n\nWe are pleased to share our proposal as detailed below.\n\n" + services + "\n\nTo proceed, please sign the proposal directly from your device using the link below:\n\n[SIGNING LINK]\n\nWe remain at your disposal if you have any questions.\n\nBest regards,\nMeire - FGC Client Relations\n+1 305 432 3009\ncontact@fgcadvisors.com";
+      },
+      thankYouBody: function(client) {
+        return "Dear " + client + ",\n\nThank you for signing our services proposal! We're delighted to welcome you as a client.\n\nIf you would like a signed copy for your records, you can download it from the link below:\n\n[SIGNED DOCUMENT LINK]\n\nWe remain at your disposal if you have any questions.\n\nBest regards,\nMeire - FGC Client Relations\n+1 305 432 3009\ncontact@fgcadvisors.com";
       },
     },
   },
@@ -3768,7 +3784,7 @@ const T = {
       "Obtenção de Certificate of Incumbency",
       "Fornecimento dos documentos em formato digital"
     ],
-    termsWillNote: "Add-on opcional: Affidavit of Witness — USD 1,000.00 adicional.\nOs honorários profissionais são estimados inicialmente em USD 5.500,00. Caso as premissas iniciais sejam alteradas ou haja necessidade de incluir disposições específicas e/ou mecanismos de sucessão adicionais, os honorários serão revisados e discutidos oportunamente.",
+    termsWillNote: null,
 
     termsApostilaTitle: "Notarização e Apostilamento",
     termsApostilaItems: [
@@ -3937,7 +3953,9 @@ const T = {
 
 ${services}
 
-Para formalizar a contratação, pedimos que assine a proposta através do link do Adobe Acrobat.
+Para formalizar a contratação, acesse o link abaixo e assine diretamente pelo seu dispositivo:
+
+[LINK DE ASSINATURA]
 
 Ficamos à disposição para esclarecimentos adicionais.
 
@@ -4125,7 +4143,7 @@ contact@fgcadvisors.com`;
     termsSDTransTitle: "Transferencia de Agente South Dakota LLC", termsSDTransItems: ["Detalles a confirmar"], termsSDTransNote: null,
     termsWillTitle: "Testamento BVI (Will)",
     termsWillItems: ["Preparación de Testamento (non-simple Will) conforme a las leyes de BVI","Personalización con derecho a hasta 2 rondas de revisión","Restringido exclusivamente a las acciones de la BVI Company","Obtención de Certificate of Good Standing","Obtención de Certificate of Incumbency","Entrega de documentos en formato digital"],
-    termsWillNote: "Add-on opcional: Affidavit of Witness — USD 1,000.00 adicional.\nLos honorarios profesionales se estiman inicialmente en USD 5.500,00. En caso de que las premisas iniciales se modifiquen o se requiera incluir disposiciones específicas y/o mecanismos de sucesión adicionales, los honorarios serán revisados y discutidos oportunamente.",
+    termsWillNote: null,
     termsApostilaTitle: "Notarización y Apostillado",
     termsApostilaItems: ["Notarización de documentos societarios","Apostillado conforme al Convenio de La Haya","Entrega de documentos apostillados en formato digital"],
     termsApostilaNote: "Servicio adicional típicamente incluido en las propuestas de constitución. Cotizado por separado cuando se solicita fuera de un proceso de constitución.",
@@ -4199,7 +4217,9 @@ Es con satisfacción que le enviamos nuestra propuesta conforme detallado a cont
 
 ${services}
 
-Para formalizar la contratación, le pedimos que firme la propuesta a través del enlace de Adobe Acrobat.
+Para formalizar la contratación, acceda al enlace a continuación y firme directamente desde su dispositivo:
+
+[LINK DE FIRMA]
 
 Quedamos a disposición para cualquier aclaración adicional.
 
@@ -4386,7 +4406,7 @@ contact@fgcadvisors.com`;
     termsSDTransTitle: "South Dakota LLC Registered Agent Transfer", termsSDTransItems: ["Details to be confirmed"], termsSDTransNote: null,
     termsWillTitle: "BVI Will",
     termsWillItems: ["Preparation of a non-simple Will under BVI law","Customization with up to 2 rounds of revision","Restricted exclusively to shares of the BVI Company","Certificate of Good Standing","Certificate of Incumbency","Delivery of documents in digital format"],
-    termsWillNote: "Optional add-on: Affidavit of Witness — additional USD 1,000.00.\nProfessional fees are initially estimated at USD 5,500.00. Should the initial assumptions change or should there be an intention to include specific provisions and/or additional succession mechanisms, fees will be revised and discussed in due course.",
+    termsWillNote: null,
     termsApostilaTitle: "Notarization & Apostille",
     termsApostilaItems: ["Notarization of corporate documents","Apostille in accordance with the Hague Convention","Delivery of apostilled documents in digital format"],
     termsApostilaNote: "Additional service typically included in formation proposals. Quoted separately when requested outside a formation process.",
@@ -4462,7 +4482,9 @@ We are pleased to share our proposal as detailed below.
 
 ${services}
 
-To proceed, please sign the proposal via the Adobe Acrobat link.
+To proceed, please sign the proposal directly from your device using the link below:
+
+[SIGNING LINK]
 
 We remain at your disposal if you have any questions.
 
@@ -6548,6 +6570,15 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
 // ═══════════════════════════════════════════════════════════════════
 //  EMAIL PANEL
 // ═══════════════════════════════════════════════════════════════════
+let emailType = 'proposal';
+
+function setEmailType(type) {
+  emailType = type;
+  document.getElementById('email-type-proposal').classList.toggle('active', type === 'proposal');
+  document.getElementById('email-type-thankyou').classList.toggle('active', type === 'thankyou');
+  updateEmailPanel();
+}
+
 function toggleEmailPanel() {
   const panel = document.getElementById('email-panel');
   panel.classList.toggle('open');
@@ -6601,7 +6632,15 @@ function updateEmailPanel() {
   else if (descs.length > 2) serviceDescription = descs.slice(0, -1).join(', ') + ' ' + O.conjAnd + ' ' + descs[descs.length - 1];
 
   const svcList = services.map(s => `• ${s}`).join('\n');
-  const body = (FGC_CONFIG.email[emailLang] && FGC_CONFIG.email[emailLang].body) ? FGC_CONFIG.email[emailLang].body(client, svcList, serviceDescription) : '';
+  let body = '';
+  const L = FGC_CONFIG.email[emailLang];
+  if (L) {
+    if (emailType === 'thankyou' && L.thankYouBody) {
+      body = L.thankYouBody(client);
+    } else if (L.body) {
+      body = L.body(client, svcList, serviceDescription);
+    }
+  }
 
   const ta = document.getElementById('email-textarea');
   if (ta) ta.value = body;
