@@ -775,8 +775,8 @@
   <div class="email-panel-body">
     <!-- Email type toggle -->
     <div style="display:flex;gap:6px;margin-bottom:10px;">
-      <button class="email-lang-btn active" id="email-type-proposal" onclick="setEmailType('proposal')">Proposta</button>
-      <button class="email-lang-btn" id="email-type-thankyou" onclick="setEmailType('thankyou')">Agradecimento</button>
+      <button class="email-lang-btn active" id="email-type-proposal" onclick="setEmailType('proposal')">Envio de Proposta</button>
+      <button class="email-lang-btn" id="email-type-thankyou" onclick="setEmailType('thankyou')">Pós Assinatura</button>
     </div>
     <!-- Language follows proposal language automatically -->
     <textarea id="email-textarea" class="email-output" spellcheck="false"></textarea>
@@ -3332,11 +3332,11 @@ var FGC_CONFIG = {
       subject: function(client) { return "FGC. | Proposta de Serviços | " + client; },
       body: function(client, services, serviceDescription) {
         var sal = (typeof getSalutation === 'function') ? getSalutation() : 'Prezado(a)';
-        return sal + " " + client + ",\n\nÉ com satisfação que encaminhamos nossa proposta conforme detalhado abaixo.\n\n" + services + "\n\nPara formalizar a contratação, acesse o link abaixo e assine diretamente pelo seu dispositivo:\n\n[LINK DE ASSINATURA]\n\nFicamos à disposição para esclarecimentos adicionais.\n\nAtenciosamente,\nMeire - FGC Client Relations\n+1 305 432 3009\ncontact@fgcadvisors.com";
+        return sal + " " + client + ",\n\nÉ com satisfação que encaminhamos nossa proposta conforme detalhado abaixo.\n\n" + services + "\n\nPara formalizar a contratação, acesse o link abaixo e assine diretamente pelo seu dispositivo:\n\n[LINK do Clio]\n\nFicamos à disposição para esclarecimentos adicionais.\n\nAtenciosamente,\nMeire - FGC Client Relations\n+1 305 432 3009\ncontact@fgcadvisors.com";
       },
       thankYouBody: function(client) {
         var sal = (typeof getSalutation === 'function') ? getSalutation() : 'Prezado(a)';
-        return sal + " " + client + ",\n\nObrigada por assinar nossa proposta de serviços! É um prazer tê-lo(a) como cliente.\n\nCaso queira uma cópia assinada para seus registros, você pode baixá-la pelo link abaixo:\n\n[LINK DO DOCUMENTO ASSINADO]\n\nFicamos à disposição para qualquer dúvida.\n\nAtenciosamente,\nMeire - FGC Client Relations\n+1 305 432 3009\ncontact@fgcadvisors.com";
+        return sal + " " + client + ",\n\nObrigada por assinar nossa proposta de serviços! É um prazer tê-lo(a) como cliente.\n\nCaso deseje uma via assinada para sua documentação, ela está disponível para download no link abaixo.\n[LINK do Clio]\n\nFicamos à disposição para qualquer dúvida.\n\nAtenciosamente,\nMeire - FGC Client Relations\n+1 305 432 3009\ncontact@fgcadvisors.com";
       },
     },
     es: {
@@ -3955,7 +3955,7 @@ ${services}
 
 Para formalizar a contratação, acesse o link abaixo e assine diretamente pelo seu dispositivo:
 
-[LINK DE ASSINATURA]
+[LINK do Clio]
 
 Ficamos à disposição para esclarecimentos adicionais.
 
