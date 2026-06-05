@@ -3332,7 +3332,7 @@ var FGC_CONFIG = {
       subject: function(client) { return "FGC. | Proposta de Serviços | " + client; },
       body: function(client, services, serviceDescription) {
         var sal = (typeof getSalutation === 'function') ? getSalutation() : 'Prezado(a)';
-        return sal + " " + client + ",\n\nÉ com satisfação que encaminhamos nossa proposta conforme detalhado abaixo.\n\n" + services + "\n\nPara formalizar a contratação, acesse o link abaixo e assine diretamente pelo seu dispositivo:\n\n[LINK do Clio]\n\nFicamos à disposição para esclarecimentos adicionais.\n\nAtenciosamente,\nMeire - FGC Client Relations\n+1 305 432 3009\ncontact@fgcadvisors.com";
+        return sal + " " + client + ",\n\nÉ com satisfação que encaminhamos nossa proposta conforme detalhado em anexo.\n\nPara formalizar a contratação, acesse o link abaixo e assine diretamente pelo seu dispositivo:\n\n[LINK do Clio]\n\nFicamos à disposição para esclarecimentos adicionais.\n\nAtenciosamente,\nMeire - FGC Client Relations\n+1 305 432 3009\ncontact@fgcadvisors.com";
       },
       thankYouBody: function(client) {
         var sal = (typeof getSalutation === 'function') ? getSalutation() : 'Prezado(a)';
@@ -3343,7 +3343,7 @@ var FGC_CONFIG = {
       subject: function(client) { return "FGC. | Propuesta de Servicios | " + client; },
       body: function(client, services, serviceDescription) {
         var sal = (typeof gender !== 'undefined' && gender === 'M') ? 'Estimado' : (gender === 'F') ? 'Estimada' : 'Estimado(a)';
-        return sal + " " + client + ",\n\nEs con satisfacción que le enviamos nuestra propuesta conforme detallado a continuación.\n\n" + services + "\n\nPara formalizar la contratación, acceda al enlace a continuación y firme directamente desde su dispositivo:\n\n[LINK do Clio]\n\nQuedamos a disposición para cualquier aclaración adicional.\n\nAtentamente,\nMeire - FGC Client Relations\n+1 305 432 3009\ncontact@fgcadvisors.com";
+        return sal + " " + client + ",\n\nEs con satisfacción que le enviamos nuestra propuesta conforme detallado en el documento adjunto.\n\nPara formalizar la contratación, acceda al enlace a continuación y firme directamente desde su dispositivo:\n\n[LINK do Clio]\n\nQuedamos a disposición para cualquier aclaración adicional.\n\nAtentamente,\nMeire - FGC Client Relations\n+1 305 432 3009\ncontact@fgcadvisors.com";
       },
       thankYouBody: function(client) {
         var sal = (typeof gender !== 'undefined' && gender === 'M') ? 'Estimado' : (gender === 'F') ? 'Estimada' : 'Estimado(a)';
@@ -3353,7 +3353,7 @@ var FGC_CONFIG = {
     en: {
       subject: function(client) { return "FGC. | Services Proposal | " + client; },
       body: function(client, services, serviceDescription) {
-        return "Dear " + client + ",\n\nWe are pleased to share our proposal as detailed below.\n\n" + services + "\n\nTo proceed, please sign the proposal directly from your device using the link below:\n\n[LINK do Clio]\n\nWe remain at your disposal if you have any questions.\n\nBest regards,\nMeire - FGC Client Relations\n+1 305 432 3009\ncontact@fgcadvisors.com";
+        return "Dear " + client + ",\n\nWe are pleased to share our proposal, as detailed in the attached document.\n\nTo proceed, please sign the proposal directly from your device using the link below:\n\n[LINK do Clio]\n\nWe remain at your disposal if you have any questions.\n\nBest regards,\nMeire - FGC Client Relations\n+1 305 432 3009\ncontact@fgcadvisors.com";
       },
       thankYouBody: function(client) {
         return "Dear " + client + ",\n\nThank you for signing our services proposal! We're delighted to welcome you as a client.\n\nIf you would like a signed copy for your records, you can download it from the link below:\n\n[LINK do Clio]\n\nWe remain at your disposal if you have any questions.\n\nBest regards,\nMeire - FGC Client Relations\n+1 305 432 3009\ncontact@fgcadvisors.com";
@@ -3949,9 +3949,7 @@ const T = {
     emailBody: (client, services, serviceDescription, salutation) => {
       return `${salutation || 'Prezado(a)'} ${client},
 
-É com satisfação que encaminhamos nossa proposta conforme detalhado abaixo.
-
-${services}
+É com satisfação que encaminhamos nossa proposta conforme detalhado em anexo.
 
 Para formalizar a contratação, acesse o link abaixo e assine diretamente pelo seu dispositivo:
 
@@ -4213,9 +4211,7 @@ contact@fgcadvisors.com`;
     emailBody: (client, services, serviceDescription, salutation) => {
       return `${salutation || 'Estimado(a)'} ${client},
 
-Es con satisfacción que le enviamos nuestra propuesta conforme detallado a continuación.
-
-${services}
+Es con satisfacción que le enviamos nuestra propuesta conforme detallado en el documento adjunto.
 
 Para formalizar la contratación, acceda al enlace a continuación y firme directamente desde su dispositivo:
 
