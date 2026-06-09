@@ -6478,6 +6478,11 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
           const trKeywords = { pt: 'Preparação de Tax Return final', es: 'Preparación de Tax Return final', en: 'Preparation of final Tax Return' };
           notIncItems = notIncItems.filter(i => i !== trKeywords[lang]);
         }
+        // When notarization is selected, remove it from the "not included" list (courier stays)
+        if (hasApostila && !isNotarizationOnly) {
+          const apostilaKeywords = { pt: 'Notarizações e apostilamentos', es: 'Notarizaciones y apostillados', en: 'Notarizations and apostilles' };
+          notIncItems = notIncItems.filter(i => i !== apostilaKeywords[lang]);
+        }
         // Notarization-only proposals: remove items irrelevant to standalone notarization
         if (isNotarizationOnly) {
           const removeForNotarization = {
