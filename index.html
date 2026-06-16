@@ -563,8 +563,10 @@
     .macro-category { break-inside: avoid; page-break-inside: avoid; }
     .terms-section { break-inside: avoid; page-break-inside: avoid; }
     .signature-section { break-inside: avoid; page-break-inside: avoid; }
-    .fee-table { break-inside: avoid; page-break-inside: avoid; }
+    .fee-table { break-inside: avoid; page-break-inside: avoid; margin-bottom: 0 !important; }
     .fee-table tr { break-inside: avoid; page-break-inside: avoid; }
+    .macro-category + .fee-table,
+    .doc-section-subheader + .fee-table { margin-top: 0 !important; }
     .summary-section { break-inside: avoid; page-break-inside: avoid; }
     .clause-section { break-inside: auto; page-break-inside: auto; }
     .clause-section .clause-item { break-inside: avoid; page-break-inside: avoid; }
@@ -842,6 +844,15 @@
         </div>
         <div class="advisor-chips" id="advisor-chips"></div>
       </div>
+    </div>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="field-group">
+      <label class="field-label">Observações <span style="font-weight:400;opacity:0.55">(item 4.6 — opcional)</span></label>
+      <textarea id="f-notes" class="field-input" rows="3" style="resize:vertical;min-height:52px;"
+        placeholder="Notas adicionais para a proposta..."
+        oninput="proposalNotes=this.value; debouncedUpdate()"></textarea>
     </div>
   </div>
 
@@ -4506,6 +4517,7 @@ let qty = {};
 // Bespoke per-module customisation
 let scopeNotes     = {};   // { key: "extra note text" }  — appended to standard scope
 let scopeOverrides = {};   // { key: "full replacement text" } — replaces standard scope
+let proposalNotes  = '';   // free-text notes shown as item 4.6 in the proposal
 let customReestruItems = []; // legacy — unused, kept for reset compat
 let _customIdSeq = 0;
 // Maintenance price overrides (per entity maint key)
@@ -4515,13 +4527,13 @@ let reestruEntries = [{ label: '', companyName: '', desc: '', extraBullets: '', 
 // Custom US states (supports multiple)
 let customStates = [{ name: '', price: '', qty: 1, maintPrice: '' }];
 // Custom offshore formations
-let customOffshore = [{ label: '', price: '', qty: 1, maintPrice: '', scope: '' }];
+let customOffshore = [{ label: '', price: '', qty: 1, maintPrice: '', scope: '', hasScope: false }];
 // Custom transfers
-let customTransfers = [{ label: '', price: '', qty: 1, scope: '' }];
+let customTransfers = [{ label: '', price: '', qty: 1, scope: '', hasScope: false }];
 // Custom accounting/fiscal services
-let customAccounting = [{ label: '', price: '', qty: 1, payTerm: 'acceptance', scope: '' }];
+let customAccounting = [{ label: '', price: '', qty: 1, payTerm: 'acceptance', scope: '', hasScope: false }];
 // Custom dissolutions
-let customDissolutions = [{ label: '', price: '', qty: 1, scope: '' }];
+let customDissolutions = [{ label: '', price: '', qty: 1, scope: '', hasScope: false }];
 
 function setGender(g) {
   gender = g;
@@ -4631,35 +4643,39 @@ function setCustomStateQty(i, v) { customStates[i].qty = Math.max(1, parseInt(v)
 function setCustomStateMaintPrice(i, v) { customStates[i].maintPrice = v === '' ? '' : Number(v); debouncedUpdate(); }
 
 // — Custom offshore formation —
-function addCustomOffshore() { customOffshore.push({ label:'', price:'', qty:1, maintPrice:'' }); renderServicePicker(); debouncedUpdate(); }
-function removeCustomOffshore(i) { customOffshore.splice(i,1); if(!customOffshore.length) customOffshore=[{label:'',price:'',qty:1,maintPrice:''}]; renderServicePicker(); debouncedUpdate(); }
+function addCustomOffshore() { customOffshore.push({ label:'', price:'', qty:1, maintPrice:'', scope:'', hasScope:false }); renderServicePicker(); debouncedUpdate(); }
+function removeCustomOffshore(i) { customOffshore.splice(i,1); if(!customOffshore.length) customOffshore=[{label:'',price:'',qty:1,maintPrice:'',scope:'',hasScope:false}]; renderServicePicker(); debouncedUpdate(); }
 function setCustomOffshoreLabel(i,v) { customOffshore[i].label=v; debouncedUpdate(); }
 function setCustomOffshorePrice(i,v) { customOffshore[i].price=v===''?'':Number(v); debouncedUpdate(); }
 function setCustomOffshoreQty(i,v) { customOffshore[i].qty=Math.max(1,parseInt(v)||1); debouncedUpdate(); }
 function setCustomOffshoreMaintPrice(i,v) { customOffshore[i].maintPrice=v===''?'':Number(v); debouncedUpdate(); }
+function setCustomOffshoreHasScope(i,v) { customOffshore[i].hasScope=v; if(!v) customOffshore[i].scope=''; renderServicePicker(); debouncedUpdate(); }
 
 // — Custom transfer —
-function addCustomTransfer() { customTransfers.push({ label:'', price:'', qty:1 }); renderServicePicker(); debouncedUpdate(); }
-function removeCustomTransfer(i) { customTransfers.splice(i,1); if(!customTransfers.length) customTransfers=[{label:'',price:'',qty:1}]; renderServicePicker(); debouncedUpdate(); }
+function addCustomTransfer() { customTransfers.push({ label:'', price:'', qty:1, scope:'', hasScope:false }); renderServicePicker(); debouncedUpdate(); }
+function removeCustomTransfer(i) { customTransfers.splice(i,1); if(!customTransfers.length) customTransfers=[{label:'',price:'',qty:1,scope:'',hasScope:false}]; renderServicePicker(); debouncedUpdate(); }
 function setCustomTransferLabel(i,v) { customTransfers[i].label=v; debouncedUpdate(); }
 function setCustomTransferPrice(i,v) { customTransfers[i].price=v===''?'':Number(v); debouncedUpdate(); }
 function setCustomTransferQty(i,v) { customTransfers[i].qty=Math.max(1,parseInt(v)||1); debouncedUpdate(); }
+function setCustomTransferHasScope(i,v) { customTransfers[i].hasScope=v; if(!v) customTransfers[i].scope=''; renderServicePicker(); debouncedUpdate(); }
 
 // — Custom accounting —
-function addCustomAccounting() { customAccounting.push({ label:'', price:'', qty:1, payTerm:'acceptance' }); renderServicePicker(); debouncedUpdate(); }
-function removeCustomAccounting(i) { customAccounting.splice(i,1); if(!customAccounting.length) customAccounting=[{label:'',price:'',qty:1,payTerm:'acceptance'}]; renderServicePicker(); debouncedUpdate(); }
+function addCustomAccounting() { customAccounting.push({ label:'', price:'', qty:1, payTerm:'acceptance', scope:'', hasScope:false }); renderServicePicker(); debouncedUpdate(); }
+function removeCustomAccounting(i) { customAccounting.splice(i,1); if(!customAccounting.length) customAccounting=[{label:'',price:'',qty:1,payTerm:'acceptance',scope:'',hasScope:false}]; renderServicePicker(); debouncedUpdate(); }
 function setCustomAccountingLabel(i,v) { customAccounting[i].label=v; debouncedUpdate(); }
 function setCustomAccountingPrice(i,v) { customAccounting[i].price=v===''?'':Number(v); debouncedUpdate(); }
 function setCustomAccountingQty(i,v) { customAccounting[i].qty=Math.max(1,parseInt(v)||1); debouncedUpdate(); }
 function setCustomAccountingPayTerm(i,v) { customAccounting[i].payTerm=v; debouncedUpdate(); }
+function setCustomAccountingHasScope(i,v) { customAccounting[i].hasScope=v; if(!v) customAccounting[i].scope=''; renderServicePicker(); debouncedUpdate(); }
 
 // — Custom dissolution —
-function addCustomDissolution() { customDissolutions.push({ label:'', price:'', qty:1 }); renderServicePicker(); debouncedUpdate(); }
-function removeCustomDissolution(i) { customDissolutions.splice(i,1); if(!customDissolutions.length) customDissolutions=[{label:'',price:'',qty:1}]; renderServicePicker(); debouncedUpdate(); }
+function addCustomDissolution() { customDissolutions.push({ label:'', price:'', qty:1, scope:'', hasScope:false }); renderServicePicker(); debouncedUpdate(); }
+function removeCustomDissolution(i) { customDissolutions.splice(i,1); if(!customDissolutions.length) customDissolutions=[{label:'',price:'',qty:1,scope:'',hasScope:false}]; renderServicePicker(); debouncedUpdate(); }
 function setCustomDissolutionLabel(i,v) { customDissolutions[i].label=v; debouncedUpdate(); }
 function setCustomDissolutionPrice(i,v) { customDissolutions[i].price=v===''?'':Number(v); debouncedUpdate(); }
 function setCustomDissolutionQty(i,v) { customDissolutions[i].qty=Math.max(1,parseInt(v)||1); debouncedUpdate(); }
 function setCustomDissolutionScope(i,v) { customDissolutions[i].scope=v; debouncedUpdate(); }
+function setCustomDissolutionHasScope(i,v) { customDissolutions[i].hasScope=v; if(!v) customDissolutions[i].scope=''; renderServicePicker(); debouncedUpdate(); }
 function setCustomTransferScope(i,v) { customTransfers[i].scope=v; debouncedUpdate(); }
 function setCustomAccountingScope(i,v) { customAccounting[i].scope=v; debouncedUpdate(); }
 function setCustomOffshoreScope(i,v) { customOffshore[i].scope=v; debouncedUpdate(); }
@@ -5056,11 +5072,14 @@ function buildServiceToggle(svc) {
             <input type="number" class="qty-input" min="1" max="20" value="${o.qty}"
               oninput="setCustomOffshoreQty(${i},this.value)" onchange="setCustomOffshoreQty(${i},this.value)" onclick="event.stopPropagation()">
           </div>
-          <span class="bespoke-label">${lang==='en'?'Scope (one bullet per line)':lang==='es'?'Alcance (un bullet por línea)':'Escopo (um bullet por linha)'}</span>
-          <textarea class="bespoke-textarea" rows="3" placeholder="${lang==='en'?'One bullet per line...':lang==='es'?'Un bullet por línea...':'Um bullet por linha...'}"
-            oninput="setCustomOffshoreScope(${i},this.value)" onchange="setCustomOffshoreScope(${i},this.value)" onclick="event.stopPropagation()">${(o.scope||'').replace(/</g,'&lt;')}</textarea>
+          <label style="display:flex;align-items:center;gap:6px;cursor:pointer;margin-top:4px;" onclick="event.stopPropagation()">
+            <input type="checkbox" ${o.hasScope?'checked':''} onchange="setCustomOffshoreHasScope(${i},this.checked)" onclick="event.stopPropagation()" style="cursor:pointer;">
+            <span style="font-size:10px;font-weight:600;letter-spacing:0.5px;color:rgba(7,18,16,0.55);text-transform:uppercase;">${lang==='en'?'Include scope in Section II':lang==='es'?'Incluir alcance en Sección II':'Incluir descrição no Escopo (Seção II)'}</span>
+          </label>
+          ${o.hasScope ? `<textarea class="bespoke-textarea" rows="3" placeholder="${lang==='en'?'One bullet per line...':lang==='es'?'Un bullet por línea...':'Um bullet por linha...'}"
+            oninput="setCustomOffshoreScope(${i},this.value)" onchange="setCustomOffshoreScope(${i},this.value)" onclick="event.stopPropagation()">${(o.scope||'').replace(/</g,'&lt;')}</textarea>` : ''}
         </div>`).join('');
-      bespokeHTML = `${entriesHTML}<div style="padding:6px 0 0;"><button onclick="event.stopPropagation();addCustomOffshore()" style="background:none;border:1px dashed rgba(7,18,16,0.25);border-radius:4px;padding:4px 10px;cursor:pointer;font-size:11px;color:rgba(7,18,16,0.55);width:100%;text-align:center;">${addLabel}</button></div>`;
+      bespokeHTML = `${entriesHTML}<div style="padding:8px 0 0;"><button onclick="event.stopPropagation();addCustomOffshore()" style="background:rgba(7,18,16,0.04);border:1px dashed rgba(7,18,16,0.35);border-radius:4px;padding:6px 10px;cursor:pointer;font-size:11px;font-weight:600;color:rgba(7,18,16,0.65);width:100%;text-align:center;">${addLabel}</button></div>`;
     }
     return `<label class="service-toggle"><input type="checkbox" ${checked} onchange="toggleService('customOffshore',this.checked)"><div><div class="service-toggle-label">${tl('svcCustomOffshore')}</div></div></label>${bespokeHTML}`;
   }
@@ -5091,11 +5110,14 @@ function buildServiceToggle(svc) {
             <input type="number" class="qty-input" min="1" max="20" value="${t.qty}"
               oninput="setCustomTransferQty(${i},this.value)" onchange="setCustomTransferQty(${i},this.value)" onclick="event.stopPropagation()">
           </div>
-          <span class="bespoke-label">${lang==='en'?'Scope (one bullet per line)':lang==='es'?'Alcance (un bullet por línea)':'Escopo (um bullet por linha)'}</span>
-          <textarea class="bespoke-textarea" rows="3" placeholder="${lang==='en'?'One bullet per line...':lang==='es'?'Un bullet por línea...':'Um bullet por linha...'}"
-            oninput="setCustomTransferScope(${i},this.value)" onchange="setCustomTransferScope(${i},this.value)" onclick="event.stopPropagation()">${(t.scope||'').replace(/</g,'&lt;')}</textarea>
+          <label style="display:flex;align-items:center;gap:6px;cursor:pointer;margin-top:4px;" onclick="event.stopPropagation()">
+            <input type="checkbox" ${t.hasScope?'checked':''} onchange="setCustomTransferHasScope(${i},this.checked)" onclick="event.stopPropagation()" style="cursor:pointer;">
+            <span style="font-size:10px;font-weight:600;letter-spacing:0.5px;color:rgba(7,18,16,0.55);text-transform:uppercase;">${lang==='en'?'Include scope in Section II':lang==='es'?'Incluir alcance en Sección II':'Incluir descrição no Escopo (Seção II)'}</span>
+          </label>
+          ${t.hasScope ? `<textarea class="bespoke-textarea" rows="3" placeholder="${lang==='en'?'One bullet per line...':lang==='es'?'Un bullet por línea...':'Um bullet por linha...'}"
+            oninput="setCustomTransferScope(${i},this.value)" onchange="setCustomTransferScope(${i},this.value)" onclick="event.stopPropagation()">${(t.scope||'').replace(/</g,'&lt;')}</textarea>` : ''}
         </div>`).join('');
-      bespokeHTML = `${entriesHTML}<div style="padding:6px 0 0;"><button onclick="event.stopPropagation();addCustomTransfer()" style="background:none;border:1px dashed rgba(7,18,16,0.25);border-radius:4px;padding:4px 10px;cursor:pointer;font-size:11px;color:rgba(7,18,16,0.55);width:100%;text-align:center;">${addLabel}</button></div>`;
+      bespokeHTML = `${entriesHTML}<div style="padding:8px 0 0;"><button onclick="event.stopPropagation();addCustomTransfer()" style="background:rgba(7,18,16,0.04);border:1px dashed rgba(7,18,16,0.35);border-radius:4px;padding:6px 10px;cursor:pointer;font-size:11px;font-weight:600;color:rgba(7,18,16,0.65);width:100%;text-align:center;">${addLabel}</button></div>`;
     }
     return `<label class="service-toggle"><input type="checkbox" ${checked} onchange="toggleService('customTransfer',this.checked)"><div><div class="service-toggle-label">${tl('svcCustomTransfer')}</div></div></label>${bespokeHTML}`;
   }
@@ -5132,11 +5154,14 @@ function buildServiceToggle(svc) {
             <label style="font-size:11px;display:flex;align-items:center;gap:4px;cursor:pointer;"><input type="radio" name="custAcctPay${i}" value="acceptance" ${a.payTerm!=='year2'?'checked':''} onchange="setCustomAccountingPayTerm(${i},this.value)" onclick="event.stopPropagation()"> ${acceptLbl}</label>
             <label style="font-size:11px;display:flex;align-items:center;gap:4px;cursor:pointer;"><input type="radio" name="custAcctPay${i}" value="year2" ${a.payTerm==='year2'?'checked':''} onchange="setCustomAccountingPayTerm(${i},this.value)" onclick="event.stopPropagation()"> ${year2Lbl}</label>
           </div>
-          <span class="bespoke-label">${lang==='en'?'Scope (one bullet per line)':lang==='es'?'Alcance (un bullet por línea)':'Escopo (um bullet por linha)'}</span>
-          <textarea class="bespoke-textarea" rows="3" placeholder="${lang==='en'?'One bullet per line...':lang==='es'?'Un bullet por línea...':'Um bullet por linha...'}"
-            oninput="setCustomAccountingScope(${i},this.value)" onchange="setCustomAccountingScope(${i},this.value)" onclick="event.stopPropagation()">${(a.scope||'').replace(/</g,'&lt;')}</textarea>
+          <label style="display:flex;align-items:center;gap:6px;cursor:pointer;margin-top:4px;" onclick="event.stopPropagation()">
+            <input type="checkbox" ${a.hasScope?'checked':''} onchange="setCustomAccountingHasScope(${i},this.checked)" onclick="event.stopPropagation()" style="cursor:pointer;">
+            <span style="font-size:10px;font-weight:600;letter-spacing:0.5px;color:rgba(7,18,16,0.55);text-transform:uppercase;">${lang==='en'?'Include scope in Section II':lang==='es'?'Incluir alcance en Sección II':'Incluir descrição no Escopo (Seção II)'}</span>
+          </label>
+          ${a.hasScope ? `<textarea class="bespoke-textarea" rows="3" placeholder="${lang==='en'?'One bullet per line...':lang==='es'?'Un bullet por línea...':'Um bullet por linha...'}"
+            oninput="setCustomAccountingScope(${i},this.value)" onchange="setCustomAccountingScope(${i},this.value)" onclick="event.stopPropagation()">${(a.scope||'').replace(/</g,'&lt;')}</textarea>` : ''}
         </div>`).join('');
-      bespokeHTML = `${entriesHTML}<div style="padding:6px 0 0;"><button onclick="event.stopPropagation();addCustomAccounting()" style="background:none;border:1px dashed rgba(7,18,16,0.25);border-radius:4px;padding:4px 10px;cursor:pointer;font-size:11px;color:rgba(7,18,16,0.55);width:100%;text-align:center;">${addLabel}</button></div>`;
+      bespokeHTML = `${entriesHTML}<div style="padding:8px 0 0;"><button onclick="event.stopPropagation();addCustomAccounting()" style="background:rgba(7,18,16,0.04);border:1px dashed rgba(7,18,16,0.35);border-radius:4px;padding:6px 10px;cursor:pointer;font-size:11px;font-weight:600;color:rgba(7,18,16,0.65);width:100%;text-align:center;">${addLabel}</button></div>`;
     }
     return `<label class="service-toggle"><input type="checkbox" ${checked} onchange="toggleService('customAccounting',this.checked)"><div><div class="service-toggle-label">${tl('svcCustomAccounting')}</div></div></label>${bespokeHTML}`;
   }
@@ -5167,11 +5192,14 @@ function buildServiceToggle(svc) {
             <input type="number" class="qty-input" min="1" max="20" value="${d.qty}"
               oninput="setCustomDissolutionQty(${i},this.value)" onchange="setCustomDissolutionQty(${i},this.value)" onclick="event.stopPropagation()">
           </div>
-          <span class="bespoke-label">${lang==='en'?'Scope (one bullet per line)':lang==='es'?'Alcance (un bullet por línea)':'Escopo (um bullet por linha)'}</span>
-          <textarea class="bespoke-textarea" rows="3" placeholder="${lang==='en'?'One bullet per line...':lang==='es'?'Un bullet por línea...':'Um bullet por linha...'}"
-            oninput="setCustomDissolutionScope(${i},this.value)" onchange="setCustomDissolutionScope(${i},this.value)" onclick="event.stopPropagation()">${(d.scope||'').replace(/</g,'&lt;')}</textarea>
+          <label style="display:flex;align-items:center;gap:6px;cursor:pointer;margin-top:4px;" onclick="event.stopPropagation()">
+            <input type="checkbox" ${d.hasScope?'checked':''} onchange="setCustomDissolutionHasScope(${i},this.checked)" onclick="event.stopPropagation()" style="cursor:pointer;">
+            <span style="font-size:10px;font-weight:600;letter-spacing:0.5px;color:rgba(7,18,16,0.55);text-transform:uppercase;">${lang==='en'?'Include scope in Section II':lang==='es'?'Incluir alcance en Sección II':'Incluir descrição no Escopo (Seção II)'}</span>
+          </label>
+          ${d.hasScope ? `<textarea class="bespoke-textarea" rows="3" placeholder="${lang==='en'?'One bullet per line...':lang==='es'?'Un bullet por línea...':'Um bullet por linha...'}"
+            oninput="setCustomDissolutionScope(${i},this.value)" onchange="setCustomDissolutionScope(${i},this.value)" onclick="event.stopPropagation()">${(d.scope||'').replace(/</g,'&lt;')}</textarea>` : ''}
         </div>`).join('');
-      bespokeHTML = `${entriesHTML}<div style="padding:6px 0 0;"><button onclick="event.stopPropagation();addCustomDissolution()" style="background:none;border:1px dashed rgba(7,18,16,0.25);border-radius:4px;padding:4px 10px;cursor:pointer;font-size:11px;color:rgba(7,18,16,0.55);width:100%;text-align:center;">${addLabel}</button></div>`;
+      bespokeHTML = `${entriesHTML}<div style="padding:8px 0 0;"><button onclick="event.stopPropagation();addCustomDissolution()" style="background:rgba(7,18,16,0.04);border:1px dashed rgba(7,18,16,0.35);border-radius:4px;padding:6px 10px;cursor:pointer;font-size:11px;font-weight:600;color:rgba(7,18,16,0.65);width:100%;text-align:center;">${addLabel}</button></div>`;
     }
     return `<label class="service-toggle"><input type="checkbox" ${checked} onchange="toggleService('customDissolution',this.checked)"><div><div class="service-toggle-label">${tl('svcCustomDissolution')}</div></div></label>${bespokeHTML}`;
   }
@@ -5489,7 +5517,9 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
   const hasDissolution = state.dissolucaoBVI || state.dissolucaoBahamas || state.dissolucaoCayman || state.dissolucaoNevis || state.dissolucaoFL || state.dissolucaoDE || state.dissolucaoNY || state.dissolucaoSD || state.dissolucaoWI || state.dissolucaoMN || hasCustomDissol;
   const isDissolutionOnly = hasDissolution && !hasFormation && !hasTransfer && !hasSuccession && !hasAccounting && !hasApostila && !hasMailing && !has3rdPartyFS && !has3rdPartyTR && !state.dcbe;
   const isNotarizationOnly = hasApostila && !hasFormation && !hasTransfer && !hasSuccession && !hasAccounting && !hasMailing && !has3rdPartyFS && !has3rdPartyTR && !state.dcbe && !hasDissolution;
-  const hasAnyService = hasFormation || hasTransfer || hasSuccession || hasAccounting || hasApostila || hasMailing || hasStandalone || has3rdPartyFS || has3rdPartyTR || hasCustomAcct;
+  const hasAnyService = hasFormation || hasTransfer || hasSuccession || hasAccounting
+    || state.fsAnterior || state.trAnterior
+    || hasApostila || hasMailing || hasStandalone || has3rdPartyFS || has3rdPartyTR || hasCustomAcct;
 
   if (!hasAnyService) {
     alert(lang==='pt'?'Selecione pelo menos um serviço.':lang==='es'?'Seleccione al menos un servicio.':'Please select at least one service.');
@@ -5555,7 +5585,7 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
       if (!o.label.trim()) return;
       const q = Math.max(o.qty || 1, 1);
       const unit = (o.price !== '' && o.price != null) ? Number(o.price) : null;
-      sec1Items.push({ key:'customOffshore', label: (q>1?q+'x ':'')+o.label.trim(), amount: unit !== null ? unit*q : null, pay: L.payOnAcceptance, group:'pic', qty:q, offshoreLabel: o.label.trim(), customScope: o.scope||'' });
+      sec1Items.push({ key:'customOffshore', label: (q>1?q+'x ':'')+o.label.trim(), amount: unit !== null ? unit*q : null, pay: L.payOnAcceptance, group:'pic', qty:q, offshoreLabel: o.label.trim(), customScope: o.hasScope ? (o.scope||'') : '' });
     });
   }
   // Custom transfer
@@ -5564,7 +5594,7 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
       if (!t.label.trim()) return;
       const q = Math.max(t.qty || 1, 1);
       const unit = (t.price !== '' && t.price != null) ? Number(t.price) : null;
-      sec1Items.push({ key:'customTransfer', label: (q>1?q+'x ':'')+t.label.trim(), amount: unit !== null ? unit*q : null, pay: L.payOnAcceptance, group:'pic', qty:q, customScope: t.scope||'' });
+      sec1Items.push({ key:'customTransfer', label: (q>1?q+'x ':'')+t.label.trim(), amount: unit !== null ? unit*q : null, pay: L.payOnAcceptance, group:'pic', qty:q, customScope: t.hasScope ? (t.scope||'') : '' });
     });
   }
 
@@ -5723,7 +5753,7 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
       const unit = (a.price !== '' && a.price != null) ? Number(a.price) : null;
       const payTerm = a.payTerm === 'year2' ? L2.payFromYear2 : L2.payOnAcceptance;
       const recurring = a.payTerm === 'year2';
-      secAcctItems.push({ key:'customAccounting', label: (q>1?q+'x ':'')+a.label.trim(), amount: unit !== null ? unit*q : null, pay: payTerm, recurring, qty:q, customScope: a.scope||'' });
+      secAcctItems.push({ key:'customAccounting', label: (q>1?q+'x ':'')+a.label.trim(), amount: unit !== null ? unit*q : null, pay: payTerm, recurring, qty:q, customScope: a.hasScope ? (a.scope||'') : '' });
     });
   }
   // Transfer prior-year services (declared here, after secAcctItems exists)
@@ -5756,7 +5786,7 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
       if (!d.label.trim()) return;
       const q = Math.max(d.qty || 1, 1);
       const unit = (d.price !== '' && d.price != null) ? Number(d.price) : null;
-      sec3Items.push({ key:'customDissolution', label: (q>1?q+'x ':'')+d.label.trim(), amount: unit !== null ? unit*q : null, pay: L.payOnAcceptance, qty:q, customScope: d.scope||'' });
+      sec3Items.push({ key:'customDissolution', label: (q>1?q+'x ':'')+d.label.trim(), amount: unit !== null ? unit*q : null, pay: L.payOnAcceptance, qty:q, customScope: d.hasScope ? (d.scope||'') : '' });
     });
   }
   // Restructuring: one entry per company
@@ -6224,8 +6254,8 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
           <div class="row-amount">${amountStr}</div>
         </td>
         <td>
-          <div class="row-payment">${it.pay.split('\n')[0]}</div>
-          ${it.pay.includes('\n') ? it.pay.split('\n').slice(1).map(l => `<div class="row-anual">${l}</div>`).join('') : ''}
+          <div class="row-payment">${(it.pay||'').split('\n')[0]}</div>
+          ${(it.pay||'').includes('\n') ? (it.pay||'').split('\n').slice(1).map(l => `<div class="row-anual">${l}</div>`).join('') : ''}
         </td>
       </tr>
     `;
@@ -6534,6 +6564,11 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
           <div class="terms-section-heading">${secTCNum}.5 — ${clauseSet.legalChanges.title}</div>
           <ul class="terms-list">${clauseSet.legalChanges.items.map(i => '<li>' + i + '</li>').join('')}</ul>
         </div>
+        ${proposalNotes.trim() ? `
+        <div class="terms-section">
+          <div class="terms-section-heading">${secTCNum}.6 — ${{ pt: 'Observações', es: 'Observaciones', en: 'Observations' }[lang]}</div>
+          <p style="font-size:12px;line-height:1.65;color:var(--text);margin:0;">${proposalNotes.trim().replace(/\n/g, '<br>')}</p>
+        </div>` : ''}
       </div>`;
       })()}
 
@@ -6757,15 +6792,16 @@ function resetProposal() {
   _lastTrivaMode = null;
   scopeNotes = {};
   scopeOverrides = {};
+  proposalNotes = '';
   customReestruItems = [];
   _customIdSeq = 0;
   maintPriceOverrides = {};
   reestruEntries = [{ label: '', companyName: '', desc: '', extraBullets: '', price: '', qty: 1 }];
   customStates       = [{ name: '', price: '', qty: 1, maintPrice: '' }];
-  customOffshore     = [{ label: '', price: '', qty: 1, maintPrice: '', scope: '' }];
-  customTransfers    = [{ label: '', price: '', qty: 1, scope: '' }];
-  customAccounting   = [{ label: '', price: '', qty: 1, payTerm: 'acceptance', scope: '' }];
-  customDissolutions = [{ label: '', price: '', qty: 1, scope: '' }];
+  customOffshore     = [{ label: '', price: '', qty: 1, maintPrice: '', scope: '', hasScope: false }];
+  customTransfers    = [{ label: '', price: '', qty: 1, scope: '', hasScope: false }];
+  customAccounting   = [{ label: '', price: '', qty: 1, payTerm: 'acceptance', scope: '', hasScope: false }];
+  customDissolutions = [{ label: '', price: '', qty: 1, scope: '', hasScope: false }];
   // Clear form fields
   document.getElementById('f-client').value = '';
   document.getElementById('f-email').value = '';
@@ -6774,6 +6810,8 @@ function resetProposal() {
   if (careofEl) careofEl.value = '';
   const extraEl = document.getElementById('f-extra');
   if (extraEl) extraEl.value = '';
+  const notesEl = document.getElementById('f-notes');
+  if (notesEl) notesEl.value = '';
   // Reset date to today
   const today = new Date();
   document.getElementById('f-date').value = today.getFullYear() + '-' + String(today.getMonth()+1).padStart(2,'0') + '-' + String(today.getDate()).padStart(2,'0');
@@ -6990,6 +7028,16 @@ function saveDraft() {
     date: document.getElementById('f-date').value,
     lang,
     state: Object.assign({}, state),
+    customTransfers: JSON.parse(JSON.stringify(customTransfers)),
+    customStates: JSON.parse(JSON.stringify(customStates)),
+    customOffshore: JSON.parse(JSON.stringify(customOffshore)),
+    customAccounting: JSON.parse(JSON.stringify(customAccounting)),
+    customDissolutions: JSON.parse(JSON.stringify(customDissolutions)),
+    reestruEntries: JSON.parse(JSON.stringify(reestruEntries)),
+    priceOverrides: Object.assign({}, priceOverrides),
+    scopeNotes: Object.assign({}, scopeNotes),
+    scopeOverrides: Object.assign({}, scopeOverrides),
+    proposalNotes: proposalNotes,
     savedBy: user,
     savedAt: new Date().toISOString(),
     status: 'draft',
@@ -7030,6 +7078,18 @@ function loadDraft(id) {
   if (lb) lb.classList.add('active');
   Object.keys(state).forEach(k => { state[k] = false; });
   Object.assign(state, draft.state);
+  if (draft.customTransfers) customTransfers = draft.customTransfers;
+  if (draft.customStates) customStates = draft.customStates;
+  if (draft.customOffshore) customOffshore = draft.customOffshore;
+  if (draft.customAccounting) customAccounting = draft.customAccounting;
+  if (draft.customDissolutions) customDissolutions = draft.customDissolutions;
+  if (draft.reestruEntries) reestruEntries = draft.reestruEntries;
+  if (draft.priceOverrides) priceOverrides = draft.priceOverrides;
+  if (draft.scopeNotes) scopeNotes = draft.scopeNotes;
+  if (draft.scopeOverrides) scopeOverrides = draft.scopeOverrides;
+  proposalNotes = draft.proposalNotes || '';
+  const notesEl = document.getElementById('f-notes');
+  if (notesEl) notesEl.value = proposalNotes;
   document.getElementById('f-client').value = draft.client || '';
   if (document.getElementById('f-email')) document.getElementById('f-email').value = draft.clientEmail || '';
   document.getElementById('f-advisor').value = draft.advisor || '';
