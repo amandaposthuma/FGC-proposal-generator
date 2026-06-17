@@ -195,7 +195,7 @@
     box-shadow: 0 -4px 16px rgba(7,18,16,0.12);
     padding: 16px 18px 20px; z-index: 9999;
   }
-  #backfill-panel.open { display: block; }
+  #backfill-panel.open { display: none; /* hidden — internal use only */ }
   .backfill-title { font-size: 10px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: var(--dark); margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
   .backfill-field { margin-bottom: 8px; }
   .backfill-field label { font-size: 10px; font-weight: 600; color: var(--text-light); display: block; margin-bottom: 3px; letter-spacing: 0.3px; }
@@ -885,7 +885,7 @@
         <span class="draft-count-badge" id="draft-count-badge">0</span>
       </button>
       <button id="btn-email-toggle" onclick="toggleEmailPanel()" data-key="btnEmail">Gerar Email</button>
-      <button id="btn-log-backfill" onclick="toggleBackfillPanel()" title="Uso interno: registra manualmente uma proposta no log do Notion caso o envio automático tenha falhado. Não aparece para clientes.">⚑ Registrar no log</button>
+      <button id="btn-log-backfill" onclick="toggleBackfillPanel()" style="display:none;">⚑ Registrar no log</button>
     </div>
   </div>
 
