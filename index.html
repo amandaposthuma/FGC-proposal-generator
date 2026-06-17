@@ -885,14 +885,14 @@
         <span class="draft-count-badge" id="draft-count-badge">0</span>
       </button>
       <button id="btn-email-toggle" onclick="toggleEmailPanel()" data-key="btnEmail">Gerar Email</button>
-      <button id="btn-log-backfill" onclick="toggleBackfillPanel()">⚑ Registrar proposta manualmente</button>
+      <button id="btn-log-backfill" onclick="toggleBackfillPanel()" title="Uso interno: registra manualmente uma proposta no log do Notion caso o envio automático tenha falhado. Não aparece para clientes.">⚑ Registrar no log</button>
     </div>
   </div>
 
   <!-- Backfill / retry log panel -->
   <div id="backfill-panel">
     <div class="backfill-title">
-      <span>Registrar no Log</span>
+      <span title="Use este painel se uma proposta foi gerada mas não apareceu no log do Notion. Preencha os dados e clique em Registrar para reenviar manualmente.">Registrar proposta no log do Notion</span>
       <span onclick="toggleBackfillPanel()" style="cursor:pointer;font-size:15px;font-weight:400;color:var(--text-light);">✕</span>
     </div>
     <div class="backfill-field">
