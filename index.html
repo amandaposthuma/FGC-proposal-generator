@@ -5594,7 +5594,7 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
       if (!t.label.trim()) return;
       const q = Math.max(t.qty || 1, 1);
       const unit = (t.price !== '' && t.price != null) ? Number(t.price) : null;
-      sec1Items.push({ key:'customTransfer', label: (q>1?q+'x ':'')+t.label.trim(), amount: unit !== null ? unit*q : null, pay: L.payOnAcceptance, group:'pic', qty:q, customScope: t.hasScope ? (t.scope||'') : '' });
+      sec1Items.push({ key:'customTransfer', label: (q>1?q+'x ':'')+t.label.trim(), amount: unit !== null ? unit*q : null, pay: L.payOnAcceptance, qty:q, customScope: t.hasScope ? (t.scope||'') : '' });
     });
   }
 
