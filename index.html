@@ -7076,14 +7076,51 @@ function loadDraft(id) {
   document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
   const lb = document.querySelector(`.lang-btn[onclick="setLang('${lang}')"]`);
   if (lb) lb.classList.add('active');
+  // Reset all custom arrays and overrides to defaults FIRST —
+  // prevents stale data from a previous session bleeding into this draft load
+  customTransfers    = [{ label: '', price: '', qty: 1, scope: '', hasScope: false }];
+  customStates       = [{ name: '', price: '', qty: 1, maintPrice: '' }];
+  customOffshore     = [{ label: '', price: '', qty: 1, maintPrice: '', scope: '', hasScope: false }];
+  customAccounting   = [{ label: '', price: '', qty: 1, payTerm: 'acceptance', scope: '', hasScope: false }];
+  customDissolutions = [{ label: '', price: '', qty: 1, scope: '', hasScope: false }];
+  reestruEntries     = [{ label: '', companyName: '', desc: '', extraBullets: '', price: '', qty: 1 }];
+  priceOverrides = {};
+  scopeNotes = {};
+  scopeOverrides = {};
+
   Object.keys(state).forEach(k => { state[k] = false; });
   Object.assign(state, draft.state);
-  if (draft.customTransfers) customTransfers = draft.customTransfers;
-  if (draft.customStates) customStates = draft.customStates;
-  if (draft.customOffshore) customOffshore = draft.customOffshore;
-  if (draft.customAccounting) customAccounting = draft.customAccounting;
-  if (draft.customDissolutions) customDissolutions = draft.customDissolutions;
-  if (draft.reestruEntries) reestruEntries = draft.reestruEntries;
+
+  // Restore custom arrays from draft; if missing (old draft format), turn off the
+  // corresponding toggle so no empty/blank service item appears in the form or proposal
+  if (draft.customTransfers) {
+    customTransfers = draft.customTransfers;
+  } else {
+    state.customTransfer = false;
+  }
+  if (draft.customStates) {
+    customStates = draft.customStates;
+  }
+  if (draft.customOffshore) {
+    customOffshore = draft.customOffshore;
+  } else {
+    state.customOffshore = false;
+  }
+  if (draft.customAccounting) {
+    customAccounting = draft.customAccounting;
+  } else {
+    state.customAccounting = false;
+  }
+  if (draft.customDissolutions) {
+    customDissolutions = draft.customDissolutions;
+  } else {
+    state.customDissolution = false;
+  }
+  if (draft.reestruEntries) {
+    reestruEntries = draft.reestruEntries;
+  } else {
+    state.reestru = false;
+  }
   if (draft.priceOverrides) priceOverrides = draft.priceOverrides;
   if (draft.scopeNotes) scopeNotes = draft.scopeNotes;
   if (draft.scopeOverrides) scopeOverrides = draft.scopeOverrides;
