@@ -723,6 +723,12 @@
 </style>
 </head>
 <body>
+<!-- ── Auto-save restore banner ── -->
+<div id="autosave-banner" style="display:none;position:fixed;top:0;left:0;right:0;z-index:10000;background:#1a3a2a;color:#e2ff00;font-family:var(--font,sans-serif);font-size:12px;font-weight:600;padding:10px 16px;align-items:center;gap:12px;box-shadow:0 2px 8px rgba(0,0,0,0.25);">
+  <span style="flex:1;">Trabalho não salvo encontrado — <span id="autosave-banner-client" style="color:#fff;"></span> <span id="autosave-banner-time" style="font-weight:400;opacity:0.75;"></span></span>
+  <button onclick="restoreAutoSave()" style="background:#e2ff00;color:#071210;border:none;border-radius:3px;padding:5px 12px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;">Restaurar</button>
+  <button onclick="dismissAutoSave()" style="background:transparent;color:#e2ff00;border:1px solid rgba(226,255,0,0.4);border-radius:3px;padding:5px 10px;font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;">Descartar</button>
+</div>
 <!-- ── Password Gate Overlay ── -->
 <div id="pw-gate">
   <div class="pw-box">
@@ -5404,6 +5410,7 @@ function renderAlerts() {
 //  DEBOUNCE
 // ═══════════════════════════════════════════════════════════════════
 let debTimer;
+let autoSaveTimer;
 // Track the last triva mode used so live-preview re-generation uses the same branding.
 // null = no proposal generated yet; undefined/true = a proposal is live (matches triva arg).
 let _lastTrivaMode = null;
@@ -5421,6 +5428,121 @@ function debouncedUpdate() {
       generateProposal(_lastTrivaMode, true);
     }
   }, 150);
+  // Auto-save 3 seconds after last change — catches work before explicit Save Draft
+  clearTimeout(autoSaveTimer);
+  autoSaveTimer = setTimeout(writeAutoSave, 3000);
+}
+
+// ═══════════════════════════════════════════════════════════════════
+//  AUTO-SAVE — writes form state continuously so work is never lost
+// ═══════════════════════════════════════════════════════════════════
+function writeAutoSave() {
+  const client = (document.getElementById('f-client') || {}).value || '';
+  if (!client.trim()) return; // nothing worth saving without a client name
+  try {
+    const snapshot = {
+      client,
+      clientEmail: (document.getElementById('f-email') || {}).value || '',
+      advisor: (document.getElementById('f-advisor') || {}).value || '',
+      date: (document.getElementById('f-date') || {}).value || '',
+      lang,
+      state: Object.assign({}, state),
+      customTransfers: JSON.parse(JSON.stringify(customTransfers)),
+      customStates: JSON.parse(JSON.stringify(customStates)),
+      customOffshore: JSON.parse(JSON.stringify(customOffshore)),
+      customAccounting: JSON.parse(JSON.stringify(customAccounting)),
+      customDissolutions: JSON.parse(JSON.stringify(customDissolutions)),
+      reestruEntries: JSON.parse(JSON.stringify(reestruEntries)),
+      priceOverrides: Object.assign({}, priceOverrides),
+      scopeNotes: Object.assign({}, scopeNotes),
+      scopeOverrides: Object.assign({}, scopeOverrides),
+      proposalNotes,
+      savedAt: new Date().toISOString(),
+    };
+    localStorage.setItem('fgc_autosave', JSON.stringify(snapshot));
+  } catch(e) {}
+}
+
+function clearAutoSave() {
+  try { localStorage.removeItem('fgc_autosave'); } catch(e) {}
+}
+
+function restoreAutoSave() {
+  try {
+    const raw = localStorage.getItem('fgc_autosave');
+    if (!raw) return;
+    const snap = JSON.parse(raw);
+    // Reuse loadDraft logic by building a fake draft object
+    const fake = Object.assign({ id: '__autosave__', savedBy: '', status: 'draft' }, snap);
+    // Apply directly (same as loadDraft but without panel close / display toggle)
+    lang = snap.lang || 'pt';
+    document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+    const lb = document.querySelector(`.lang-btn[onclick="setLang('${lang}')"]`);
+    if (lb) lb.classList.add('active');
+    customTransfers    = [{ label: '', price: '', qty: 1, scope: '', hasScope: false }];
+    customStates       = [{ name: '', price: '', qty: 1, maintPrice: '' }];
+    customOffshore     = [{ label: '', price: '', qty: 1, maintPrice: '', scope: '', hasScope: false }];
+    customAccounting   = [{ label: '', price: '', qty: 1, payTerm: 'acceptance', scope: '', hasScope: false }];
+    customDissolutions = [{ label: '', price: '', qty: 1, scope: '', hasScope: false }];
+    reestruEntries     = [{ label: '', companyName: '', desc: '', extraBullets: '', price: '', qty: 1 }];
+    priceOverrides = {}; scopeNotes = {}; scopeOverrides = {};
+    Object.keys(state).forEach(k => { state[k] = false; });
+    Object.assign(state, snap.state || {});
+    if (snap.customTransfers)    customTransfers    = snap.customTransfers;
+    else state.customTransfer = false;
+    if (snap.customStates)       customStates       = snap.customStates;
+    if (snap.customOffshore)     customOffshore     = snap.customOffshore;
+    else state.customOffshore = false;
+    if (snap.customAccounting)   customAccounting   = snap.customAccounting;
+    else state.customAccounting = false;
+    if (snap.customDissolutions) customDissolutions = snap.customDissolutions;
+    else state.customDissolution = false;
+    if (snap.reestruEntries)     reestruEntries     = snap.reestruEntries;
+    else state.reestru = false;
+    if (snap.priceOverrides) priceOverrides = snap.priceOverrides;
+    if (snap.scopeNotes)     scopeNotes     = snap.scopeNotes;
+    if (snap.scopeOverrides) scopeOverrides = snap.scopeOverrides;
+    proposalNotes = snap.proposalNotes || '';
+    document.getElementById('f-client').value  = snap.client || '';
+    if (document.getElementById('f-email'))   document.getElementById('f-email').value   = snap.clientEmail || '';
+    document.getElementById('f-advisor').value = snap.advisor || '';
+    document.getElementById('f-date').value    = snap.date || '';
+    const notesEl = document.getElementById('f-notes');
+    if (notesEl) notesEl.value = proposalNotes;
+    renderServicePicker();
+    renderUI();
+    renderAdvisorChips();
+    updateTopbar();
+    hideAutoSaveBanner();
+  } catch(e) {}
+}
+
+function showAutoSaveBannerIfNeeded() {
+  try {
+    const raw = localStorage.getItem('fgc_autosave');
+    if (!raw) return;
+    const snap = JSON.parse(raw);
+    if (!snap.client || !snap.savedAt) return;
+    const when = new Date(snap.savedAt);
+    const now = new Date();
+    const minAgo = Math.round((now - when) / 60000);
+    const timeLabel = minAgo < 2 ? 'agora há pouco' : `há ${minAgo} min`;
+    const banner = document.getElementById('autosave-banner');
+    if (!banner) return;
+    document.getElementById('autosave-banner-client').textContent = snap.client;
+    document.getElementById('autosave-banner-time').textContent = timeLabel;
+    banner.style.display = 'flex';
+  } catch(e) {}
+}
+
+function hideAutoSaveBanner() {
+  const banner = document.getElementById('autosave-banner');
+  if (banner) banner.style.display = 'none';
+}
+
+function dismissAutoSave() {
+  clearAutoSave();
+  hideAutoSaveBanner();
 }
 
 function toggleEditMode() {
@@ -6782,6 +6904,7 @@ function exportInteractivePDF() {
 // ═══════════════════════════════════════════════════════════════════
 function resetProposal() {
   _lastLoggedClient = null;
+  clearAutoSave(); // starting fresh — discard any pending auto-save
   // Reset all service state
   Object.keys(state).forEach(k => { state[k] = false; });
   state.fsIncludeAFR = true;       // restore default
@@ -6859,6 +6982,7 @@ function checkLogin() {
     setCurrentUser(match.display);
     document.getElementById('pw-gate').classList.add('hidden');
     if (!getDeviceName()) showDeviceModal();
+    showAutoSaveBannerIfNeeded();
   } else {
     errEl.textContent = 'Usuário ou senha incorretos.';
     document.getElementById('pw-input').value = '';
@@ -7043,6 +7167,7 @@ function saveDraft() {
     status: 'draft',
   });
   putDrafts(drafts);
+  clearAutoSave(); // explicit save supersedes auto-save
   updateDraftCountBadge();
   renderDraftsList();
   const btn = document.getElementById('btn-save-draft');
@@ -7217,6 +7342,8 @@ document.addEventListener('DOMContentLoaded', () => {
   updateDraftCountBadge();
   // Focus username input
   document.getElementById('pw-username').focus();
+  // Save on tab close / navigate away
+  window.addEventListener('beforeunload', writeAutoSave);
 });
 </script>
 </body>
