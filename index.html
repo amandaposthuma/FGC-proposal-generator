@@ -7144,6 +7144,8 @@ function saveDraft() {
   const user = getCurrentUser() || 'Unknown';
   const drafts = getDrafts();
   const id = 'draft_' + Date.now();
+  const _docEl = document.getElementById('proposal-doc');
+  const proposalHTML = (_docEl && _docEl.style.display !== 'none') ? _docEl.innerHTML : null;
   drafts.unshift({
     id,
     client,
@@ -7151,6 +7153,7 @@ function saveDraft() {
     advisor: document.getElementById('f-advisor').value.trim(),
     date: document.getElementById('f-date').value,
     lang,
+    proposalHTML,
     state: Object.assign({}, state),
     customTransfers: JSON.parse(JSON.stringify(customTransfers)),
     customStates: JSON.parse(JSON.stringify(customStates)),
@@ -7260,10 +7263,23 @@ function loadDraft(id) {
   renderUI();
   renderAdvisorChips();
   updateTopbar();
-  document.getElementById('proposal-doc').style.display = 'none';
-  document.getElementById('proposal-empty').style.display = 'flex';
-  document.getElementById('btn-new-proposal').style.display = 'none';
-  document.getElementById('btn-generate').style.display = '';
+  const _loadDocEl = document.getElementById('proposal-doc');
+  if (draft.proposalHTML && _loadDocEl) {
+    _loadDocEl.innerHTML = draft.proposalHTML;
+    _loadDocEl.style.display = '';
+    _loadDocEl.contentEditable = 'false';
+    document.getElementById('proposal-empty').style.display = 'none';
+    document.getElementById('btn-new-proposal').style.display = '';
+    document.getElementById('btn-generate').style.display = 'none';
+    const _editBtn = document.getElementById('btn-edit-proposal');
+    if (_editBtn) _editBtn.style.display = '';
+    _editMode = false;
+  } else {
+    _loadDocEl.style.display = 'none';
+    document.getElementById('proposal-empty').style.display = 'flex';
+    document.getElementById('btn-new-proposal').style.display = 'none';
+    document.getElementById('btn-generate').style.display = '';
+  }
   closeDraftsPanel();
 }
 
