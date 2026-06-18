@@ -6511,8 +6511,8 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
           return `
           <div style="display:flex;align-items:center;gap:10px;font-size:11px;margin-bottom:6px;padding:4px 0;">
             <span style="flex:1;">${name}</span>
-            <label style="display:flex;align-items:center;gap:3px;font-size:10px;font-weight:600;"><input type="radio" name="${radioName}" style="accent-color:var(--dark);"> ${yesLabel}</label>
-            <label style="display:flex;align-items:center;gap:3px;font-size:10px;font-weight:600;"><input type="radio" name="${radioName}" style="accent-color:var(--dark);"> ${noLabel}</label>
+            <span style="display:flex;align-items:center;gap:3px;font-size:10px;font-weight:600;"><span style="display:inline-block;width:11px;height:11px;border-radius:50%;border:1.5px solid var(--dark);flex-shrink:0;"></span> ${yesLabel}</span>
+            <span style="display:flex;align-items:center;gap:3px;font-size:10px;font-weight:600;"><span style="display:inline-block;width:11px;height:11px;border-radius:50%;border:1.5px solid var(--dark);flex-shrink:0;"></span> ${noLabel}</span>
           </div>`;
         }).join('')}
       </div>
