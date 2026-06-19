@@ -1,5 +1,23 @@
 # FGC Proposal Generator v2 — CLAUDE.md
 
+---
+
+## !! VERIFICATION REQUIREMENT — MANDATORY !!
+
+**NEVER report a task as complete without first providing screenshot evidence.**
+
+Before saying "done", "fixed", "working", or any equivalent:
+1. Use the `verify` skill (or WebFetch the live URL) to take a screenshot of `https://amandaposthuma.github.io/FGC-proposal-generator/`
+2. Show the screenshot proving the specific issue is resolved on the LIVE site
+3. Only THEN report completion
+
+This applies to ALL tasks on this project without exception.
+The user has been given false "it's fixed" reports multiple times. **Visual proof is required. Your word alone is not accepted.**
+
+**Item 1 specifics (top priority):** Input fields/boxes must NOT be visible in the generated proposal output. The service description must render as plain text with no editable boxes or form controls showing in the printed/generated proposal.
+
+---
+
 ## Overview
 Static single-page HTML tool hosted on GitHub Pages. No backend. All persistence via localStorage.
 
