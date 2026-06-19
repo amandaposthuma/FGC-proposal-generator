@@ -7265,6 +7265,7 @@ function loadDraft(id) {
   updateTopbar();
   const _loadDocEl = document.getElementById('proposal-doc');
   if (draft.proposalHTML && _loadDocEl) {
+    _lastTrivaMode = null; // prevent debouncedUpdate from regenerating over the restored HTML
     _loadDocEl.innerHTML = draft.proposalHTML;
     _loadDocEl.style.display = '';
     _loadDocEl.contentEditable = 'false';
