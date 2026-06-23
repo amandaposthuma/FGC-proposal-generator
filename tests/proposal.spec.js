@@ -271,6 +271,106 @@ test.describe('FGC Proposal Generator — Regression Tests', () => {
     expect(btnBox.y).toBeGreaterThanOrEqual(bannerBox.y + bannerBox.height);
   });
 
+  // ── BUG 5: AFR note must not appear for Bahamas entities ─────────────────
+  // When state.afr was true and a Bahamas entity was selected (but no BVI),
+  // the AFR line appeared in the accounting section because hasPICEntity was
+  // used instead of hasBVIEntity. AFR is exclusive to BVI.
+  test('BUG 5 — AFR note does not appear for Bahamas-only proposals', async ({ page }) => {
+    await login(page);
+
+    // Enable Bahamas service and AFR, but NOT BVI
+    await page.evaluate(() => {
+      document.querySelectorAll('label, .service-toggle').forEach(el => {
+        if (el.textContent.trim().match(/bahamas/i)) el.click();
+      });
+    });
+    await page.waitForTimeout(300);
+
+    // Enable AFR toggle if available
+    await page.evaluate(() => {
+      document.querySelectorAll('label, .service-toggle, input[type="checkbox"]').forEach(el => {
+        if (el.textContent.trim().match(/^AFR$|annual.*report/i)) el.click();
+      });
+    });
+    await page.waitForTimeout(300);
+
+    // Generate
+    await page.evaluate(() => {
+      document.querySelectorAll('button').forEach(b => {
+        if (b.textContent.match(/gerar/i)) b.click();
+      });
+    });
+    await page.waitForTimeout(2000);
+
+    // AFR should not appear as a fee table row (boilerplate payment terms always mention "AFR"
+    // as a document type — we check the fee rows specifically, not the full text)
+    const afrInFeeTable = await page.evaluate(() => {
+      const doc = document.getElementById('proposal-doc');
+      if (!doc) return false;
+      // Check only fee table cells (service name cells), not the full document
+      const feeCells = doc.querySelectorAll('.fee-table td:first-child');
+      for (const cell of feeCells) {
+        if (/\bAFR\b/.test(cell.textContent)) return true;
+      }
+      return false;
+    });
+
+    expect(afrInFeeTable).toBe(false);
+  });
+
+  // ── BUG 6: Payment text must not appear for third-party-only proposals ───
+  // When only fs3rd / tr3rd were selected (no formation, transfer, or maintenance),
+  // the payment text paragraph ("Os honorários são pagos em...") still appeared.
+  test('BUG 6 — No payment text when only third-party FS/TR is selected', async ({ page }) => {
+    await login(page);
+
+    // Enable only fs3rd
+    await page.evaluate(() => {
+      document.querySelectorAll('label, .service-toggle').forEach(el => {
+        if (el.textContent.match(/terceiro|terceros|third.?party/i)) el.click();
+      });
+    });
+    await page.waitForTimeout(300);
+
+    await page.evaluate(() => {
+      document.querySelectorAll('button').forEach(b => {
+        if (b.textContent.match(/gerar/i)) b.click();
+      });
+    });
+    await page.waitForTimeout(2000);
+
+    const paymentTextVisible = await page.evaluate(() => {
+      const doc = document.getElementById('proposal-doc');
+      if (!doc) return false;
+      // Payment text contains these key phrases in any language
+      return !!(
+        doc.textContent.match(/honorários são devidos|pagaderos en la aceptación|fees are due upon acceptance|pagamento.*confirmação|pagos em.*parcelas/i)
+      );
+    });
+
+    expect(paymentTextVisible).toBe(false);
+  });
+
+  // ── BUG 7: Edit-mode banner must not be inside proposal-doc ──────────────
+  // The edit-mode-banner was injected as the first child inside #proposal-doc,
+  // making users think it was proposal content they needed to delete before PDF.
+  // Now it's a sibling element outside #proposal-doc.
+  test('BUG 7 — Edit-mode banner is outside proposal-doc, not inside it', async ({ page }) => {
+    await login(page);
+    await generateBVIProposal(page, { client: 'Test Client' });
+
+    const bannerInsideDoc = await page.evaluate(() => {
+      const doc = document.getElementById('proposal-doc');
+      return !!doc?.querySelector('#edit-mode-banner');
+    });
+
+    expect(bannerInsideDoc).toBe(false);
+
+    // Verify the banner is a sibling (outside proposal-doc)
+    const bannerExists = await page.evaluate(() => !!document.getElementById('edit-mode-banner'));
+    expect(bannerExists).toBe(true);
+  });
+
   // ── SANITY: Proposal generates without errors ─────────────────────────────
   test('SANITY — Proposal generates and is visible', async ({ page }) => {
     await login(page);
