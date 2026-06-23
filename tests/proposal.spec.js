@@ -234,6 +234,43 @@ test.describe('FGC Proposal Generator — Regression Tests', () => {
     expect(pricePresent).toBe(true);
   });
 
+  // ── BUG 4: Save PDF button must not be hidden by auto-save banner ────────
+  // When an auto-save snapshot exists and the banner is shown at the top of
+  // the page, it used to physically cover the topbar, making "Save PDF ↓"
+  // unreachable without first clicking Restaurar or Descartar.
+  test('BUG 4 — Save PDF button is visible even when auto-save banner is shown', async ({ page }) => {
+    // Inject a fake auto-save snapshot so the banner appears on load
+    await page.addInitScript(() => {
+      localStorage.setItem('fgc_autosave', JSON.stringify({
+        client: 'FGC ADVISORS',
+        savedAt: new Date().toISOString(),
+        lang: 'pt',
+        state: {},
+      }));
+    });
+
+    await login(page);
+    // Generate a proposal so the Save PDF button is in the topbar
+    await generateBVIProposal(page, { client: 'Piero Contezini' });
+
+    // The auto-save banner should be visible
+    const bannerVisible = await page.evaluate(() => {
+      const b = document.getElementById('autosave-banner');
+      return b && b.style.display !== 'none';
+    });
+    expect(bannerVisible).toBe(true);
+
+    // The Save PDF button must be visible and not covered
+    const pdfBtn = page.locator('#btn-export-pdf');
+    await expect(pdfBtn).toBeVisible();
+
+    // It must also be interactable (not obscured by the banner)
+    const btnBox = await pdfBtn.boundingBox();
+    const bannerBox = await page.locator('#autosave-banner').boundingBox();
+    // Button top must be below banner bottom
+    expect(btnBox.y).toBeGreaterThanOrEqual(bannerBox.y + bannerBox.height);
+  });
+
   // ── SANITY: Proposal generates without errors ─────────────────────────────
   test('SANITY — Proposal generates and is visible', async ({ page }) => {
     await login(page);

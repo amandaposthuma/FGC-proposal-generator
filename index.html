@@ -5532,12 +5532,16 @@ function showAutoSaveBannerIfNeeded() {
     document.getElementById('autosave-banner-client').textContent = snap.client;
     document.getElementById('autosave-banner-time').textContent = timeLabel;
     banner.style.display = 'flex';
+    const mainEl = document.getElementById('main');
+    if (mainEl) mainEl.style.paddingTop = banner.offsetHeight + 'px';
   } catch(e) {}
 }
 
 function hideAutoSaveBanner() {
   const banner = document.getElementById('autosave-banner');
   if (banner) banner.style.display = 'none';
+  const mainEl = document.getElementById('main');
+  if (mainEl) mainEl.style.paddingTop = '';
 }
 
 function dismissAutoSave() {
