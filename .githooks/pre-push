@@ -1,0 +1,32 @@
+#!/bin/sh
+# Pre-push hook: run Playwright tests before allowing push to main.
+# If any test fails, the push is blocked.
+
+BRANCH=$(git rev-parse --abbrev-ref HEAD)
+
+if [ "$BRANCH" = "main" ]; then
+  echo "🧪 Running regression tests before push to main..."
+  cd "$(git rev-parse --show-toplevel)"
+
+  # Install playwright if needed
+  if ! npx playwright --version > /dev/null 2>&1; then
+    echo "Installing Playwright..."
+    npm install
+    npx playwright install chromium --with-deps
+  fi
+
+  npx playwright test --reporter=list
+  STATUS=$?
+
+  if [ $STATUS -ne 0 ]; then
+    echo ""
+    echo "❌ Tests FAILED — push blocked."
+    echo "   Fix the failing tests before pushing to main."
+    echo "   Run: npx playwright test"
+    exit 1
+  fi
+
+  echo "✅ All tests passed — pushing."
+fi
+
+exit 0

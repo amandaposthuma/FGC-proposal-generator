@@ -1,0 +1,11 @@
+{
+  "name": "fgc-proposal-generator",
+  "version": "1.0.0",
+  "scripts": {
+    "test": "PLAYWRIGHT_BROWSERS_PATH=/opt/node22/lib/node_modules/playwright node_modules/.bin/playwright test",
+    "test:live": "BASE_URL=https://amandaposthuma.github.io/FGC-proposal-generator PLAYWRIGHT_BROWSERS_PATH=/opt/node22/lib/node_modules/playwright node_modules/.bin/playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.44.0"
+  }
+}
