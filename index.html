@@ -543,7 +543,8 @@
     /* When printing via exportInteractivePDF(), proposal-doc is moved into #print-wrap on body.
        Hide everything except the print wrapper to guarantee no blank pages. */
     body.printing > *:not(#print-wrap) { display: none !important; }
-    #print-wrap { position: static !important; }
+    #print-wrap { position: static !important; margin: 0 !important; padding: 0 !important; width: 100% !important; }
+    html { margin: 0 !important; padding: 0 !important; }
     /* Fallback for direct Ctrl+P (no .printing class) */
     #sidebar, #topbar, #email-panel { display: none !important; }
     #app { display: block; }
@@ -959,6 +960,7 @@
       <h3 data-key="emptyTitle">Nenhuma proposta gerada</h3>
       <p data-key="emptyDesc">Selecione os serviços e clique em "Gerar Proposta".</p>
     </div>
+    <div id="edit-mode-banner" style="display:none;background:var(--dust,#9AB4B0);color:#fff;font-size:11px;font-weight:600;padding:6px 12px;text-align:center;letter-spacing:0.2px;border-radius:4px 4px 0 0;"></div>
     <div id="proposal-doc" style="display:none;"></div>
   </div>
 </div>
@@ -1347,7 +1349,7 @@ var FGC_CONFIG = {
           "Entrega da versão final em formato digital e físico, acompanhada de orientações formais sobre assinatura e guarda do documento",
           "Quaisquer despesas incorridas no âmbito deste trabalho serão reembolsadas imediatamente."
         ],
-        note: "A assinatura do Testamento deverá ocorrer no país de residência fiscal do testador, seguindo as formalidades locais.\nNão há registro público obrigatório nas BVI, mas recomenda-se informar os executores sobre o local de guarda do documento original.\nAdd-on opcional: Affidavit of Witness — USD 1.000,00 adicional. Recomendamos que as testemunhas assinem o Affidavit of Witness com antecedência, documento obrigatório para fins de probate.\nOs honorários profissionais são estimados inicialmente em USD 5.500,00. Caso as premissas iniciais sejam alteradas ou haja necessidade de incluir disposições específicas e/ou mecanismos de sucessão adicionais, os honorários serão revisados e discutidos oportunamente."
+        note: "Não há registro público obrigatório nas BVI, mas recomenda-se informar os executores sobre o local de guarda do documento original.\nAdd-on opcional: Affidavit of Witness — USD 1.000,00 adicional. Recomendamos que as testemunhas assinem o Affidavit of Witness com antecedência, documento obrigatório para fins de probate.\nOs honorários profissionais são estimados inicialmente em USD 5.500,00. Caso as premissas iniciais sejam alteradas ou haja necessidade de incluir disposições específicas e/ou mecanismos de sucessão adicionais, os honorários serão revisados e discutidos oportunamente."
       },
       apostila: {
         title: "Notarização e Apostilamento",
@@ -1963,7 +1965,7 @@ var FGC_CONFIG = {
           "Entrega de la versión final en formato digital y físico, acompañada de orientaciones formales sobre firma y custodia del documento",
           "Cualquier gasto incurrido en relación con este asunto será reembolsado de inmediato."
         ],
-        note: "La firma del Testamento deberá realizarse en el país de residencia fiscal del testador, siguiendo las formalidades locales.\nNo existe registro público obligatorio en BVI, pero se recomienda informar a los ejecutores sobre el lugar de custodia del documento original.\nAdd-on opcional: Affidavit of Witness — USD 1.000,00 adicional. Recomendamos que los testigos ejecuten el Affidavit of Witness con anticipación, documento obligatorio para el proceso de probate.\nLos honorarios profesionales se estiman inicialmente en USD 5.500,00. En caso de que las premisas iniciales se modifiquen o se requiera incluir disposiciones específicas y/o mecanismos de sucesión adicionales, los honorarios serán revisados y discutidos oportunamente."
+        note: "No existe registro público obligatorio en BVI, pero se recomienda informar a los ejecutores sobre el lugar de custodia del documento original.\nAdd-on opcional: Affidavit of Witness — USD 1.000,00 adicional. Recomendamos que los testigos ejecuten el Affidavit of Witness con anticipación, documento obligatorio para el proceso de probate.\nLos honorarios profesionales se estiman inicialmente en USD 5.500,00. En caso de que las premisas iniciales se modifiquen o se requiera incluir disposiciones específicas y/o mecanismos de sucesión adicionales, los honorarios serán revisados y discutidos oportunamente."
       },
       apostila: {
         title: "Notarización y Apostillado",
@@ -2580,7 +2582,7 @@ var FGC_CONFIG = {
           "Delivery of the final version in digital and physical format, accompanied by formal guidance on signing and document custody",
           "Any expenses incurred in connection with this matter shall be reimbursed immediately."
         ],
-        note: "The Will must be signed in the testator's country of tax residence, following local formalities.\nThere is no mandatory public registration in BVI, but it is recommended to inform executors of the original document's custody location.\nOptional add-on: Affidavit of Witness — additional USD 1,000.00. We recommend that witnesses execute an Affidavit of Witness in advance, which is a mandatory document required for probate purposes.\nProfessional fees are initially estimated at USD 5,500.00. Should the initial assumptions change or should there be an intention to include specific provisions and/or additional succession mechanisms, fees will be revised and discussed in due course."
+        note: "There is no mandatory public registration in BVI, but it is recommended to inform executors of the original document's custody location.\nOptional add-on: Affidavit of Witness — additional USD 1,000.00. We recommend that witnesses execute an Affidavit of Witness in advance, which is a mandatory document required for probate purposes.\nProfessional fees are initially estimated at USD 5,500.00. Should the initial assumptions change or should there be an intention to include specific provisions and/or additional succession mechanisms, fees will be revised and discussed in due course."
       },
       apostila: {
         title: "Notarization & Apostille",
@@ -2601,7 +2603,7 @@ var FGC_CONFIG = {
         note: "Any correspondence received at FGC's address will be stored for up to 30 days. After that period, correspondence will be discarded unless formal instruction is provided by the client."
       },
       fs: {
-        title: "Financial Statements (Demonstrações Financeiras)",
+        title: "Financial Statements",
         items: [
           "Financial Statements",
           "Annual Financial Return (AFR)"
@@ -3383,15 +3385,15 @@ var FGC_CONFIG = {
   // ─────────────────────────────────────────────────────────────────
   thirdPartyNotes: {
     pt: {
-      fs: "As Demonstrações Financeiras (Financial Statements) serão preparadas por escritório terceiro.",
+      fs: "As Demonstrações Financeiras (Financial Statements) serão preparadas por escritório terceiro. Para as demonstrações financeiras preparadas por terceiros, o cliente deverá encaminhar à FGC, até o dia 1° de junho de cada ano, os documentos contábeis e financeiros necessários à elaboração das demonstrações financeiras.",
       tr: "A Declaração Fiscal (Tax Return) será preparada por escritório terceiro.",
     },
     es: {
-      fs: "Los Estados Financieros (Financial Statements) serán preparados por un despacho externo.",
+      fs: "Los Estados Financieros (Financial Statements) serán preparados por un despacho externo. Para los estados financieros preparados por terceros, el cliente deberá enviar a FGC, antes del 1° de junio de cada año, los documentos contables y financieros necesarios para la elaboración de los estados financieros.",
       tr: "La Declaración Fiscal (Tax Return) será preparada por un despacho externo.",
     },
     en: {
-      fs: "Financial Statements will be prepared by a third-party firm.",
+      fs: "Financial Statements will be prepared by a third-party firm. For financial statements prepared by third parties, the client must provide FGC, by June 1st of each year, with all accounting and financial documents necessary for the preparation of the financial statements.",
       tr: "Tax Return will be prepared by a third-party firm.",
     },
   },
@@ -3822,7 +3824,7 @@ const T = {
     // Terms – FS / TR
     termsFSTitle: "Demonstrações Financeiras (FS) + AFR",
     termsFSItems: [
-      "Elaboração das Demonstrações Financeiras (Financial Statements)",
+      "Preparação das Demonstrações Financeiras (Financial Statements)",
       "Preparação do Annual Financial Return (AFR) junto ao Registro de BVI",
       "Análise e categorização das movimentações do período"
     ],
@@ -4166,7 +4168,7 @@ contact@fgcadvisors.com`;
     termsMailingItems: ["Suministro de dirección de correspondencia en EE.UU.","Recepción y digitalización de correspondencia oficial","Reenvío por correo electrónico al cliente"],
     termsMailingNote: "En caso de transferencia de titularidad o administración de la empresa, el cliente se compromete a actualizar de inmediato la dirección oficial ante las autoridades competentes, garantizando que la dirección de FGC no sea utilizada tras la conclusión de la transferencia. Si el cliente no realiza esta actualización en el plazo de hasta 30 días, FGC se reserva el derecho de, a su exclusivo criterio, transferir la dirección oficial de la empresa a la dirección residencial o comercial del cliente que conste en nuestros registros.",
     termsFSTitle: "Estados Financieros (FS) + AFR",
-    termsFSItems: ["Elaboración de los Estados Financieros (Financial Statements)","Preparación del Annual Financial Return (AFR) ante el Registro de BVI","Análisis y categorización de movimientos del período"],
+    termsFSItems: ["Preparación de los Estados Financieros (Financial Statements)","Preparación del Annual Financial Return (AFR) ante el Registro de BVI","Análisis y categorización de movimientos del período"],
     termsFSNote: null,
     termsTRTitle: "Tax Return (TR) — Declaración Fiscal EE.UU.",
     termsTRItems: ["Preparación y presentación de la declaración de impuestos ante el IRS","Análisis de movimientos y categorización fiscal","Entrega del comprobante de presentación"],
@@ -5532,12 +5534,16 @@ function showAutoSaveBannerIfNeeded() {
     document.getElementById('autosave-banner-client').textContent = snap.client;
     document.getElementById('autosave-banner-time').textContent = timeLabel;
     banner.style.display = 'flex';
+    const mainEl = document.getElementById('main');
+    if (mainEl) mainEl.style.paddingTop = banner.offsetHeight + 'px';
   } catch(e) {}
 }
 
 function hideAutoSaveBanner() {
   const banner = document.getElementById('autosave-banner');
   if (banner) banner.style.display = 'none';
+  const mainEl = document.getElementById('main');
+  if (mainEl) mainEl.style.paddingTop = '';
 }
 
 function dismissAutoSave() {
@@ -5845,8 +5851,8 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
     const tr3rdPrice = priceOverrides['tr3rd'] !== undefined ? priceOverrides['tr3rd'] * tr3rdQ : null;
     secAcctItems.push({ key:'tr3rd', label: (tr3rdQ>1?tr3rdQ+'x ':'')+{ pt: 'Tax Return por Terceiros', es: 'Tax Return por Terceros', en: 'Tax Return (Third Party)' }[lang], amount: tr3rdPrice, pay: '', group:'us' });
   }
-  // AFR standalone (only if FS not selected, and at least one PIC entity exists)
-  if (state.afr && !state.fs && hasPICEntity) {
+  // AFR standalone (only if FS not selected, and at least one BVI entity exists — not Bahamas/Cayman/Nevis)
+  if (state.afr && !state.fs && hasBVIEntity) {
     // Use user-set qty if explicitly provided; otherwise derive from BVI entity count (or 1)
     const afrQtyAuto = Math.max(bviQty, 1);
     const afrQtyFinal = qty['afr'] !== undefined ? qty['afr'] : afrQtyAuto;
@@ -6215,12 +6221,16 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
   buildTermsForItems(sec3Items);
 
   // ── Payment text ──
+  const isThirdPartyOnly = (has3rdPartyFS || has3rdPartyTR) && !hasFormation && !hasTransfer && !hasAccounting && !hasSuccession && !hasApostila && !hasMailing && !hasStandalone && !hasCustomAcct;
+  // If proposal mixes formation/transfer with one-time services (apostille, prior-year FS/TR),
+  // use generic text so all services are implicitly covered rather than naming only one type.
+  const hasExtraOneTimeServices = hasApostila || state.fsAnterior || state.trAnterior;
   let payText = '';
-  if (isDissolutionOnly) payText = '';
+  if (isDissolutionOnly || isThirdPartyOnly) payText = '';
   else if (isNotarizationOnly) payText = { pt: 'Os honorários são devidos na aceitação desta proposta, previamente ao início dos serviços.', es: 'Los honorarios son pagaderos en la aceptación de esta propuesta, antes del inicio de los servicios.', en: 'Fees are due upon acceptance of this proposal, prior to the start of services.' }[lang];
   else if (hasFormation && hasTransfer) payText = FGC_CONFIG.paymentText[lang].mixed;
-  else if (hasFormation && hasMaint) payText = FGC_CONFIG.paymentText[lang].formation;
-  else if (hasTransfer && hasMaint) payText = FGC_CONFIG.paymentText[lang].transfer;
+  else if (hasFormation && hasMaint) payText = hasExtraOneTimeServices ? FGC_CONFIG.paymentText[lang].mixed : FGC_CONFIG.paymentText[lang].formation;
+  else if (hasTransfer && hasMaint) payText = hasExtraOneTimeServices ? FGC_CONFIG.paymentText[lang].mixed : FGC_CONFIG.paymentText[lang].transfer;
   else if (hasMaint && !hasFormation && !hasTransfer) payText = FGC_CONFIG.paymentText[lang].maintenanceOnly;
   else payText = FGC_CONFIG.paymentText[lang].mixed;
 
@@ -6716,7 +6726,7 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
   docEl.style.outline = '';
   const editBtn = document.getElementById('btn-edit-proposal');
   if (editBtn) { editBtn.textContent = '✏ Editar'; editBtn.classList.remove('active'); editBtn.style.display = ''; }
-  docEl.innerHTML = `<div id="edit-mode-banner" style="display:none;background:var(--dust,#9AB4B0);color:#fff;font-size:11px;font-weight:600;padding:6px 12px;text-align:center;border-radius:4px 4px 0 0;letter-spacing:0.2px;"></div>` + docHTML;
+  docEl.innerHTML = docHTML;
   docEl.style.display = 'block';
   document.getElementById('proposal-empty').style.display = 'none';
   document.getElementById('btn-new-proposal').style.display = '';
