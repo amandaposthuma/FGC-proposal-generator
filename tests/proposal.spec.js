@@ -371,6 +371,44 @@ test.describe('FGC Proposal Generator — Regression Tests', () => {
     expect(bannerExists).toBe(true);
   });
 
+  // ── BUG 8: Payment text must cover all services, not just formation/transfer ─
+  // When apostille or prior-year FS/TR were bundled with formation, the payment
+  // text said "Os honorários de constituição" — mentioning only formation and
+  // ignoring the other services. Now uses generic "honorários iniciais" text.
+  test('BUG 8 — Payment text is generic when apostille is bundled with formation', async ({ page }) => {
+    await login(page);
+
+    // Enable BVI + apostille together
+    await page.evaluate(() => {
+      document.querySelectorAll('label, .service-toggle').forEach(el => {
+        if (el.textContent.includes('BVI')) el.click();
+      });
+    });
+    await page.waitForTimeout(300);
+    await page.evaluate(() => {
+      document.querySelectorAll('label, .service-toggle, input[type="checkbox"]').forEach(el => {
+        if (el.textContent.trim().match(/apostil|notariza/i)) el.click();
+      });
+    });
+    await page.waitForTimeout(300);
+    await page.evaluate(() => {
+      document.querySelectorAll('button').forEach(b => {
+        if (b.textContent.match(/gerar/i)) b.click();
+      });
+    });
+    await page.waitForTimeout(2000);
+
+    // Should NOT say "honorários de constituição" (formation-specific) when
+    // other services are also present — should use the generic initial-fees text.
+    const usesSpecificFormationText = await page.evaluate(() => {
+      const doc = document.getElementById('proposal-doc');
+      if (!doc) return false;
+      return doc.textContent.includes('honorários de constituição são devidos');
+    });
+
+    expect(usesSpecificFormationText).toBe(false);
+  });
+
   // ── SANITY: Proposal generates without errors ─────────────────────────────
   test('SANITY — Proposal generates and is visible', async ({ page }) => {
     await login(page);

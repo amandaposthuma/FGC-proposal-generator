@@ -6222,12 +6222,15 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
 
   // ── Payment text ──
   const isThirdPartyOnly = (has3rdPartyFS || has3rdPartyTR) && !hasFormation && !hasTransfer && !hasAccounting && !hasSuccession && !hasApostila && !hasMailing && !hasStandalone && !hasCustomAcct;
+  // If proposal mixes formation/transfer with one-time services (apostille, prior-year FS/TR),
+  // use generic text so all services are implicitly covered rather than naming only one type.
+  const hasExtraOneTimeServices = hasApostila || state.fsAnterior || state.trAnterior;
   let payText = '';
   if (isDissolutionOnly || isThirdPartyOnly) payText = '';
   else if (isNotarizationOnly) payText = { pt: 'Os honorários são devidos na aceitação desta proposta, previamente ao início dos serviços.', es: 'Los honorarios son pagaderos en la aceptación de esta propuesta, antes del inicio de los servicios.', en: 'Fees are due upon acceptance of this proposal, prior to the start of services.' }[lang];
   else if (hasFormation && hasTransfer) payText = FGC_CONFIG.paymentText[lang].mixed;
-  else if (hasFormation && hasMaint) payText = FGC_CONFIG.paymentText[lang].formation;
-  else if (hasTransfer && hasMaint) payText = FGC_CONFIG.paymentText[lang].transfer;
+  else if (hasFormation && hasMaint) payText = hasExtraOneTimeServices ? FGC_CONFIG.paymentText[lang].mixed : FGC_CONFIG.paymentText[lang].formation;
+  else if (hasTransfer && hasMaint) payText = hasExtraOneTimeServices ? FGC_CONFIG.paymentText[lang].mixed : FGC_CONFIG.paymentText[lang].transfer;
   else if (hasMaint && !hasFormation && !hasTransfer) payText = FGC_CONFIG.paymentText[lang].maintenanceOnly;
   else payText = FGC_CONFIG.paymentText[lang].mixed;
 
