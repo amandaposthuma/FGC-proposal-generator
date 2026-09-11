@@ -104,7 +104,29 @@ git push origin main
 
 Always validate before pushing — copy JS blocks into a `.js` file and run `node --check` if there's any doubt about syntax.
 
+```bash
+node -e "
+const fs = require('fs'), html = fs.readFileSync('index.html','utf8');
+const s=[]; let i=0;
+while(true){const a=html.indexOf('<script>',i); if(a===-1)break; const b=html.indexOf('</script>',a); s.push(html.substring(a+8,b)); i=b+9;}
+fs.writeFileSync('/tmp/fgc_check.js',s.join('\n'));
+" && node --check /tmp/fgc_check.js && echo "SYNTAX OK"
+```
+
+---
+
+## Client-ready checklist — run before every "it's done"
+
+1. **Test the exact client workflow** — fill form → save draft → reload page → load draft → generate
+2. **Test with prior session state** — have another draft/custom items open first, then load the target draft
+3. **Test with old-format data** — simulate a draft saved before the fix (missing new keys); confirm it loads cleanly
+
 ---
 
 ## Version history
 - **Version June 1** — per-user login, device nickname, draft saving, Notion audit log, local fallback logging, Make.com unbreakable setup
+- **Version June 17** — fixed fsAnterior/trAnterior crash; full draft save/load (custom items + overrides); Observações field (section 4.6); hasScope toggle on custom items; print margin CSS; loadDraft stale-data reset; custom transfer group fix (no more "PRIVATE INVESTMENT COMPANY" on non-PIC items); item ordering fix
+
+## Known draft behavior
+- Drafts saved **before June 17** do not have `customTransfers`/`customOffshore`/etc. keys. Loading them now turns those toggles OFF cleanly (no blank forms). Users must re-save to get the new format.
+- `"Registrar proposta manualmente"` button = retries failed Notion audit log entries stored in `fgc_failed_logs`. Internal use only, not shown to clients.
