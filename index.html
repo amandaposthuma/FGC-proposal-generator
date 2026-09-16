@@ -1262,6 +1262,17 @@
   }
   @media print { #update-banner, .build-stamp { display: none !important; } }
 
+  /* ── Three levels, each visibly subordinate to the one above ──
+     1  Seção NN + Georgia title      (section)
+     2  bold navy sentence case        (group: "O que está incluído")
+     3  smaller, muted                 (one service inside that group)  */
+  #proposal-doc .doc-included-label { font-size: 13px; }
+  #proposal-doc .terms-section-heading.is-scope-item {
+    font-size: 11px; font-weight: 600; color: var(--doc-muted);
+    margin: 16px 0 6px; padding-left: 0;
+  }
+  #proposal-doc .terms-section-heading.is-scope-item + .terms-list { margin-left: 2px; }
+
 </style>
 </head>
 <body>
@@ -1473,6 +1484,43 @@
     </div>
     <div id="req-docs-list"></div>
     <button class="doc-row-add" onclick="addRequiredDoc()">+ Adicionar documento</button>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-section-title">Seção 02 <span class="field-hint">(trabalho pontual)</span></div>
+    <div class="field-group">
+      <label class="field-label">Introdução <span class="field-hint">(acima da tabela)</span></label>
+      <textarea id="f-sec2intro" class="field-input" rows="2" style="resize:vertical;min-height:44px;"
+        oninput="sec2Intro=this.value; debouncedUpdate()"></textarea>
+    </div>
+    <div class="field-group">
+      <label class="field-label">Timeline</label>
+      <textarea id="f-timeline" class="field-input" rows="3" style="resize:vertical;min-height:52px;"
+        oninput="timelineText=this.value; debouncedUpdate()"></textarea>
+    </div>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-section-title">Seção 03 <span class="field-hint">(manutenção anual)</span></div>
+    <div class="field-group">
+      <label class="field-label">Introdução <span class="field-hint">(acima da tabela)</span></label>
+      <textarea id="f-sec3intro" class="field-input" rows="2" style="resize:vertical;min-height:44px;"
+        oninput="sec3Intro=this.value; debouncedUpdate()"></textarea>
+    </div>
+    <div class="field-group">
+      <label class="field-label">Vencimento</label>
+      <textarea id="f-vencimento" class="field-input" rows="3" style="resize:vertical;min-height:52px;"
+        oninput="vencimentoText=this.value; debouncedUpdate()"></textarea>
+    </div>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-section-title">Condições <span class="field-hint">(um item por linha)</span></div>
+    <div class="field-group">
+      <textarea id="f-conditions" class="field-input" rows="3" style="resize:vertical;min-height:52px;"
+        oninput="conditionsText=this.value; debouncedUpdate()"></textarea>
+      <div class="field-hint">{VALIDADE} é substituído pela validade da capa.</div>
+    </div>
   </div>
 
   <div class="sidebar-section">
@@ -5193,7 +5241,7 @@ const DOC_FORMAT = 3;
 // Shown in the sidebar so the running build is always identifiable, and
 // compared against the deployed file so a stale cached copy announces
 // itself instead of silently showing an old proposal format.
-const BUILD = '2026-09-16-d';
+const BUILD = '2026-09-16-g';
 
 function showUpdateBanner() {
   if (document.getElementById('update-banner')) return;
@@ -5214,6 +5262,11 @@ async function checkForUpdate() {
   } catch (e) { /* offline or blocked — stay quiet */ }
 }
 let oneOffTitle        = '';   // Seção 02 title; blank = derive from services
+let sec2Intro          = '';
+let timelineText       = '';
+let sec3Intro          = '';
+let vencimentoText     = '';
+let conditionsText     = '';
 let nextSteps          = '';
 let requiredDocs       = [{ doc: '', desc: '', who: '' }];
 
@@ -5243,7 +5296,7 @@ const DOC_L = {
     annualCoversLabel: 'O que o valor anual cobre',
     notIncludedLabel: 'O que não está incluído',
     conditionsLabel: 'Condições',
-    nextStepsLabel: 'Próximos passos',
+    nextStepsLabel: 'Próximos passos', timelineLabel: 'Timeline', vencimentoLabel: 'Vencimento',
     aceiteIntro: 'Ao assinar, as partes concordam com o escopo e as condições desta proposta.',
     clientParty: 'Cliente', nameLine: 'Nome:', dateLine: 'Data:',
     contactLabel: 'Contato',
@@ -5278,7 +5331,7 @@ const DOC_L = {
     annualCoversLabel: 'Qué cubre el valor anual',
     notIncludedLabel: 'Qué no está incluido',
     conditionsLabel: 'Condiciones',
-    nextStepsLabel: 'Próximos pasos',
+    nextStepsLabel: 'Próximos pasos', timelineLabel: 'Cronograma', vencimentoLabel: 'Vencimiento',
     aceiteIntro: 'Al firmar, las partes aceptan el alcance y las condiciones de esta propuesta.',
     clientParty: 'Cliente', nameLine: 'Nombre:', dateLine: 'Fecha:',
     contactLabel: 'Contacto',
@@ -5313,7 +5366,7 @@ const DOC_L = {
     annualCoversLabel: 'What the annual fee covers',
     notIncludedLabel: 'What is not included',
     conditionsLabel: 'Conditions',
-    nextStepsLabel: 'Next steps',
+    nextStepsLabel: 'Next steps', timelineLabel: 'Timeline', vencimentoLabel: 'Due date',
     aceiteIntro: 'By signing, the parties agree to the scope and conditions of this proposal.',
     clientParty: 'Client', nameLine: 'Name:', dateLine: 'Date:',
     contactLabel: 'Contact',
@@ -5352,6 +5405,11 @@ const FGC_DEFAULTS = {
       '⟦Manutenção anual, se aplicável⟧\n' +
       '⟦Contabilidade anual, se aplicável⟧',
     undRec: 'Concluído o trabalho, sugerimos ⟦o próximo passo recomendado⟧.',
+    sec2Intro: 'Os valores abaixo refletem ⟦a origem dos custos⟧. Valores sujeitos a confirmação final conforme o andamento do processo.',
+    timeline: '⟦Prazo estimado e o que pode afetá-lo: aprovações necessárias, tempo típico de cada etapa e o que acontece depois de obtida cada aprovação.⟧',
+    sec3Intro: 'A manutenção da sociedade é apresentada como um valor anual único, que reúne todas as obrigações recorrentes sob uma só relação.',
+    vencimento: 'O vencimento da anuidade se dará sempre no dia ⟦dia e mês⟧ de todo ano, sendo a primeira em ⟦ano⟧. Emitimos as invoices com antecedência, para que haja tempo hábil de pagamento e de cumprimento dos prazos.',
+    conditions: 'Validade desta proposta: {VALIDADE} dias a partir da data de emissão.\nPremissas: legislação vigente, jurisdição de constituição e dados fornecidos pelo cliente nesta data.\nA contratação formaliza-se por contrato de prestação de serviços específico.',
     nextSteps: 'Alinhamento final de escopo e condições.\nAssinatura do aceite.\nInício dos trabalhos.',
   },
   es: {
@@ -5372,6 +5430,11 @@ const FGC_DEFAULTS = {
       '⟦Mantenimiento anual, si aplica⟧\n' +
       '⟦Contabilidad anual, si aplica⟧',
     undRec: 'Concluido el trabajo, sugerimos ⟦el próximo paso recomendado⟧.',
+    sec2Intro: 'Los valores a continuación reflejan ⟦el origen de los costos⟧. Valores sujetos a confirmación final según el avance del proceso.',
+    timeline: '⟦Plazo estimado y qué puede afectarlo: aprobaciones necesarias, tiempo típico de cada etapa y qué ocurre tras cada aprobación.⟧',
+    sec3Intro: 'El mantenimiento de la sociedad se presenta como un valor anual único, que reúne todas las obligaciones recurrentes en una sola relación.',
+    vencimento: 'El vencimiento de la anualidad será siempre el día ⟦día y mes⟧ de cada año, siendo la primera en ⟦año⟧. Emitimos las facturas con antelación, para que haya tiempo de pago y de cumplimiento de los plazos.',
+    conditions: 'Validez de esta propuesta: {VALIDADE} días desde la fecha de emisión.\nPremisas: legislación vigente, jurisdicción de constitución y datos proporcionados por el cliente en esta fecha.\nLa contratación se formaliza mediante contrato de prestación de servicios específico.',
     nextSteps: 'Alineación final de alcance y condiciones.\nFirma de la aceptación.\nInicio de los trabajos.',
   },
   en: {
@@ -5392,6 +5455,11 @@ const FGC_DEFAULTS = {
       '⟦Annual maintenance, if applicable⟧\n' +
       '⟦Annual accounting, if applicable⟧',
     undRec: 'Once the work is complete, we suggest ⟦the recommended next step⟧.',
+    sec2Intro: 'The amounts below reflect ⟦the origin of the costs⟧. Amounts subject to final confirmation as the process advances.',
+    timeline: '⟦Estimated timing and what can affect it: approvals required, typical duration of each stage, and what follows each approval.⟧',
+    sec3Intro: 'Maintenance of the company is presented as a single annual amount, bringing every recurring obligation under one relationship.',
+    vencimento: 'The annual fee falls due on ⟦day and month⟧ each year, the first in ⟦year⟧. We issue invoices in advance so there is time to pay and to meet the filing deadlines.',
+    conditions: 'Validity of this proposal: {VALIDADE} days from the date of issuance.\nAssumptions: current legislation, jurisdiction of incorporation, and the data provided by the client as of this date.\nEngagement is formalised through a specific services agreement.',
     nextSteps: 'Final alignment of scope and conditions.\nSignature of the acceptance.\nWork begins.',
   },
 };
@@ -5411,6 +5479,11 @@ function applyStandardText() {
     'f-und-rec':    D.undRec,
     'f-docs-intro': dl().docsIntroDefault,
     'f-nextsteps':  D.nextSteps,
+    'f-sec2intro':  D.sec2Intro,
+    'f-timeline':   D.timeline,
+    'f-sec3intro':  D.sec3Intro,
+    'f-vencimento': D.vencimento,
+    'f-conditions': D.conditions,
   };
   Object.keys(map).forEach(id => {
     const el = document.getElementById(id);
@@ -5571,7 +5644,7 @@ function renderRequiredDocs() {
 function coverStatePayload() {
   return {
     coverSubject, refCode, refCodeAuto, validityDays, clientLogo, openingNote,
-    oneOffTitle, nextSteps,
+    oneOffTitle, nextSteps, sec2Intro, timelineText, sec3Intro, vencimentoText, conditionsText,
     understanding: Object.assign({}, understanding),
     requiredDocsIntro,
     requiredDocs: JSON.parse(JSON.stringify(requiredDocs)),
@@ -5587,6 +5660,11 @@ function applyCoverState(src) {
   openingNote       = d.openingNote || '';
   oneOffTitle       = d.oneOffTitle || '';
   nextSteps         = d.nextSteps || '';
+  sec2Intro         = d.sec2Intro || '';
+  timelineText      = d.timelineText || '';
+  sec3Intro         = d.sec3Intro || '';
+  vencimentoText    = d.vencimentoText || '';
+  conditionsText    = d.conditionsText || '';
   understanding     = Object.assign({ what: '', objective: '', scope: '', recommendation: '' }, d.understanding || {});
   requiredDocsIntro = d.requiredDocsIntro || '';
   requiredDocs      = Array.isArray(d.requiredDocs) && d.requiredDocs.length
@@ -5606,6 +5684,11 @@ function syncCoverFields() {
   set('f-docs-intro', requiredDocsIntro);
   set('f-sec2title', oneOffTitle);
   set('f-nextsteps', nextSteps);
+  set('f-sec2intro', sec2Intro);
+  set('f-timeline', timelineText);
+  set('f-sec3intro', sec3Intro);
+  set('f-vencimento', vencimentoText);
+  set('f-conditions', conditionsText);
   const ref = document.getElementById('f-refcode');
   if (ref && !refCodeAuto) ref.value = refCode;
   refreshRefCodeField();
@@ -5618,6 +5701,11 @@ function syncCoverFields() {
 function paras(text) {
   return String(text || '').trim().split(/\n/).filter(function (l) { return l.trim(); })
     .map(function (l) { return `<p>${markTokens(escHtml(l.trim()))}</p>`; }).join('');
+}
+function bulletItems(text) {
+  return String(text || '').split('\n')
+    .map(function (l) { return l.replace(/^\s*[-•▪*]\s*/, '').trim(); })
+    .filter(Boolean);
 }
 function bulletList(text) {
   const items = String(text || '').split('\n')
@@ -7330,7 +7418,7 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
   function buildTermsSection(title, items, note, extraNote, bankNote) {
     return `
       <div class="terms-section">
-        <div class="terms-section-heading">${title}</div>
+        <div class="terms-section-heading is-scope-item">${title}</div>
         <ul class="terms-list">
           ${items.map(i => `<li>${i}</li>`).join('')}
         </ul>
@@ -7477,8 +7565,13 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
   // numbers are assigned here, so build order has to match document order.
   const _termsMarkA = termsHTML.length;
   buildTermsForItems(secMaintItems, state.will ? { extraBullet: { key: 'bviMaint', text: willMaintExtra[lang] } } : null);
-  const termsMaintHTML  = termsHTML.slice(_termsMarkA);
-  const termsOneOffHTML = termsHTML.slice(0, _termsMarkA);
+  function collapseSingleScopeHeading(html) {
+    const count = (html.match(/class="terms-section-heading/g) || []).length;
+    if (count !== 1) return html;   // keep headings when they tell services apart
+    return html.replace(/<div class="terms-section-heading[^"]*">[^<]*<\/div>/, '');
+  }
+  const termsMaintHTML  = collapseSingleScopeHeading(termsHTML.slice(_termsMarkA));
+  const termsOneOffHTML = collapseSingleScopeHeading(termsHTML.slice(0, _termsMarkA));
 
   // ── Payment text ──
   let payText = '';
@@ -7793,6 +7886,36 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
       ${buildAceite(docCtx)}`;
   }
 
+  // ── Not-included list (hoisted: rendered in Seção 03, or Seção 05 when
+  //    there is no annual-maintenance section) ──
+      const clauseSet = isDissolutionOnly ? FGC_CONFIG.dissolucaoClauses[lang] : FGC_CONFIG.clauses[lang];
+      let notIncItems = clauseSet.notIncludedItems;
+      if (!isDissolutionOnly) {
+        const reestruKeywords = { pt: 'Reestruturações', es: 'Reestructuraciones', en: 'Restructurings' };
+        if (!hasPICForm && !hasPICTrans) {
+          notIncItems = notIncItems.filter(i => i !== reestruKeywords[lang]);
+        }
+      }
+      // FL dissolution includes Tax Return as a scope item — remove it from not-included list
+      if (isDissolutionOnly && state.dissolucaoFL && !state.dissolucaoDE) {
+        const trKeywords = { pt: 'Preparação de Tax Return final', es: 'Preparación de Tax Return final', en: 'Preparation of final Tax Return' };
+        notIncItems = notIncItems.filter(i => i !== trKeywords[lang]);
+      }
+      // When notarization is selected, remove it from the "not included" list (courier stays)
+      if (hasApostila && !isNotarizationOnly) {
+        const apostilaKeywords = { pt: 'Notarizações e apostilamentos', es: 'Notarizaciones y apostillados', en: 'Notarizations and apostilles' };
+        notIncItems = notIncItems.filter(i => i !== apostilaKeywords[lang]);
+      }
+      // Notarization-only proposals: remove items irrelevant to standalone notarization
+      if (isNotarizationOnly) {
+        const removeForNotarization = {
+          pt: ['Elaboração de atas (aportes, redução de capital, entre outros)', 'Certificados (Good Standing, Incumbency)', 'Reestruturações', 'Notarizações e apostilamentos', 'Serviços de courier/postagem'],
+          es: ['Elaboración de actas (aportes, reducción de capital, entre otros)', 'Certificados (Good Standing, Incumbency)', 'Reestructuraciones', 'Notarizaciones y apostillados', 'Servicios de courier/correo'],
+          en: ['Preparation of minutes (capital contributions, capital reductions, among others)', 'Certificates (Good Standing, Incumbency)', 'Restructurings', 'Notarizations and apostilles', 'Courier/postage services'],
+        };
+        notIncItems = notIncItems.filter(i => !removeForNotarization[lang].includes(i));
+      }
+
   // ── Assemble document ──
   const docHTML = `
     ${buildCover(docCtx)}
@@ -7823,6 +7946,7 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
       ${(hasOneOffFees || termsOneOffHTML) ? `
       <div class="doc-section">
         ${secHead(nextSecNo(), oneOffSecTitle)}
+        ${sec2Intro.trim() ? `<div class="doc-note-body">${paras(sec2Intro)}</div>` : ''}
 
         ${hasSec1Content ? `
           ${sec1SubLabel === oneOffSecTitle ? '' : `<div class="doc-section-subheader">${sec1SubLabel}</div>`}
@@ -7862,6 +7986,10 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
           <div class="doc-block-label doc-included-label">${dl().includedLabel}</div>
           ${termsOneOffHTML}
         ` : ''}
+        ${timelineText.trim() ? `
+          <div class="doc-block-label doc-included-label">${dl().timelineLabel}</div>
+          <div class="doc-note-body">${paras(timelineText)}</div>
+        ` : ''}
       </div>
       ` : ''}
 
@@ -7869,6 +7997,7 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
       ${secMaintItems.length > 0 ? `
       <div class="doc-section">
         ${secHead(nextSecNo(), dl().maintTitle)}
+        ${sec3Intro.trim() ? `<div class="doc-note-body">${paras(sec3Intro)}</div>` : ''}
         ${secMaintPIC.length > 0 ? macroHeader(L.macroPIC) + buildFeeTable(secMaintPIC) : ''}
         ${secMaintUS.length > 0  ? macroHeader(L.macroUS)  + buildFeeTable(secMaintUS)  : ''}
         ${secMaintOther.filter(it => it.key === 'trustMaint').length > 0 ? macroHeader({ pt: 'Share Trust', es: 'Share Trust', en: 'Share Trust' }[lang]) + buildFeeTable(secMaintOther.filter(it => it.key === 'trustMaint')) : ''}
@@ -7878,38 +8007,17 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
           <div class="doc-block-label doc-included-label">${dl().annualCoversLabel}</div>
           ${termsMaintHTML}
         ` : ''}
+        <div class="doc-block-label doc-included-label">${dl().notIncludedLabel}</div>
+        <ul class="terms-list">${notIncItems.map(i => '<li>' + i + '</li>').join('')}</ul>
+        ${vencimentoText.trim() ? `
+          <div class="doc-block-label doc-included-label">${dl().vencimentoLabel}</div>
+          <div class="doc-note-body">${paras(vencimentoText)}</div>
+        ` : ''}
       </div>
       ` : ''}
 
       <!-- Other not included (US-only proposals exclude "Reestruturações" per master templates) -->
       ${(() => {
-        const clauseSet = isDissolutionOnly ? FGC_CONFIG.dissolucaoClauses[lang] : FGC_CONFIG.clauses[lang];
-        let notIncItems = clauseSet.notIncludedItems;
-        if (!isDissolutionOnly) {
-          const reestruKeywords = { pt: 'Reestruturações', es: 'Reestructuraciones', en: 'Restructurings' };
-          if (!hasPICForm && !hasPICTrans) {
-            notIncItems = notIncItems.filter(i => i !== reestruKeywords[lang]);
-          }
-        }
-        // FL dissolution includes Tax Return as a scope item — remove it from not-included list
-        if (isDissolutionOnly && state.dissolucaoFL && !state.dissolucaoDE) {
-          const trKeywords = { pt: 'Preparação de Tax Return final', es: 'Preparación de Tax Return final', en: 'Preparation of final Tax Return' };
-          notIncItems = notIncItems.filter(i => i !== trKeywords[lang]);
-        }
-        // When notarization is selected, remove it from the "not included" list (courier stays)
-        if (hasApostila && !isNotarizationOnly) {
-          const apostilaKeywords = { pt: 'Notarizações e apostilamentos', es: 'Notarizaciones y apostillados', en: 'Notarizations and apostilles' };
-          notIncItems = notIncItems.filter(i => i !== apostilaKeywords[lang]);
-        }
-        // Notarization-only proposals: remove items irrelevant to standalone notarization
-        if (isNotarizationOnly) {
-          const removeForNotarization = {
-            pt: ['Elaboração de atas (aportes, redução de capital, entre outros)', 'Certificados (Good Standing, Incumbency)', 'Reestruturações', 'Notarizações e apostilamentos', 'Serviços de courier/postagem'],
-            es: ['Elaboración de actas (aportes, reducción de capital, entre otros)', 'Certificados (Good Standing, Incumbency)', 'Reestructuraciones', 'Notarizaciones y apostillados', 'Servicios de courier/correo'],
-            en: ['Preparation of minutes (capital contributions, capital reductions, among others)', 'Certificates (Good Standing, Incumbency)', 'Restructurings', 'Notarizations and apostilles', 'Courier/postage services'],
-          };
-          notIncItems = notIncItems.filter(i => !removeForNotarization[lang].includes(i));
-        }
         return `
       <!-- SEÇÃO: Documentos necessários -->
       ${buildRequiredDocsSection(nextSecNo())}
@@ -7918,12 +8026,12 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
       <div class="doc-section">
         ${(secTCNum = Number(nextSecNo()), secHead(String(secTCNum).padStart(2, '0'), dl().termsNextTitle))}
 
-        <div class="doc-block">
-          <div class="doc-block-label">${dl().notIncludedLabel}</div>
-          <ul class="terms-list">
-            ${notIncItems.map(i => '<li>' + i + '</li>').join('')}
-          </ul>
-        </div>
+        <div class="doc-block-label doc-included-label">${dl().conditionsLabel}</div>
+        <ul class="terms-list">${bulletItems(conditionsText.replace(/\{VALIDADE\}/g, String(validityDays))).map(i => '<li>' + i + '</li>').join('')}</ul>
+
+        ${secMaintItems.length > 0 ? '' : `
+        <div class="doc-block-label doc-included-label">${dl().notIncludedLabel}</div>
+        <ul class="terms-list">${notIncItems.map(i => '<li>' + i + '</li>').join('')}</ul>`}
 
         <div class="terms-section">
           <div class="terms-section-heading">${clauseSet.payment.title}</div>
@@ -7964,7 +8072,7 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
 
         <div class="doc-block">
           <div class="doc-block-label doc-included-label">${dl().nextStepsLabel}</div>
-          ${bulletList(nextSteps)}
+          <ul class="terms-list">${bulletItems(nextSteps).map(i => '<li>' + escHtml(i) + '</li>').join('')}</ul>
         </div>
 
         ${buildAceiteSection()}

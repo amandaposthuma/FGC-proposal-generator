@@ -78,10 +78,10 @@ Section titles are the template's, not invented. Document order:
 |---|-------|----------|
 | — | Apresentação → *Uma palavra antes da proposta* | opening note + signature |
 | 01 | Entendimento e escopo | O que entendemos · Objetivo · Escopo · Sugestão |
-| 02 | *named after the service* | one-off fee tables · O que está incluído |
-| 03 | Manutenção anual | annual fee table · O que o valor anual cobre |
+| 02 | *named after the service* | intro · fee tables · O que está incluído · Timeline |
+| 03 | Manutenção anual | intro · annual table · O que o valor anual cobre · O que não está incluído · Vencimento |
 | 04 | Documentos necessários | KYC document table |
-| 05 | Termos e próximos passos | O que não está incluído · Condições · Próximos passos · Aceite |
+| 05 | Termos e próximos passos | Condições · clause blocks · Próximos passos · Aceite |
 
 The template titles its Seção 02 after the work itself ("Reinstatement"), so the
 generator derives that title from the dominant selected service (Constituição,
@@ -220,6 +220,7 @@ fs.writeFileSync('/tmp/fgc_check.js',s.join('\n'));
 - **Version Sept 16 (c)** — fee tables to the source's `Descrição | Modelo | Investimento` columns (46/22/32) with `Subtotal estimado` / `Total anual estimado` as ruled rows; added `DOC_FORMAT` draft stamping so drafts saved under an older structure regenerate instead of replaying stale HTML.
 - **Version Sept 16 (d)** — collapsed two competing heading systems into one: removed all `N.N` decimal numbering (section, scope and clause headings), unified every sub-heading to the source's bold navy sentence-case block label, flattened the clause groups to siblings of Próximos passos and Aceite, and re-ordered scope building to match render order so inline item numbers run 1-2-3 down the page.
 - **Version Sept 16 (e)** — added `BUILD` stamp, no-cache meta tags and a self-check that offers a reload when the deployed build differs. This was the reason several shipped fixes appeared not to have landed.
+- **Version Sept 16 (g)** — remaining template prose added: Seção 02 intro and Timeline, Seção 03 intro and Vencimento, and the Condições list (with `{VALIDADE}` kept in sync with the cover). `O que não está incluído` moved into Seção 03 as the source has it, falling back to Seção 05 when there is no maintenance section. Scope headings collapse when a section has only one service, so bullets sit directly under the group label.
 - **Version June 17** — fixed fsAnterior/trAnterior crash; full draft save/load (custom items + overrides); Observações field (section 4.6); hasScope toggle on custom items; print margin CSS; loadDraft stale-data reset; custom transfer group fix (no more "PRIVATE INVESTMENT COMPANY" on non-PIC items); item ordering fix
 
 ## Known draft behavior
