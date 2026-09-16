@@ -1196,6 +1196,50 @@
     padding: 6px 0; margin: 20px 0 8px;
   }
 
+  /* ══════════════════════════════════════════════════════════════
+     HEADING HIERARCHY — two levels, one system.
+     The source has no decimal numbering anywhere; it uses a mono
+     "Seção NN" eyebrow over a Georgia title for sections, and a
+     bold navy sentence-case run-in label for everything beneath.
+       section title   Georgia 22pt #041725, navy rule under
+       block label     Arial 10pt bold #041725, sentence case, no rule
+     Item numbers appear only inline in the fee Descrição column.
+     ══════════════════════════════════════════════════════════════ */
+  #proposal-doc .doc-block-label,
+  #proposal-doc .doc-included-label,
+  #proposal-doc .terms-section-heading,
+  #proposal-doc .doc-section-subheader {
+    font-family: var(--doc-sans);
+    font-size: 12px; font-weight: 700; letter-spacing: 0;
+    text-transform: none; color: var(--doc-ink);
+    border-bottom: none; padding: 0; margin: 24px 0 8px;
+  }
+  /* First label in a section sits tight under the section rule */
+  #proposal-doc .doc-sec-head + .doc-block,
+  #proposal-doc .doc-sec-head + .doc-block-label { margin-top: 0; }
+  #proposal-doc .doc-block > .doc-block-label:first-child { margin-top: 0; }
+  #proposal-doc .doc-block { margin-bottom: 18px; }
+
+  /* "O que está incluído" opens a group, so it carries slightly more weight */
+  #proposal-doc .doc-included-label { font-size: 13px; margin-top: 28px; }
+
+  /* Objetivo is the one label the source rules — a hairline above it */
+  #proposal-doc .doc-block-label.is-objective {
+    color: var(--doc-accent); text-transform: uppercase;
+    font-size: 10px; letter-spacing: 1.2px;
+    border-top: 1px solid var(--doc-rule-row);
+    padding-top: 14px; margin-top: 22px;
+  }
+
+  /* Entity grouping inside a fee table stays subordinate to both levels */
+  #proposal-doc .macro-category {
+    font-family: var(--doc-mono);
+    font-size: 8px; font-weight: 500; letter-spacing: 1.6px;
+    text-transform: uppercase; color: var(--doc-muted-2);
+    border-bottom: none; padding: 0; margin: 18px 0 6px;
+  }
+  #proposal-doc .terms-section { margin-bottom: 0; }
+
 </style>
 </head>
 <body>
@@ -5627,7 +5671,7 @@ function buildEntendimento(num) {
         ${u.what.trim() ? paras(u.what) : fillPrompt(D.promptWhat)}
       </div>
       <div class="doc-block">
-        <div class="doc-block-label">${D.objectiveLabel}</div>
+        <div class="doc-block-label is-objective">${D.objectiveLabel}</div>
         ${u.objective.trim() ? paras(u.objective) : fillPrompt(D.promptObjective)}
       </div>
       <div class="doc-block">
@@ -7104,19 +7148,19 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
       : hasFormation
         ? { pt: 'Constituição', es: 'Constitución', en: 'Formation' }[lang]
         : { pt: 'Transferência', es: 'Transferencia', en: 'Transfer' }[lang];
-    sec1Items.forEach((it) => { it.num = `1.${++feeItemSub}`; });
+    sec1Items.forEach((it) => { it.num = `${++feeItemSub}`; });
   }
 
   let secSuccSubLabel = '';
   if (secSuccItems.length > 0) {
     secSuccSubLabel = L.secSuccessionLabel;
-    secSuccItems.forEach((it) => { it.num = `1.${++feeItemSub}`; });
+    secSuccItems.forEach((it) => { it.num = `${++feeItemSub}`; });
   }
 
   let secMaintSubLabel = '';
   if (secMaintItems.length > 0) {
     secMaintSubLabel = L.secMaintLabel;
-    secMaintItems.forEach((it) => { it.num = `1.${++feeItemSub}`; });
+    secMaintItems.forEach((it) => { it.num = `${++feeItemSub}`; });
   }
 
   let secAcctSubLabel = '';
@@ -7124,7 +7168,7 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
     secAcctSubLabel = { pt: 'Contábil e Fiscal', es: 'Contable y Fiscal', en: 'Accounting & Tax' }[lang];
     secAcctItems.forEach((it) => {
       if (!it.shareRef) feeItemSub++;
-      it.num = `1.${feeItemSub}`;
+      it.num = `${feeItemSub}`;
     });
   }
 
@@ -7139,7 +7183,7 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
         : hasDissolvInSec3
           ? { pt: 'Dissolução', es: 'Disolución', en: 'Dissolution' }[lang]
           : L.secOtherLabel;
-    sec3Items.forEach((it, i) => { it.num = `1.${++feeItemSub}`; });
+    sec3Items.forEach((it, i) => { it.num = `${++feeItemSub}`; });
   }
 
   // Scope = II, Not Included = III, T&C = IV
@@ -7260,12 +7304,12 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
     items.forEach(it => {
       // shareRef items (e.g. AFR row) reuse the previous item's ref, no separate terms section
       if (it.shareRef) {
-        it.termsRef = `${secTermsNum}.${termsSub}`;
+        it.termsRef = `${termsSub}`;
         return;
       }
       // Reestru: simplified single-section approach
       if (it.key === 'reestru') {
-        const ref = `${secTermsNum}.${++termsSub}`;
+        const ref = `${++termsSub}`;
         it.termsRef = ref;
         const _lang = lang;
         const _defaultDescs = {
@@ -7301,13 +7345,13 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
         }
         const _defaultLabels = { pt: 'Reestruturação Societária', es: 'Reestructuración Societaria', en: 'Corporate Restructuring' };
         const _title = _itemReestruLabel.trim() || _defaultLabels[_lang];
-        termsHTML += buildTermsSection(`${ref} — ${_title}`, _items, null, null, null);
+        termsHTML += buildTermsSection(`${ref}. ${_title}`, _items, null, null, null);
         termsHTML += `<div class="terms-note" style="margin-top:6px;font-style:italic;">${_fabianaNote[_lang]}</div>`;
         return;
       }
       // Custom US state: generic formation scope with state name substituted
       if (it.key === 'customUS') {
-        const ref = `${secTermsNum}.${++termsSub}`;
+        const ref = `${++termsSub}`;
         it.termsRef = ref;
         const _stateName = it.stateName || 'Custom State';
         const _custTitle = { pt: `Constituição ${_stateName} LLC`, es: `Constitución ${_stateName} LLC`, en: `${_stateName} LLC Formation` }[lang];
@@ -7316,12 +7360,12 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
           es: ['Búsqueda del nombre de la empresa','Registro en el Department of State','Preparación de los documentos de incorporación','Standard Operating Agreement','Primer año de fees del Agente Registrado','Obtención de Tax ID/EIN (si es necesario)'],
           en: ['Company name search','Registration with the Department of State','Preparation of incorporation documents','Standard Operating Agreement','First year Registered Agent fees','Tax ID/EIN obtainment (if required)'],
         }[lang];
-        termsHTML += buildTermsSection(`${ref} — ${_custTitle}`, _custItems, null, null, null);
+        termsHTML += buildTermsSection(`${ref}. ${_custTitle}`, _custItems, null, null, null);
         return;
       }
       // Custom US state maint
       if (it.key === 'customUSMaint') {
-        const ref = `${secTermsNum}.${++termsSub}`;
+        const ref = `${++termsSub}`;
         it.termsRef = ref;
         const _stateName = it.stateName || 'Custom State';
         const _custMaintTitle = { pt: `Manutenção Anual ${_stateName} LLC`, es: `Mantenimiento Anual ${_stateName} LLC`, en: `${_stateName} LLC Annual Maintenance` }[lang];
@@ -7331,7 +7375,7 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
           en: ['Government Fee: Includes financial obligations required by the government to maintain the company in good standing','Local Registered Agent Fee: Refers to the maintenance of a local representative for the company, ensuring effective management and compliance with administrative procedures','Annual Compliance: Encompasses the verification and fulfillment of requirements necessary to ensure the company\'s conformity with legal authorities'],
         }[lang];
         const _custMaintNote = { pt: 'A elaboração do Tax Return não está incluída na taxa de manutenção anual.', es: 'La elaboración del Tax Return no está incluida en la tasa de mantenimiento anual.', en: 'Tax Return preparation is not included in the annual maintenance fee.' }[lang];
-        termsHTML += buildTermsSection(`${ref} — ${_custMaintTitle}`, _custMaintItems, _custMaintNote, null, null);
+        termsHTML += buildTermsSection(`${ref}. ${_custMaintTitle}`, _custMaintItems, _custMaintNote, null, null);
         return;
       }
       // Custom bespoke items — render scope if provided
@@ -7339,14 +7383,14 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
         if (!it.customScope || !it.customScope.trim()) { it.noRef = true; return; }
         const bullets = it.customScope.split('\n').map(l => l.trim()).filter(Boolean);
         if (bullets.length === 0) { it.noRef = true; return; }
-        const ref = `${secTermsNum}.${++termsSub}`;
+        const ref = `${++termsSub}`;
         it.termsRef = ref;
-        termsHTML += buildTermsSection(`${ref} — ${it.label}`, bullets.map(b => highlightPlaceholders(b)), null, null, null);
+        termsHTML += buildTermsSection(`${ref}. ${it.label}`, bullets.map(b => highlightPlaceholders(b)), null, null, null);
         return;
       }
       const m = getTerm(it.key);
       if (m) {
-        const ref = `${secTermsNum}.${++termsSub}`;
+        const ref = `${++termsSub}`;
         it.termsRef = ref;
         // Use scope override if set, otherwise standard items
         let itemsList = scopeOverrides[it.key] !== undefined
@@ -7362,7 +7406,7 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
         const isPartner = opts && opts.partnerKey === it.key;
         // FS note is BVI-specific (AFR submission); only show when a BVI entity is present
         const scopeNote = (it.key === 'fs' && !hasBVIEntity) ? null : m.note;
-        termsHTML += buildTermsSection(`${ref} — ${m.title}`, itemsList, isPartner ? null : scopeNote, isPartner ? scopeNote : null, m.bankNote || null);
+        termsHTML += buildTermsSection(`${ref}. ${m.title}`, itemsList, isPartner ? null : scopeNote, isPartner ? scopeNote : null, m.bankNote || null);
       }
     });
   }
@@ -7377,16 +7421,16 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
     es: 'Gestión de plazos críticos, con alertas proactivas para prevenir multas o penalidades',
     en: 'Management of critical deadlines, with proactive alerts to prevent fines or penalties',
   };
-  const _termsMarkA = termsHTML.length;
-  buildTermsForItems(secMaintItems, state.will ? { extraBullet: { key: 'bviMaint', text: willMaintExtra[lang] } } : null);
-  const _termsMarkB = termsHTML.length;
   // Accounting terms
   buildTermsForItems(secAcctItems, { partnerKey: 'tr' });
   // Sec III terms
   buildTermsForItems(sec3Items);
-  // Annual-maintenance scope is rendered under Seção 03; everything else under Seção 02
-  const termsMaintHTML  = termsHTML.slice(_termsMarkA, _termsMarkB);
-  const termsOneOffHTML = termsHTML.slice(0, _termsMarkA) + termsHTML.slice(_termsMarkB);
+  // Maintenance is built last because it renders last, under Seção 03 — item
+  // numbers are assigned here, so build order has to match document order.
+  const _termsMarkA = termsHTML.length;
+  buildTermsForItems(secMaintItems, state.will ? { extraBullet: { key: 'bviMaint', text: willMaintExtra[lang] } } : null);
+  const termsMaintHTML  = termsHTML.slice(_termsMarkA);
+  const termsOneOffHTML = termsHTML.slice(0, _termsMarkA);
 
   // ── Payment text ──
   let payText = '';
@@ -7543,8 +7587,7 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
       return `
       <tr>
         <td>
-          <div class="row-label">${it.label}</div>
-          ${!it.noRef ? `<div class="row-ref">${L.colRef} ${it.termsRef || it.num}</div>` : ''}
+          <div class="row-label">${(!it.noRef && !it.shareRef && (it.termsRef || it.num)) ? (it.termsRef || it.num) + '. ' : ''}${it.label}</div>
         </td>
         <td>
           <div class="row-payment">${(it.pay||'').split('\n')[0]}</div>
@@ -7734,7 +7777,7 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
         ${secHead(nextSecNo(), oneOffSecTitle)}
 
         ${hasSec1Content ? `
-          <div class="doc-section-subheader" style="margin-top:24px;">${sec1SubLabel}</div>
+          ${sec1SubLabel === oneOffSecTitle ? '' : `<div class="doc-section-subheader">${sec1SubLabel}</div>`}
           ${sec1PIC.length > 0   ? macroHeader(L.macroPIC) + buildFeeTable(sec1PIC)   : ''}
           ${sec1US.length > 0    ? macroHeader(L.macroUS)  + buildFeeTable(sec1US)    : ''}
           ${sec1Other.length > 0 ? buildFeeTable(sec1Other) : ''}
@@ -7742,13 +7785,13 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
         ` : ''}
 
         ${secSuccItems.length > 0 ? `
-          <div class="doc-section-subheader" style="margin-top:20px;">${secSuccSubLabel}</div>
+          <div class="doc-section-subheader">${secSuccSubLabel}</div>
           ${buildFeeTable(secSuccItems)}
           ${buildSectionSubtotal(secSuccItems)}
         ` : ''}
 
         ${secAcctItems.length > 0 ? `
-          <div class="doc-section-subheader" style="margin-top:20px;">${secAcctSubLabel}</div>
+          <div class="doc-section-subheader">${secAcctSubLabel}</div>
           ${secAcctPIC.length > 0 ? macroHeader(L.macroPIC) + buildFeeTable(secAcctPIC) : ''}
           ${secAcctUS.length > 0  ? macroHeader(L.macroUS)  + buildFeeTable(secAcctUS)  : ''}
           ${secAcctOther.length > 0 ? buildFeeTable(secAcctOther) : ''}
@@ -7756,7 +7799,7 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
         ` : ''}
 
         ${sec3Items.length > 0 ? `
-          <div class="doc-section-subheader" style="margin-top:20px;">${sec3SubLabel}</div>
+          <div class="doc-section-subheader">${sec3SubLabel}</div>
           ${buildFeeTable(sec3Items)}
         ` : ''}
 
@@ -7834,9 +7877,8 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
           </ul>
         </div>
 
-        <div class="doc-block-label doc-included-label">${dl().conditionsLabel}</div>
         <div class="terms-section">
-          <div class="terms-section-heading">${secTCNum}.1 — ${clauseSet.payment.title}</div>
+          <div class="terms-section-heading">${clauseSet.payment.title}</div>
           <ul class="terms-list">${payText ? payText.replace(/\. /g, '.|').split('|').filter(Boolean).map(s => '<li>' + s + '</li>').join('') : ''}${(() => {
             const paymentKeywordsToRemove = {
               pt: ['manutenção anuais', 'Demonstrações Financeiras, AFR e Tax Return', 'Pagamentos em atraso estão sujeitos a multas'],
@@ -7851,24 +7893,24 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
           })()}</ul>
         </div>
         <div class="terms-section">
-          <div class="terms-section-heading">${secTCNum}.2 — ${clauseSet.timelines.title}</div>
+          <div class="terms-section-heading">${clauseSet.timelines.title}</div>
           <ul class="terms-list">${timelinesItems.map(i => '<li>' + i + '</li>').join('')}</ul>
         </div>
         <div class="terms-section">
-          <div class="terms-section-heading">${secTCNum}.3 — ${clauseSet.compliance.title}</div>
+          <div class="terms-section-heading">${clauseSet.compliance.title}</div>
           <ul class="terms-list">${clauseSet.compliance.items.map(i => '<li>' + i + '</li>').join('')}</ul>
         </div>
         <div class="terms-section">
-          <div class="terms-section-heading">${secTCNum}.4 — ${clauseSet.representation.title}</div>
+          <div class="terms-section-heading">${clauseSet.representation.title}</div>
           <ul class="terms-list">${clauseSet.representation.items.map(i => '<li>' + i + '</li>').join('')}</ul>
         </div>
         <div class="terms-section">
-          <div class="terms-section-heading">${secTCNum}.5 — ${clauseSet.legalChanges.title}</div>
+          <div class="terms-section-heading">${clauseSet.legalChanges.title}</div>
           <ul class="terms-list">${clauseSet.legalChanges.items.map(i => '<li>' + i + '</li>').join('')}</ul>
         </div>
         ${proposalNotes.trim() ? `
         <div class="terms-section">
-          <div class="terms-section-heading">${secTCNum}.6 — ${{ pt: 'Observações', es: 'Observaciones', en: 'Observations' }[lang]}</div>
+          <div class="terms-section-heading">${{ pt: 'Observações', es: 'Observaciones', en: 'Observations' }[lang]}</div>
           <p style="font-size:12px;line-height:1.65;color:var(--text);margin:0;">${proposalNotes.trim().replace(/\n/g, '<br>')}</p>
         </div>` : ''}
 

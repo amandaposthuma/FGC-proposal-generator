@@ -92,6 +92,24 @@ Section numbers are assigned by `nextSecNo()` as the document renders, so an
 empty optional section never leaves a gap. `secTCNum` is captured at render time
 so the `6.1 / 6.2 …` sub-numbering always tracks its own section.
 
+**Heading hierarchy — two levels, no decimals.** The source has no `5.1`-style
+numbering anywhere, so the generator has none either:
+
+| Level | Style | Used for |
+|-------|-------|----------|
+| Section | mono `Seção NN` eyebrow + Georgia 21px navy + navy rule | the six sections |
+| Block | Arial 12px **bold navy, sentence case, no rule** | every sub-heading |
+
+`.doc-block-label`, `.doc-included-label`, `.terms-section-heading` and
+`.doc-section-subheader` all resolve to the same block style — check with
+`getComputedStyle` that they return one unique value before shipping a change.
+`Objetivo` is the one exception the source itself rules (terracotta, hairline above).
+
+**Item numbers** appear only inline in the fee `Descrição` column (`1. …`), mirrored
+in the matching scope heading. They come from `termsSub` in `buildTermsForItems`,
+so **build order must match render order** — maintenance is built last because it
+renders last, under Seção 03.
+
 **Always-on sections.** Entendimento e escopo and Documentos necessários render
 on every proposal. When a field is empty the document shows a terracotta dashed
 `.doc-placeholder` prompt instead of silently omitting it.
@@ -187,6 +205,7 @@ fs.writeFileSync('/tmp/fgc_check.js',s.join('\n'));
 - **Version Sept 16** — template-fidelity pass: cover metadata rebuilt as ruled label/value rows (44%/56%, matching the source table); all document rules taken from the docx (`#041725` 1pt headers, `#D5D8DA` 0.5pt rows, `#DAD5CC` cover); cell shading removed everywhere (the source has none); one square bullet marker across every list; standard house text pre-fills the opening note and Entendimento e escopo, with `⟦tokens⟧` highlighted until filled.
 - **Version Sept 16 (b)** — section titles matched to the template: annual maintenance split out as its own `Seção 03`, Seção 02 named after the service (derived, overridable), `Aceite` demoted to a block inside `Termos e próximos passos`, scope split into "O que está incluído" / "O que o valor anual cobre", added "Condições" and "Próximos passos".
 - **Version Sept 16 (c)** — fee tables to the source's `Descrição | Modelo | Investimento` columns (46/22/32) with `Subtotal estimado` / `Total anual estimado` as ruled rows; added `DOC_FORMAT` draft stamping so drafts saved under an older structure regenerate instead of replaying stale HTML.
+- **Version Sept 16 (d)** — collapsed two competing heading systems into one: removed all `N.N` decimal numbering (section, scope and clause headings), unified every sub-heading to the source's bold navy sentence-case block label, flattened the clause groups to siblings of Próximos passos and Aceite, and re-ordered scope building to match render order so inline item numbers run 1-2-3 down the page.
 - **Version June 17** — fixed fsAnterior/trAnterior crash; full draft save/load (custom items + overrides); Observações field (section 4.6); hasScope toggle on custom items; print margin CSS; loadDraft stale-data reset; custom transfer group fix (no more "PRIVATE INVESTMENT COMPANY" on non-PIC items); item ordering fix
 
 ## Known draft behavior
