@@ -1314,7 +1314,7 @@
     <div class="user-modal-desc">Give this device a nickname so the proposal log shows where proposals were created.</div>
     <input type="text" id="user-modal-input" class="user-modal-input" placeholder="e.g. Claudia's MacBook, Front Desk iPad" maxlength="60" onkeydown="if(event.key==='Enter') confirmDeviceName()">
     <button class="user-modal-btn" onclick="confirmDeviceName()">Continue</button>
-    <div class="user-modal-note">Stored only on this device · Never appears on proposals</div>
+    <div class="user-modal-note">Stored only on this device. Never appears on proposals.</div>
   </div>
 </div>
 
@@ -1471,7 +1471,7 @@
         oninput="understanding.scope=this.value; debouncedUpdate()"></textarea>
     </div>
     <div class="field-group">
-      <label class="field-label">Sugestão · recomendação <span class="field-hint">(opcional)</span></label>
+      <label class="field-label">Recomendação <span class="field-hint">(opcional)</span></label>
       <textarea id="f-und-rec" class="field-input" rows="2" style="resize:vertical;min-height:44px;"
         placeholder="O próximo passo que sugerimos..."
         oninput="understanding.recommendation=this.value; debouncedUpdate()"></textarea>
@@ -5245,7 +5245,7 @@ const DOC_FORMAT = 3;
 // Shown in the sidebar so the running build is always identifiable, and
 // compared against the deployed file so a stale cached copy announces
 // itself instead of silently showing an old proposal format.
-const BUILD = '2026-09-16-v';
+const BUILD = '2026-09-16-x';
 
 function showUpdateBanner() {
   if (document.getElementById('update-banner')) return;
@@ -5281,12 +5281,12 @@ const DOC_L = {
     preparedFor: 'Preparado para', preparedBy: 'Preparado por',
     date: 'Data', validity: 'Validade', ref: 'Referência',
     validityFmt: d => `${d} dias a partir da emissão`,
-    runningHeader: 'Proposta comercial · Confidencial',
+    runningHeader: 'Proposta comercial &nbsp;&nbsp; Confidencial',
     apresentacao: 'Apresentação', apresentacaoTitle: 'Uma palavra antes da proposta',
     secao: 'Seção',
     entendimento: 'Entendimento e escopo',
     whatLabel: 'O que entendemos', objectiveLabel: 'Objetivo',
-    scopeLabel: 'Escopo', recLabel: 'Sugestão · recomendação',
+    scopeLabel: 'Escopo', recLabel: 'Recomendação',
     docsTitle: 'Documentos necessários',
     docsIntroDefault: 'Documentos solicitados por acionista e diretor da sociedade, necessários para a atualização de KYC.',
     colDoc: 'Documento', colDesc: 'Descrição', colWho: 'Aplicável a',
@@ -5316,12 +5316,12 @@ const DOC_L = {
     preparedFor: 'Preparado para', preparedBy: 'Preparado por',
     date: 'Fecha', validity: 'Validez', ref: 'Referencia',
     validityFmt: d => `${d} días desde la emisión`,
-    runningHeader: 'Propuesta comercial · Confidencial',
+    runningHeader: 'Propuesta comercial &nbsp;&nbsp; Confidencial',
     apresentacao: 'Presentación', apresentacaoTitle: 'Unas palabras antes de la propuesta',
     secao: 'Sección',
     entendimento: 'Entendimiento y alcance',
     whatLabel: 'Lo que entendemos', objectiveLabel: 'Objetivo',
-    scopeLabel: 'Alcance', recLabel: 'Sugerencia · recomendación',
+    scopeLabel: 'Alcance', recLabel: 'Recomendación',
     docsTitle: 'Documentos necesarios',
     docsIntroDefault: 'Documentos solicitados por accionista y director de la sociedad, necesarios para la actualización de KYC.',
     colDoc: 'Documento', colDesc: 'Descripción', colWho: 'Aplicable a',
@@ -5351,12 +5351,12 @@ const DOC_L = {
     preparedFor: 'Prepared for', preparedBy: 'Prepared by',
     date: 'Date', validity: 'Validity', ref: 'Reference',
     validityFmt: d => `${d} days from issuance`,
-    runningHeader: 'Commercial proposal · Confidential',
+    runningHeader: 'Commercial proposal &nbsp;&nbsp; Confidential',
     apresentacao: 'Introduction', apresentacaoTitle: 'A word before the proposal',
     secao: 'Section',
     entendimento: 'Understanding and scope',
     whatLabel: 'What we understand', objectiveLabel: 'Objective',
-    scopeLabel: 'Scope', recLabel: 'Suggestion · recommendation',
+    scopeLabel: 'Scope', recLabel: 'Recommendation',
     docsTitle: 'Required documents',
     docsIntroDefault: 'Documents requested from the shareholder and director of the company, required for the KYC update.',
     colDoc: 'Document', colDesc: 'Description', colWho: 'Applies to',
@@ -5939,7 +5939,7 @@ function buildAceite(ctx) {
         </div>
       </div>
       <div class="doc-aceite-contact">
-        <strong>${D.contactLabel}</strong> &nbsp; ${escHtml(ctx.signerEmail)} &nbsp;·&nbsp; +1 305 432 3009
+        <strong>${D.contactLabel}</strong> &nbsp;&nbsp; ${escHtml(ctx.signerEmail)} &nbsp;&nbsp;&nbsp; +1 305 432 3009
       </div>
       <div class="doc-confidential">${escHtml(D.confidential)}</div>
     </div>`;
@@ -8083,7 +8083,7 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
       <div class="doc-logo">${triva
         ? `<span style="display:inline-flex;align-items:center;"><img src="${LOGO_TRIVA}" alt="Triva" style="height:16px;display:block;margin-right:12px;"><span style="font-size:10px;font-weight:400;color:var(--text-light);font-family:var(--font);margin-right:2px;">by</span><img src="${LOGO_DARK}" alt="FGC." style="height:18px;display:block;"></span>`
         : `<img src="${LOGO_DARK}" alt="FGC." style="height:26px;display:block;">`}</div>
-      <div class="doc-header-label">${L.lblProposal} · ${escHtml(currentRefCode())}</div>
+      <div class="doc-header-label">${L.lblProposal} &nbsp;&nbsp; ${escHtml(currentRefCode())}</div>
     </div>
 
     <div class="doc-body">
@@ -8234,7 +8234,7 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
         ? `<span style="display:inline-flex;align-items:center;"><img src="${LOGO_TRIVA}" alt="Triva" style="height:12px;display:block;margin-right:3px;"><span style="font-size:9px;color:var(--text-light);font-family:var(--font);margin-right:1px;">by</span><img src="${LOGO_DARK}" alt="FGC." style="height:10px;display:block;"></span>`
         : `<img src="${LOGO_DARK}" alt="FGC." style="height:24px;display:block;">`}</div>
       <div class="doc-footer-contact">
-        <span>contact@fgcadvisors.com &nbsp;·&nbsp; +1 305 432 3009</span>
+        <span>contact@fgcadvisors.com &nbsp;&nbsp;&nbsp; +1 305 432 3009</span>
         <span>1001 Brickell Bay Drive #2110, Miami, FL 33131</span>
       </div>
     </div>
@@ -8873,7 +8873,7 @@ function renderDraftsList() {
       </div>
       <div class="draft-card-meta">
         ${d.advisor ? `Advisor: ${escHtml(d.advisor)}<br>` : ''}
-        Saved by <strong>${escHtml(d.savedBy)}</strong> · ${savedDate}${savedTime ? ', ' + savedTime : ''}
+        Saved by <strong>${escHtml(d.savedBy)}</strong> &nbsp;&nbsp; ${savedDate}${savedTime ? ', ' + savedTime : ''}
       </div>
       <div class="draft-card-actions">
         <button class="draft-btn draft-btn-load" onclick="loadDraft('${d.id}')">Load</button>
