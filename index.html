@@ -880,9 +880,6 @@
   }
   .doc-cover-foot strong { color: #fff; font-weight: 600; }
 
-  /* ══ RUNNING HEADER / FOOTER (print only) ══════════════════ */
-  .doc-running-header, .doc-running-footer { display: none; }
-
   /* ══ SECTION SHELL ═════════════════════════════════════════ */
   .doc-sec { margin-bottom: 34px; }
   .doc-sec-head { margin-bottom: 16px; }
@@ -1068,26 +1065,23 @@
     }
     .doc-cover-subject { font-size: 27pt; }
 
-    /* Running header/footer repeat on every printed page in Chrome via
-       position:fixed. The cover sits above them on page 1. */
-    .doc-running-header, .doc-running-footer {
-      display: flex; align-items: center; justify-content: space-between;
-      position: fixed; left: 0; right: 0; z-index: 1;
-      font-family: var(--doc-mono);
-      font-size: 7.5pt; letter-spacing: 1.2px; text-transform: uppercase;
-      color: var(--doc-muted-2);
-    }
-    .doc-running-header { top: -9mm; }
-    .doc-running-footer { bottom: -9mm; }
-    .doc-running-header img { height: 9pt; display: block; }
-
     .doc-sec { break-inside: auto; page-break-inside: auto; }
     .doc-sec-head { break-after: avoid; page-break-after: avoid; }
+    #proposal-doc .doc-block-label,
+    #proposal-doc .doc-included-label,
+    #proposal-doc .terms-section-heading,
+    #proposal-doc .doc-section-subheader,
+    #proposal-doc .macro-category { break-after: avoid; page-break-after: avoid; }
+    /* Keep a heading with at least the first lines that follow it */
+    #proposal-doc .doc-included-label + p,
+    #proposal-doc .doc-included-label + ul,
+    #proposal-doc .doc-included-label + .doc-note-body,
+    #proposal-doc .doc-block-label + p { break-before: avoid; page-break-before: avoid; }
     .doc-block { break-inside: avoid; page-break-inside: avoid; }
     .doc-callout { break-inside: avoid; page-break-inside: avoid; }
     .doc-grid-table { break-inside: avoid; page-break-inside: avoid; }
     .doc-grid-table tr { break-inside: avoid; page-break-inside: avoid; }
-    .doc-aceite { break-inside: avoid; page-break-inside: avoid; }
+    .doc-aceite, .doc-aceite-wrap { break-inside: avoid; page-break-inside: avoid; }
     .doc-signoff { break-inside: avoid; page-break-inside: avoid; }
     .doc-placeholder { break-inside: avoid; page-break-inside: avoid; }
     #proposal-doc .doc-header, #proposal-doc .doc-body { padding-left: 0; padding-right: 0; }
@@ -5245,7 +5239,7 @@ const DOC_FORMAT = 3;
 // Shown in the sidebar so the running build is always identifiable, and
 // compared against the deployed file so a stale cached copy announces
 // itself instead of silently showing an old proposal format.
-const BUILD = '2026-09-16-x';
+const BUILD = '2026-09-16-z';
 
 function showUpdateBanner() {
   if (document.getElementById('update-banner')) return;
@@ -5798,8 +5792,8 @@ function secHead(num, title) {
 
 function buildCover(ctx) {
   const D = dl();
-  const preparedFor = [ctx.client || '—', ctx.careOf ? `${ctx.careOfPrefix} ${ctx.careOf}` : '', ctx.extraLine]
-    .filter(Boolean).map(escHtml).join('<br>');
+  const preparedFor = [ctx.client || '⟦Nome do cliente⟧', ctx.careOf ? `${ctx.careOfPrefix} ${ctx.careOf}` : '', ctx.extraLine]
+    .filter(Boolean).map(function (x) { return markTokens(escHtml(x)); }).join('<br>');
   const marks = ctx.triva
     ? `<img class="cover-fgc" src="${LOGO_TRIVA}" alt="Triva">`
     : `<img class="cover-fgc" src="${LOGO_DARK}" alt="FGC.">`;
@@ -7954,9 +7948,11 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
 
   function buildAceiteSection() {
     return `
-      <div class="doc-block-label doc-included-label">${dl().aceiteLabel}</div>
-      ${closingLead ? `<div class="doc-note-body">${paras(closingLead)}</div>` : ''}
-      ${buildAceite(docCtx)}`;
+      <div class="doc-aceite-wrap">
+        <div class="doc-block-label doc-included-label">${dl().aceiteLabel}</div>
+        ${closingLead ? `<div class="doc-note-body">${paras(closingLead)}</div>` : ''}
+        ${buildAceite(docCtx)}
+      </div>`;
   }
 
   // ── Not-included list (hoisted: rendered in Seção 03, or Seção 05 when
@@ -8069,20 +8065,10 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
   const docHTML = `
     ${buildCover(docCtx)}
 
-    <!-- Repeats on every printed page (print CSS only) -->
-    <div class="doc-running-header">
-      <img src="${LOGO_DARK}" alt="FGC.">
-      <span>${dl().runningHeader}</span>
-    </div>
-    <div class="doc-running-footer">
-      <span>fgcadvisors.com</span>
-      <span>${escHtml(currentRefCode())}</span>
-    </div>
-
     <div class="doc-header">
       <div class="doc-logo">${triva
         ? `<span style="display:inline-flex;align-items:center;"><img src="${LOGO_TRIVA}" alt="Triva" style="height:16px;display:block;margin-right:12px;"><span style="font-size:10px;font-weight:400;color:var(--text-light);font-family:var(--font);margin-right:2px;">by</span><img src="${LOGO_DARK}" alt="FGC." style="height:18px;display:block;"></span>`
-        : `<img src="${LOGO_DARK}" alt="FGC." style="height:26px;display:block;">`}</div>
+        : `<img src="${LOGO_DARK}" alt="FGC." style="height:34px;display:block;">`}</div>
       <div class="doc-header-label">${L.lblProposal} &nbsp;&nbsp; ${escHtml(currentRefCode())}</div>
     </div>
 

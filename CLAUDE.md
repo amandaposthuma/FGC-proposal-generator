@@ -165,8 +165,20 @@ are NOT stored in drafts — they belong to the advisor, not the proposal. With 
 signature on file the Dancing Script cursive rendering is used as a fallback.
 
 **Print.** `@page :first { margin: 0 }` gives the cover a true full-bleed A4
-(210×297mm); content pages use `@page { margin: 16mm 12mm }`. The running header
-and footer are `position: fixed`, which Chrome repeats on every printed page.
+(210×297mm); content pages use `@page { margin: 16mm 12mm }`.
+
+**No running header or footer — do not add one back.** Chrome repeats
+`position: fixed` elements on every printed page but reserves no space for them,
+so an earlier build printed the furniture *over* the body text on pages 3-7, with
+the header and footer swapped and the reference clipped to "FGC-P". Chrome's
+`@page` margin boxes take no content, so there is no reliable alternative.
+
+**Verifying print output.** Don't ask the user to test it. Generate the proposal
+in the browser pane, reproduce what `exportInteractivePDF()` does to the DOM
+(move `#proposal-doc` into `#print-wrap`, add `body.printing`), POST
+`document.documentElement.outerHTML` to the scratch server, then render it with
+`Google Chrome --headless=new --no-pdf-header-footer --print-to-pdf` and read the
+pages back. Every print bug so far was invisible on screen.
 
 ### 5. Notion audit log
 Every generated proposal fires a Make.com webhook → Notion database "FGC Proposal Log".
@@ -267,6 +279,7 @@ fs.writeFileSync('/tmp/fgc_check.js',s.join('\n'));
 - **Version Sept 16 (s)** — standard text rewritten to follow Fabiana's own sentences; auto-filled tokens now produce natural Portuguese (articles, noun-phrase overrides, per-jurisdiction prepositions) instead of bare service labels.
 - **Version Sept 16 (v)** — applied "black means every proposal contains this" strictly to Seção 01: situational clauses ("não pode operar, assinar contratos…", the registered-agent paragraph, conditional scope lines) are now marked, leaving only connectives and auto-filled facts in black. Fixed participle agreement by restructuring "Concluído ⟦o trabalho⟧" → "Após ⟦o trabalho⟧".
 - **Version Sept 16 (x)** — "Sugestão · recomendação" is now just "Recomendação"; every `·` separator removed from the document and the app in favour of plain spacing, the way the source sets its own contact line. Don't reintroduce middle dots as separators.
+- **Version Sept 16 (z)** — first real PDF check. Removed the `position: fixed` running header/footer, which printed over the body text on every page after the cover; enlarged the document mark; added `break-after: avoid` on all block labels so headings stay with their text; kept the whole Aceite block on one page.
 - **Version June 17** — fixed fsAnterior/trAnterior crash; full draft save/load (custom items + overrides); Observações field (section 4.6); hasScope toggle on custom items; print margin CSS; loadDraft stale-data reset; custom transfer group fix (no more "PRIVATE INVESTMENT COMPANY" on non-PIC items); item ordering fix
 
 ## Known draft behavior
