@@ -129,6 +129,14 @@ labels that take no article ("Contábil e Fiscal" → "os serviços contábeis e
 fiscais"), and each jurisdiction carries its own preposition (`de Cayman`, but
 `das Bahamas`, `da Flórida`).
 
+**Black is a promise.** If text renders black, it must belong in *every* proposal.
+Anything situational goes inside a `⟦token⟧`, even mid-sentence. This is why Seção 01
+is mostly marked: it describes one client's position, and a formation, a transfer and
+a reinstatement share nothing but the sentence skeleton. The opening letter is the
+opposite — it is genuinely standard, so it renders fully black once its tokens
+resolve. Before making any default black, ask whether a dissolution proposal would
+carry that exact sentence.
+
 **Colour rule — only what gets personalised is marked.** Standard text is finished
 copy and reads black like the rest of the document; only the `⟦tokens⟧` inside it
 are copper (`#B0542F` on white, `#E0A183` on the navy cover). An earlier build
@@ -257,6 +265,7 @@ fs.writeFileSync('/tmp/fgc_check.js',s.join('\n'));
 - **Version Sept 16 (l)** — documents table ships with the template's four model rows instead of a red "add documents" prompt; every field that feeds the document now starts from model text. Colour rule settled: standardised prose black, personalised `⟦tokens⟧` copper.
 - **Version Sept 16 (o)** — tokens the tool can answer now fill themselves (client, jurisdiction, registry, A/C contact, services), cutting a fresh proposal from ~28 manual blanks to 16 real ones. Whole-paragraph instruction tokens rewritten as model prose. `Objetivo` label no longer copper — that colour means "personalise this".
 - **Version Sept 16 (s)** — standard text rewritten to follow Fabiana's own sentences; auto-filled tokens now produce natural Portuguese (articles, noun-phrase overrides, per-jurisdiction prepositions) instead of bare service labels.
+- **Version Sept 16 (v)** — applied "black means every proposal contains this" strictly to Seção 01: situational clauses ("não pode operar, assinar contratos…", the registered-agent paragraph, conditional scope lines) are now marked, leaving only connectives and auto-filled facts in black. Fixed participle agreement by restructuring "Concluído ⟦o trabalho⟧" → "Após ⟦o trabalho⟧".
 - **Version June 17** — fixed fsAnterior/trAnterior crash; full draft save/load (custom items + overrides); Observações field (section 4.6); hasScope toggle on custom items; print margin CSS; loadDraft stale-data reset; custom transfer group fix (no more "PRIVATE INVESTMENT COMPANY" on non-PIC items); item ordering fix
 
 ## Known draft behavior
