@@ -59,7 +59,46 @@ On first login from a new device, the user is prompted to name it (e.g. "iPhone 
   - **Delete** — removes after sending
 - Drafts are per-browser (localStorage, not synced across devices)
 
-### 4. Notion audit log
+### 4. Proposal document format (v2 — Sept 2026)
+Mirrors `Proposta_template_Reinstatement.docx`. Palette and type are scoped to
+`#proposal-doc` so the app chrome is untouched.
+
+| Token | Value | Use |
+|-------|-------|-----|
+| `--doc-navy` | `#041725` | cover, rules, section underlines |
+| `--doc-muted` / `--doc-muted-2` | `#5C6B72` / `#6E8080` | secondary text, eyebrows |
+| `--doc-cream` | `#F3F0EB` | subtotal rows, callout background |
+| `--doc-accent` | `#B0542F` | recommendation callout, placeholder prompts |
+
+Type: Hanken Grotesk body · **Georgia** section titles · **Roboto Mono** eyebrows and metadata.
+
+Document order: **cover** → Apresentação (opening note + signature) → `Seção 01`
+Entendimento e escopo → Honorários → Escopo dos serviços → O que não está incluído
+→ Documentos necessários → Termos e Condições → Aceite.
+
+Section numbers are assigned by `nextSecNo()` as the document renders, so an
+empty optional section never leaves a gap. `secTCNum` is captured at render time
+so the `6.1 / 6.2 …` sub-numbering always tracks its own section.
+
+**Always-on sections.** Entendimento e escopo and Documentos necessários render
+on every proposal. When a field is empty the document shows a terracotta dashed
+`.doc-placeholder` prompt instead of silently omitting it.
+
+**Reference codes.** `FGC-PROP-{CODE}-{YEAR}`, auto-derived from the selected
+services by `computeRefCode()` — jurisdiction first (`CAY`/`BVI`/`BAH`/`NEV`/`US`),
+then service type (`SUC`/`RES`/`CTB`/`NOT`/`BOI`), falling back to `GEN`. Typing in
+the field switches to manual; ↻ returns to auto.
+
+**Assets.** Client logo uploads per proposal and is stored in the draft. Scanned
+signatures upload per advisor into `fgc_signatures` (keyed by advisor slug) and
+are NOT stored in drafts — they belong to the advisor, not the proposal. With no
+signature on file the Dancing Script cursive rendering is used as a fallback.
+
+**Print.** `@page :first { margin: 0 }` gives the cover a true full-bleed A4
+(210×297mm); content pages use `@page { margin: 16mm 12mm }`. The running header
+and footer are `position: fixed`, which Chrome repeats on every printed page.
+
+### 5. Notion audit log
 Every generated proposal fires a Make.com webhook → Notion database "FGC Proposal Log".
 
 **Make.com webhook:** `https://hook.us2.make.com/8cx5wkgvxkqp5iqijupqs5ttyos8lxy5`
@@ -90,6 +129,7 @@ Payload fields: `client`, `user`, `device`, `services`, `language`, `brand`, `ge
 | `fgc_device` | Device nickname (set once) |
 | `fgc_drafts` | Array of saved draft objects |
 | `fgc_failed_logs` | Array of proposals that failed to log to Notion |
+| `fgc_signatures` | `{ advisorSlug: dataURL }` — scanned signatures, per browser |
 
 ---
 
@@ -125,8 +165,12 @@ fs.writeFileSync('/tmp/fgc_check.js',s.join('\n'));
 
 ## Version history
 - **Version June 1** — per-user login, device nickname, draft saving, Notion audit log, local fallback logging, Make.com unbreakable setup
+- **Version Sept 15** — v2 proposal aesthetic matching `Proposta_template_Reinstatement.docx`: full-bleed navy cover with metadata grid, Apresentação opening note with scanned-signature slot, always-on Entendimento e escopo (Seção 01), Documentos necessários table, template-matching Aceite block (per-service Yes/No checklist removed), auto-generated `FGC-PROP-*` reference codes, client logo upload, `Seção NN` numbering. Added the `fgc-understanding-scope` Claude skill.
 - **Version June 17** — fixed fsAnterior/trAnterior crash; full draft save/load (custom items + overrides); Observações field (section 4.6); hasScope toggle on custom items; print margin CSS; loadDraft stale-data reset; custom transfer group fix (no more "PRIVATE INVESTMENT COMPANY" on non-PIC items); item ordering fix
 
 ## Known draft behavior
+- Drafts saved **before Sept 15** have no `cover` key. `applyCoverState(null)`
+  resets every new field to its default, so they load clean — the new sections
+  show their placeholder prompts rather than stale content from the last draft.
 - Drafts saved **before June 17** do not have `customTransfers`/`customOffshore`/etc. keys. Loading them now turns those toggles OFF cleanly (no blank forms). Users must re-save to get the new format.
 - `"Registrar proposta manualmente"` button = retries failed Notion audit log entries stored in `fgc_failed_logs`. Internal use only, not shown to clients.

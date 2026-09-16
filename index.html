@@ -6,7 +6,7 @@
 <title>FGC. Proposal Generator</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Barlow:wght@900&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Barlow:wght@900&family=Dancing+Script:wght@700&family=Roboto+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
 <style>
@@ -131,6 +131,60 @@
   }
   .field-input::placeholder { color: rgba(7,18,16,0.25); }
   .field-input:focus { border-color: rgba(7,18,16,0.4); }
+
+  /* ── Sidebar helpers for cover / understanding / documents ── */
+  .field-hint {
+    font-size: 9px; font-weight: 400; letter-spacing: 0.2px;
+    text-transform: none; color: rgba(7,18,16,0.4); margin-top: 3px; display: block;
+  }
+  .field-label .field-hint { display: inline; margin-top: 0; }
+  .field-file {
+    width: 100%; font-family: var(--font); font-size: 10px;
+    color: rgba(7,18,16,0.55); padding: 4px 0;
+  }
+  .field-file::file-selector-button {
+    font-family: var(--font); font-size: 10px; font-weight: 600;
+    padding: 5px 10px; margin-right: 8px; cursor: pointer;
+    border: 1px solid rgba(7,18,16,0.2); border-radius: 3px;
+    background: rgba(7,18,16,0.04); color: var(--dark);
+  }
+  .asset-preview:empty { display: none; }
+  .asset-preview {
+    display: flex; align-items: center; gap: 8px; margin-top: 6px;
+    padding: 6px 8px; border: 1px solid rgba(7,18,16,0.12);
+    border-radius: 3px; background: rgba(7,18,16,0.03);
+  }
+  .asset-preview img { max-height: 26px; max-width: 110px; object-fit: contain; display: block; }
+  .asset-preview button {
+    margin-left: auto; background: transparent; border: none; cursor: pointer;
+    font-family: var(--font); font-size: 10px; font-weight: 600;
+    color: rgba(7,18,16,0.45); padding: 2px 4px;
+  }
+  .asset-preview button:hover { color: #b0542f; }
+  .doc-row {
+    border: 1px solid rgba(7,18,16,0.12); border-radius: 3px;
+    padding: 8px; margin-bottom: 8px; background: rgba(7,18,16,0.02);
+  }
+  .doc-row-head {
+    display: flex; align-items: center; justify-content: space-between;
+    font-size: 9px; font-weight: 700; letter-spacing: 0.8px;
+    text-transform: uppercase; color: rgba(7,18,16,0.4); margin-bottom: 6px;
+  }
+  .doc-row-remove {
+    background: transparent; border: none; cursor: pointer;
+    font-family: var(--font); font-size: 11px; color: rgba(7,18,16,0.35); padding: 0 2px;
+  }
+  .doc-row-remove:hover { color: #b0542f; }
+  .doc-row .field-input { font-size: 11px; padding: 6px 8px; margin-bottom: 5px; }
+  .doc-row .field-input:last-child { margin-bottom: 0; }
+  .doc-row-add {
+    width: 100%; padding: 7px; cursor: pointer;
+    border: 1px dashed rgba(7,18,16,0.25); border-radius: 3px;
+    background: transparent; color: rgba(7,18,16,0.5);
+    font-family: var(--font); font-size: 10px; font-weight: 600;
+    letter-spacing: 0.3px; transition: all 0.15s;
+  }
+  .doc-row-add:hover { border-color: rgba(7,18,16,0.45); color: var(--dark); }
 
   /* Service categories */
   .service-category { margin-bottom: 8px; }
@@ -574,7 +628,7 @@
     p, li { orphans: 3; widows: 3; }
 
     /* 0.5 inch margins, no browser headers/footers */
-    @page { margin: 12.7mm 10mm; size: A4; }
+    @page { margin: 16mm 12mm; size: A4; }
     title { display: none; }
   }
 
@@ -720,6 +774,311 @@
   font-size: 11px; color: #c0392b;
   margin-top: 8px; min-height: 16px;
 }
+  /* ══════════════════════════════════════════════════════════════
+     PROPOSAL DOCUMENT — v2 aesthetic (Sept 2026)
+     Mirrors Proposta_template_Reinstatement.docx
+     Tokens scoped to #proposal-doc so app chrome is untouched.
+     ══════════════════════════════════════════════════════════════ */
+  #proposal-doc {
+    --doc-navy:    #041725;
+    --doc-ink:     #041725;
+    --doc-muted:   #5C6B72;
+    --doc-muted-2: #6E8080;
+    --doc-rule:    #C9D1D1;
+    --doc-rule-soft: #E4E7E7;
+    --doc-cream:   #F3F0EB;
+    --doc-accent:  #B0542F;
+    --doc-sans:  'Hanken Grotesk', Arial, Helvetica, sans-serif;
+    --doc-serif: Georgia, 'Times New Roman', serif;
+    --doc-mono:  'Roboto Mono', ui-monospace, SFMono-Regular, monospace;
+    color: var(--doc-ink);
+    font-family: var(--doc-sans);
+  }
+
+  /* ── Eyebrow (mono, uppercase, letterspaced) ── */
+  .doc-eyebrow {
+    font-family: var(--doc-mono);
+    font-size: 8.5px; font-weight: 500; letter-spacing: 1.6px;
+    text-transform: uppercase; color: var(--doc-muted-2);
+  }
+
+  /* ══ COVER ══════════════════════════════════════════════════ */
+  .doc-cover {
+    position: relative;
+    background: var(--doc-navy);
+    color: #fff;
+    aspect-ratio: 210 / 297;
+    display: flex; flex-direction: column;
+    padding: 46px 44px 38px;
+    overflow: hidden;
+  }
+  .doc-cover::after {
+    /* subtle engraved-line motif, echoes the template artwork */
+    content: ''; position: absolute; right: -4%; bottom: 8%;
+    width: 62%; height: 58%;
+    background-image: repeating-linear-gradient(90deg, rgba(255,255,255,0.055) 0 1px, transparent 1px 7px);
+    -webkit-mask-image: radial-gradient(120% 100% at 100% 100%, #000 38%, transparent 72%);
+    mask-image: radial-gradient(120% 100% at 100% 100%, #000 38%, transparent 72%);
+    pointer-events: none;
+  }
+  .doc-cover-top { position: relative; z-index: 2; }
+  .doc-cover-marks {
+    display: flex; align-items: flex-end; gap: 22px;
+    min-height: 54px; margin-bottom: 22px;
+  }
+  .doc-cover-marks img.cover-fgc {
+    height: 50px; display: block;
+    filter: brightness(0) invert(1);   /* knock the mark out to white on navy */
+  }
+  .doc-cover-marks .cover-client-logo {
+    max-height: 40px; max-width: 150px; display: block;
+    object-fit: contain;
+  }
+  .doc-cover-divider {
+    width: 1px; align-self: stretch; margin: 6px 0;
+    background: rgba(255,255,255,0.28);
+  }
+  .doc-cover-rule { height: 1px; background: rgba(255,255,255,0.45); }
+  .doc-cover-mid { flex: 1; position: relative; z-index: 2; display: flex; flex-direction: column; justify-content: center; }
+  .doc-cover-kicker {
+    font-family: var(--doc-mono);
+    font-size: 11px; font-weight: 500; letter-spacing: 5px;
+    text-transform: uppercase; color: rgba(255,255,255,0.85);
+    margin-bottom: 14px;
+  }
+  .doc-cover-subject {
+    font-family: var(--doc-serif);
+    font-size: 30px; line-height: 1.22; font-weight: 400;
+    color: #fff; max-width: 82%;
+  }
+  .doc-cover-meta {
+    position: relative; z-index: 2;
+    display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px 32px; margin-bottom: 30px;
+  }
+  .doc-cover-meta-item { min-width: 0; }
+  .doc-cover-meta-label {
+    font-family: var(--doc-mono);
+    font-size: 8px; font-weight: 500; letter-spacing: 1.8px;
+    text-transform: uppercase; color: rgba(255,255,255,0.52);
+    margin-bottom: 5px;
+  }
+  .doc-cover-meta-value {
+    font-size: 12.5px; line-height: 1.45; color: #fff; font-weight: 500;
+    overflow-wrap: anywhere;
+  }
+  .doc-cover-meta-value.is-ref { font-family: var(--doc-mono); font-size: 11.5px; letter-spacing: 0.4px; }
+  .doc-cover-foot {
+    position: relative; z-index: 2;
+    border-top: 1px solid rgba(255,255,255,0.45);
+    padding-top: 12px;
+    display: flex; flex-wrap: wrap; gap: 6px 28px;
+    font-size: 9.5px; color: rgba(255,255,255,0.78); letter-spacing: 0.2px;
+  }
+  .doc-cover-foot strong { color: #fff; font-weight: 600; }
+
+  /* ══ RUNNING HEADER / FOOTER (print only) ══════════════════ */
+  .doc-running-header, .doc-running-footer { display: none; }
+
+  /* ══ SECTION SHELL ═════════════════════════════════════════ */
+  .doc-sec { margin-bottom: 34px; }
+  .doc-sec-head { margin-bottom: 16px; }
+  .doc-sec-eyebrow {
+    font-family: var(--doc-mono);
+    font-size: 8.5px; font-weight: 500; letter-spacing: 2.2px;
+    text-transform: uppercase; color: var(--doc-muted-2);
+    margin-bottom: 7px;
+  }
+  .doc-sec-title {
+    font-family: var(--doc-serif);
+    font-size: 21px; line-height: 1.25; font-weight: 400;
+    color: var(--doc-ink);
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--doc-navy);
+  }
+  .doc-block { margin-bottom: 20px; }
+  .doc-block-label {
+    font-size: 10px; font-weight: 700; letter-spacing: 1.3px;
+    text-transform: uppercase; color: var(--doc-muted);
+    margin-bottom: 7px;
+  }
+  .doc-block p {
+    font-size: 12px; line-height: 1.72; color: var(--doc-ink);
+    margin: 0 0 9px;
+  }
+  .doc-block p:last-child { margin-bottom: 0; }
+  .doc-bullets { list-style: none; padding: 0; margin: 0; }
+  .doc-bullets li {
+    position: relative; padding-left: 16px;
+    font-size: 12px; line-height: 1.72; color: var(--doc-ink);
+    margin-bottom: 6px;
+  }
+  .doc-bullets li::before {
+    content: '▪'; position: absolute; left: 0; top: -1px;
+    color: var(--doc-muted-2); font-size: 11px;
+  }
+  .doc-callout {
+    background: var(--doc-cream);
+    border-left: 2px solid var(--doc-accent);
+    padding: 14px 16px; margin-top: 4px;
+  }
+  .doc-callout .doc-block-label { color: var(--doc-accent); margin-bottom: 5px; }
+  .doc-callout p { font-size: 12px; line-height: 1.7; margin: 0; }
+
+  /* Placeholder prompt for an unfilled always-on section */
+  .doc-placeholder {
+    border: 1px dashed var(--doc-accent);
+    background: rgba(176,84,47,0.05);
+    padding: 12px 14px;
+    font-size: 11px; line-height: 1.6; color: var(--doc-accent);
+  }
+  .doc-placeholder strong { font-weight: 700; letter-spacing: 0.3px; }
+
+  /* ══ OPENING NOTE ══════════════════════════════════════════ */
+  .doc-note-body p {
+    font-size: 12px; line-height: 1.78; color: var(--doc-ink); margin: 0 0 11px;
+  }
+  .doc-signoff { margin-top: 26px; }
+  .doc-signoff-valediction { font-size: 12px; color: var(--doc-ink); margin-bottom: 2px; }
+  .doc-signoff-mark { height: 46px; display: block; margin: 2px 0 4px; }
+  .doc-signoff-cursive {
+    font-family: 'Dancing Script', cursive;
+    font-size: 26px; font-weight: 700; line-height: 1.1;
+    color: var(--doc-navy); margin: 4px 0 3px;
+  }
+  .doc-signoff-name { font-size: 12px; font-weight: 600; color: var(--doc-ink); }
+  .doc-signoff-role { font-size: 10.5px; color: var(--doc-muted); }
+
+  /* ══ DOCUMENTS TABLE ═══════════════════════════════════════ */
+  .doc-grid-table { width: 100%; border-collapse: collapse; font-size: 11px; }
+  .doc-grid-table th {
+    font-family: var(--doc-mono);
+    font-size: 8px; font-weight: 500; letter-spacing: 1.4px;
+    text-transform: uppercase; color: var(--doc-muted-2);
+    text-align: left; padding: 0 10px 7px 0;
+    border-bottom: 1px solid var(--doc-navy);
+  }
+  .doc-grid-table td {
+    padding: 9px 10px 9px 0; vertical-align: top;
+    border-bottom: 1px solid var(--doc-rule-soft);
+    font-size: 11px; line-height: 1.55; color: var(--doc-ink);
+  }
+  .doc-grid-table td:first-child { font-weight: 600; }
+  .doc-grid-table td:last-child, .doc-grid-table th:last-child { padding-right: 0; color: var(--doc-muted); }
+  .doc-grid-table tr:last-child td { border-bottom: none; }
+
+  /* ══ ACEITE ════════════════════════════════════════════════ */
+  .doc-aceite { margin-top: 10px; }
+  .doc-aceite-intro { font-size: 12px; line-height: 1.7; color: var(--doc-ink); margin-bottom: 26px; }
+  .doc-aceite-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
+  .doc-aceite-party { min-width: 0; }
+  .doc-aceite-party-label {
+    font-family: var(--doc-mono);
+    font-size: 8px; font-weight: 500; letter-spacing: 1.8px;
+    text-transform: uppercase; color: var(--doc-muted-2);
+    padding-bottom: 6px; margin-bottom: 14px;
+    border-bottom: 1px solid var(--doc-rule);
+  }
+  .doc-aceite-mark { height: 42px; display: block; margin-bottom: 2px; }
+  .doc-aceite-cursive {
+    font-family: 'Dancing Script', cursive;
+    font-size: 24px; font-weight: 700; line-height: 1.6;
+    color: var(--doc-navy);
+  }
+  .doc-aceite-rule { border-bottom: 1px solid var(--doc-navy); height: 44px; }
+  .doc-aceite-name { font-size: 11.5px; font-weight: 600; margin-top: 6px; color: var(--doc-ink); }
+  .doc-aceite-line { font-size: 10.5px; color: var(--doc-muted); margin-top: 4px; }
+  .doc-aceite-contact {
+    margin-top: 34px; padding-top: 12px;
+    border-top: 1px solid var(--doc-rule);
+    font-size: 10.5px; color: var(--doc-muted);
+  }
+  .doc-confidential {
+    margin-top: 16px; font-size: 9.5px; line-height: 1.6; color: var(--doc-muted-2);
+  }
+
+  /* ── Restyle inherited fee/terms components to the new palette ── */
+  #proposal-doc .doc-header {
+    background: #fff; border-bottom: 1px solid var(--doc-navy);
+    padding: 26px 44px 18px;
+  }
+  #proposal-doc .doc-header-label {
+    font-family: var(--doc-mono);
+    font-size: 9px; font-weight: 500; letter-spacing: 2.4px; color: var(--doc-muted-2);
+  }
+  #proposal-doc .doc-body { padding: 40px 44px 34px; }
+  #proposal-doc .doc-section-header {
+    font-family: var(--doc-serif);
+    font-size: 21px; font-weight: 400; letter-spacing: 0; text-transform: none;
+    color: var(--doc-ink); padding-bottom: 10px; margin-bottom: 16px;
+    border-bottom: 1px solid var(--doc-navy);
+  }
+  #proposal-doc .doc-section-subheader {
+    font-size: 10px; font-weight: 700; letter-spacing: 1.3px;
+    text-transform: uppercase; color: var(--doc-muted);
+    border-bottom: none; padding-bottom: 0; margin-bottom: 8px;
+  }
+  #proposal-doc .macro-category {
+    font-family: var(--doc-mono);
+    font-size: 8px; font-weight: 500; letter-spacing: 1.6px;
+    color: var(--doc-muted-2); border-bottom: 1px solid var(--doc-rule-soft);
+  }
+  #proposal-doc .fee-table th {
+    font-family: var(--doc-mono);
+    font-size: 8px; font-weight: 500; letter-spacing: 1.4px;
+    color: var(--doc-muted-2); border-bottom: 1px solid var(--doc-navy);
+  }
+  #proposal-doc .fee-table td { border-bottom: 1px solid var(--doc-rule-soft); color: var(--doc-ink); }
+  #proposal-doc .fee-table tr.subtotal-row td {
+    background: var(--doc-cream); border-bottom: 1px solid var(--doc-navy);
+  }
+  #proposal-doc .terms-section-heading {
+    font-size: 10px; font-weight: 700; letter-spacing: 1.2px;
+    text-transform: uppercase; color: var(--doc-muted);
+  }
+  #proposal-doc .terms-list li { font-size: 12px; line-height: 1.7; color: var(--doc-ink); }
+  #proposal-doc .doc-footer { border-top: 1px solid var(--doc-navy); }
+  #proposal-doc .doc-footer-contact { color: var(--doc-muted); }
+
+  /* ══ PRINT ═════════════════════════════════════════════════ */
+  @media print {
+    /* Page 1 is the full-bleed cover — no page margin there. */
+    @page :first { margin: 0; }
+
+    .doc-cover {
+      width: 210mm; height: 297mm; aspect-ratio: auto;
+      padding: 16mm 15mm 13mm;
+      break-after: page; page-break-after: always;
+      break-inside: avoid; page-break-inside: avoid;
+      position: relative; z-index: 10;
+    }
+    .doc-cover-subject { font-size: 27pt; }
+
+    /* Running header/footer repeat on every printed page in Chrome via
+       position:fixed. The cover sits above them on page 1. */
+    .doc-running-header, .doc-running-footer {
+      display: flex; align-items: center; justify-content: space-between;
+      position: fixed; left: 0; right: 0; z-index: 1;
+      font-family: var(--doc-mono);
+      font-size: 7.5pt; letter-spacing: 1.2px; text-transform: uppercase;
+      color: var(--doc-muted-2);
+    }
+    .doc-running-header { top: -9mm; }
+    .doc-running-footer { bottom: -9mm; }
+    .doc-running-header img { height: 9pt; display: block; }
+
+    .doc-sec { break-inside: auto; page-break-inside: auto; }
+    .doc-sec-head { break-after: avoid; page-break-after: avoid; }
+    .doc-block { break-inside: avoid; page-break-inside: avoid; }
+    .doc-callout { break-inside: avoid; page-break-inside: avoid; }
+    .doc-grid-table { break-inside: avoid; page-break-inside: avoid; }
+    .doc-grid-table tr { break-inside: avoid; page-break-inside: avoid; }
+    .doc-aceite { break-inside: avoid; page-break-inside: avoid; }
+    .doc-signoff { break-inside: avoid; page-break-inside: avoid; }
+    .doc-placeholder { break-inside: avoid; page-break-inside: avoid; }
+    #proposal-doc .doc-header, #proposal-doc .doc-body { padding-left: 0; padding-right: 0; }
+  }
+
 </style>
 </head>
 <body>
@@ -845,12 +1204,88 @@
       <label class="field-label" data-key="lblAdvisor">Consultor</label>
       <div class="advisor-wrap">
         <div class="advisor-input-row">
-          <input type="text" id="f-advisor" class="field-input" placeholder="Advisor">
+          <input type="text" id="f-advisor" class="field-input" placeholder="Advisor" oninput="renderAssetPreviews(); debouncedUpdate()">
           <button class="advisor-add-btn" onclick="addAdvisorFromInput()" title="Save advisor">+</button>
         </div>
         <div class="advisor-chips" id="advisor-chips"></div>
       </div>
     </div>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-section-title">Capa &amp; apresentação</div>
+    <div class="field-group">
+      <label class="field-label">Objeto da proposta <span class="field-hint">(título da capa)</span></label>
+      <input type="text" id="f-subject" class="field-input" placeholder="ex: Reinstatement — S&amp;W Investment Company" oninput="coverSubject=this.value; debouncedUpdate()">
+    </div>
+    <div class="field-group">
+      <label class="field-label">Referência</label>
+      <div class="advisor-input-row">
+        <input type="text" id="f-refcode" class="field-input" placeholder="FGC-PROP-CAY-2026" oninput="onRefCodeInput(this.value)">
+        <button class="advisor-add-btn" onclick="resetRefCodeAuto()" title="Gerar automaticamente">↻</button>
+      </div>
+      <div class="field-hint" id="refcode-hint">Gerado automaticamente a partir dos serviços.</div>
+    </div>
+    <div class="field-group">
+      <label class="field-label">Validade <span class="field-hint">(dias)</span></label>
+      <input type="number" id="f-validity" class="field-input" min="1" max="365" value="10" oninput="validityDays=Math.max(1,parseInt(this.value)||10); debouncedUpdate()">
+    </div>
+    <div class="field-group">
+      <label class="field-label">Logo do cliente <span class="field-hint">(opcional)</span></label>
+      <input type="file" id="f-clientlogo" class="field-file" accept="image/*" onchange="onClientLogoPick(this)">
+      <div id="clientlogo-preview" class="asset-preview"></div>
+    </div>
+    <div class="field-group">
+      <label class="field-label">Assinatura digitalizada <span class="field-hint">(por assessor)</span></label>
+      <input type="file" id="f-signature" class="field-file" accept="image/*" onchange="onSignaturePick(this)">
+      <div id="signature-preview" class="asset-preview"></div>
+    </div>
+    <div class="field-group">
+      <label class="field-label">Nota de abertura <span class="field-hint">(deixe vazio para gerar automaticamente)</span></label>
+      <textarea id="f-opening" class="field-input" rows="4" style="resize:vertical;min-height:64px;"
+        placeholder="Uma palavra antes da proposta..."
+        oninput="openingNote=this.value; debouncedUpdate()"></textarea>
+    </div>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-section-title">Entendimento e escopo <span class="field-hint">(Seção 01)</span></div>
+    <div class="field-group">
+      <label class="field-label">O que entendemos</label>
+      <textarea id="f-und-what" class="field-input" rows="4" style="resize:vertical;min-height:64px;"
+        placeholder="A situação atual do cliente, em linguagem simples..."
+        oninput="understanding.what=this.value; debouncedUpdate()"></textarea>
+    </div>
+    <div class="field-group">
+      <label class="field-label">Objetivo</label>
+      <textarea id="f-und-obj" class="field-input" rows="2" style="resize:vertical;min-height:44px;"
+        placeholder="O que este trabalho entrega..."
+        oninput="understanding.objective=this.value; debouncedUpdate()"></textarea>
+    </div>
+    <div class="field-group">
+      <label class="field-label">Escopo <span class="field-hint">(um item por linha)</span></label>
+      <textarea id="f-und-scope" class="field-input" rows="4" style="resize:vertical;min-height:64px;"
+        placeholder="Um item por linha..."
+        oninput="understanding.scope=this.value; debouncedUpdate()"></textarea>
+    </div>
+    <div class="field-group">
+      <label class="field-label">Sugestão · recomendação <span class="field-hint">(opcional)</span></label>
+      <textarea id="f-und-rec" class="field-input" rows="2" style="resize:vertical;min-height:44px;"
+        placeholder="O próximo passo que sugerimos..."
+        oninput="understanding.recommendation=this.value; debouncedUpdate()"></textarea>
+    </div>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-section-title">Documentos necessários</div>
+    <div class="field-group">
+      <label class="field-label">Introdução <span class="field-hint">(opcional)</span></label>
+      <textarea id="f-docs-intro" class="field-input" rows="2" style="resize:vertical;min-height:44px;"
+        placeholder="Documentos solicitados por acionista e diretor..."
+        oninput="requiredDocsIntro=this.value; debouncedUpdate()"></textarea>
+    </div>
+    <div id="req-docs-list"></div>
+    <button class="doc-row-add" onclick="addRequiredDoc()">+ Adicionar documento</button>
   </div>
 
   <div class="sidebar-section">
@@ -4541,6 +4976,453 @@ let customAccounting = [{ label: '', price: '', qty: 1, payTerm: 'acceptance', s
 // Custom dissolutions
 let customDissolutions = [{ label: '', price: '', qty: 1, scope: '', hasScope: false }];
 
+// ═══════════════════════════════════════════════════════════════════
+//  COVER / APRESENTAÇÃO / ENTENDIMENTO / DOCUMENTOS  (v2 aesthetic)
+// ═══════════════════════════════════════════════════════════════════
+let coverSubject       = '';
+let refCode            = '';
+let refCodeAuto        = true;
+let validityDays       = 10;
+let clientLogo         = '';   // dataURL
+let openingNote        = '';   // overrides the auto-generated opening when non-empty
+let understanding      = { what: '', objective: '', scope: '', recommendation: '' };
+let requiredDocsIntro  = '';
+let requiredDocs       = [{ doc: '', desc: '', who: '' }];
+
+// Document copy, per language
+const DOC_L = {
+  pt: {
+    kicker: 'Proposta', preparedFor: 'Preparado para', preparedBy: 'Preparado por',
+    date: 'Data', validity: 'Validade', ref: 'Referência',
+    validityFmt: d => `${d} dias a partir da emissão`,
+    runningHeader: 'Proposta comercial · Confidencial',
+    apresentacao: 'Apresentação', apresentacaoTitle: 'Uma palavra antes da proposta',
+    secao: 'Seção',
+    entendimento: 'Entendimento e escopo',
+    whatLabel: 'O que entendemos', objectiveLabel: 'Objetivo',
+    scopeLabel: 'Escopo', recLabel: 'Sugestão · recomendação',
+    docsTitle: 'Documentos necessários',
+    docsIntroDefault: 'Documentos solicitados por acionista e diretor da sociedade, necessários para a atualização de KYC.',
+    colDoc: 'Documento', colDesc: 'Descrição', colWho: 'Aplicável a',
+    aceite: 'Aceite',
+    aceiteIntro: 'Ao assinar, as partes concordam com o escopo e as condições desta proposta.',
+    clientParty: 'Cliente', nameLine: 'Nome:', dateLine: 'Data:',
+    contactLabel: 'Contato',
+    confidential: 'Esta proposta é confidencial e destina-se exclusivamente ao destinatário indicado na capa. Os valores e o escopo aqui apresentados baseiam-se nas informações disponíveis nesta data e permanecem válidos pelo prazo indicado.',
+    fillPrompt: 'A preencher —',
+    promptWhat: 'descreva a situação atual do cliente em "O que entendemos", na barra lateral.',
+    promptObjective: 'descreva o objetivo do trabalho na barra lateral.',
+    promptScope: 'liste os itens de escopo na barra lateral, um por linha.',
+    promptDocs: 'adicione os documentos necessários na barra lateral.',
+  },
+  es: {
+    kicker: 'Propuesta', preparedFor: 'Preparado para', preparedBy: 'Preparado por',
+    date: 'Fecha', validity: 'Validez', ref: 'Referencia',
+    validityFmt: d => `${d} días desde la emisión`,
+    runningHeader: 'Propuesta comercial · Confidencial',
+    apresentacao: 'Presentación', apresentacaoTitle: 'Unas palabras antes de la propuesta',
+    secao: 'Sección',
+    entendimento: 'Entendimiento y alcance',
+    whatLabel: 'Lo que entendemos', objectiveLabel: 'Objetivo',
+    scopeLabel: 'Alcance', recLabel: 'Sugerencia · recomendación',
+    docsTitle: 'Documentos necesarios',
+    docsIntroDefault: 'Documentos solicitados por accionista y director de la sociedad, necesarios para la actualización de KYC.',
+    colDoc: 'Documento', colDesc: 'Descripción', colWho: 'Aplicable a',
+    aceite: 'Aceptación',
+    aceiteIntro: 'Al firmar, las partes aceptan el alcance y las condiciones de esta propuesta.',
+    clientParty: 'Cliente', nameLine: 'Nombre:', dateLine: 'Fecha:',
+    contactLabel: 'Contacto',
+    confidential: 'Esta propuesta es confidencial y está dirigida exclusivamente al destinatario indicado en la portada. Los valores y el alcance aquí presentados se basan en la información disponible en esta fecha y permanecen válidos por el plazo indicado.',
+    fillPrompt: 'Por completar —',
+    promptWhat: 'describa la situación actual del cliente en "Lo que entendemos", en la barra lateral.',
+    promptObjective: 'describa el objetivo del trabajo en la barra lateral.',
+    promptScope: 'liste los ítems de alcance en la barra lateral, uno por línea.',
+    promptDocs: 'agregue los documentos necesarios en la barra lateral.',
+  },
+  en: {
+    kicker: 'Proposal', preparedFor: 'Prepared for', preparedBy: 'Prepared by',
+    date: 'Date', validity: 'Validity', ref: 'Reference',
+    validityFmt: d => `${d} days from issuance`,
+    runningHeader: 'Commercial proposal · Confidential',
+    apresentacao: 'Introduction', apresentacaoTitle: 'A word before the proposal',
+    secao: 'Section',
+    entendimento: 'Understanding and scope',
+    whatLabel: 'What we understand', objectiveLabel: 'Objective',
+    scopeLabel: 'Scope', recLabel: 'Suggestion · recommendation',
+    docsTitle: 'Required documents',
+    docsIntroDefault: 'Documents requested from the shareholder and director of the company, required for the KYC update.',
+    colDoc: 'Document', colDesc: 'Description', colWho: 'Applies to',
+    aceite: 'Acceptance',
+    aceiteIntro: 'By signing, the parties agree to the scope and conditions of this proposal.',
+    clientParty: 'Client', nameLine: 'Name:', dateLine: 'Date:',
+    contactLabel: 'Contact',
+    confidential: 'This proposal is confidential and intended solely for the recipient named on the cover. The amounts and scope presented here are based on the information available as of this date and remain valid for the period indicated.',
+    fillPrompt: 'To be completed —',
+    promptWhat: 'describe the client’s current situation under "What we understand" in the sidebar.',
+    promptObjective: 'describe the objective of the engagement in the sidebar.',
+    promptScope: 'list the scope items in the sidebar, one per line.',
+    promptDocs: 'add the required documents in the sidebar.',
+  },
+};
+function dl() { return DOC_L[lang] || DOC_L.pt; }
+
+// ── Signature images (per advisor, this browser) ──
+function advisorSlug(name) { return (name || '').trim().toLowerCase().replace(/[^a-z0-9]/g, '') || 'default'; }
+function getSignatures() {
+  try { return JSON.parse(localStorage.getItem('fgc_signatures') || '{}'); } catch (e) { return {}; }
+}
+function putSignatures(map) {
+  try { localStorage.setItem('fgc_signatures', JSON.stringify(map)); } catch (e) {}
+}
+function getSignatureFor(advisorName) { return getSignatures()[advisorSlug(advisorName)] || ''; }
+
+function readImageFile(input, maxW, cb) {
+  const file = input.files && input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    const img = new Image();
+    img.onload = () => {
+      // Downscale so drafts and localStorage stay small
+      const scale = Math.min(1, maxW / img.width);
+      const cv = document.createElement('canvas');
+      cv.width = Math.round(img.width * scale);
+      cv.height = Math.round(img.height * scale);
+      cv.getContext('2d').drawImage(img, 0, 0, cv.width, cv.height);
+      cb(cv.toDataURL('image/png'));
+    };
+    img.onerror = () => cb(ev.target.result);
+    img.src = ev.target.result;
+  };
+  reader.readAsDataURL(file);
+  input.value = '';
+}
+
+function onClientLogoPick(input) {
+  readImageFile(input, 400, dataUrl => { clientLogo = dataUrl; renderAssetPreviews(); debouncedUpdate(); });
+}
+function clearClientLogo() { clientLogo = ''; renderAssetPreviews(); debouncedUpdate(); }
+
+function onSignaturePick(input) {
+  readImageFile(input, 400, dataUrl => {
+    const advisorName = (document.getElementById('f-advisor') || {}).value || '';
+    const map = getSignatures();
+    map[advisorSlug(advisorName)] = dataUrl;
+    putSignatures(map);
+    renderAssetPreviews();
+    debouncedUpdate();
+  });
+}
+function clearSignature() {
+  const advisorName = (document.getElementById('f-advisor') || {}).value || '';
+  const map = getSignatures();
+  delete map[advisorSlug(advisorName)];
+  putSignatures(map);
+  renderAssetPreviews();
+  debouncedUpdate();
+}
+
+function renderAssetPreviews() {
+  const logoBox = document.getElementById('clientlogo-preview');
+  if (logoBox) {
+    logoBox.innerHTML = clientLogo
+      ? `<img src="${clientLogo}" alt=""><button onclick="clearClientLogo()">Remover</button>`
+      : '';
+  }
+  const sigBox = document.getElementById('signature-preview');
+  if (sigBox) {
+    const advisorName = (document.getElementById('f-advisor') || {}).value || '';
+    const sig = getSignatureFor(advisorName);
+    sigBox.innerHTML = sig
+      ? `<img src="${sig}" alt=""><button onclick="clearSignature()">Remover</button>`
+      : '';
+  }
+}
+
+// ── Reference code ──
+function computeRefCode() {
+  const rawDate = (document.getElementById('f-date') || {}).value || '';
+  const year = /^\d{4}/.test(rawDate) ? rawDate.slice(0, 4) : String(new Date().getFullYear());
+  const on = k => !!state[k];
+  const jurisdictions = [
+    ['CAY', ['cayman', 'transCayman', 'transCaymanRA', 'dissolucaoCayman']],
+    ['BVI', ['bvi', 'transBVI', 'transBVIRA', 'dissolucaoBVI']],
+    ['BAH', ['bahamas', 'transBahamas', 'transBahamasRA', 'dissolucaoBahamas']],
+    ['NEV', ['nevis', 'transNevis', 'transNevisRA', 'dissolucaoNevis']],
+  ];
+  const usKeys = ['fl','de','ny','sd','wi','mn','transFL','transDE','transNY','transSD','transWI','transMN',
+                  'transFLRA','transDERA','dissolucaoFL','dissolucaoDE','dissolucaoNY','dissolucaoSD',
+                  'dissolucaoWI','dissolucaoMN','customUS'];
+  let code = 'GEN';
+  const hit = jurisdictions.find(function (j) { return j[1].some(on); });
+  if (hit)                                    code = hit[0];
+  else if (usKeys.some(on))                   code = 'US';
+  else if (state.will || state.trust)         code = 'SUC';
+  else if (state.reestru)                     code = 'RES';
+  else if (state.fs || state.tr || state.afr) code = 'CTB';
+  else if (state.apostila)                    code = 'NOT';
+  else if (state.dcbe)                        code = 'BOI';
+  return `FGC-PROP-${code}-${year}`;
+}
+function currentRefCode() { return refCodeAuto ? computeRefCode() : (refCode || computeRefCode()); }
+function refreshRefCodeField() {
+  const el = document.getElementById('f-refcode');
+  const hint = document.getElementById('refcode-hint');
+  if (!el) return;
+  if (refCodeAuto) {
+    el.value = computeRefCode();
+    if (hint) hint.textContent = 'Gerado automaticamente a partir dos serviços.';
+  } else if (hint) {
+    hint.textContent = 'Código manual — clique em ↻ para voltar ao automático.';
+  }
+}
+function onRefCodeInput(v) { refCode = v; refCodeAuto = false; refreshRefCodeField(); debouncedUpdate(); }
+function resetRefCodeAuto() { refCodeAuto = true; refCode = ''; refreshRefCodeField(); debouncedUpdate(); }
+
+// ── Required documents rows ──
+function addRequiredDoc() { requiredDocs.push({ doc: '', desc: '', who: '' }); renderRequiredDocs(); debouncedUpdate(); }
+function removeRequiredDoc(i) {
+  requiredDocs.splice(i, 1);
+  if (!requiredDocs.length) requiredDocs = [{ doc: '', desc: '', who: '' }];
+  renderRequiredDocs(); debouncedUpdate();
+}
+function setRequiredDoc(i, field, v) { if (requiredDocs[i]) { requiredDocs[i][field] = v; debouncedUpdate(); } }
+function renderRequiredDocs() {
+  const box = document.getElementById('req-docs-list');
+  if (!box) return;
+  box.innerHTML = requiredDocs.map(function (d, i) { return `
+    <div class="doc-row">
+      <div class="doc-row-head">
+        <span>Documento ${i + 1}</span>
+        <button class="doc-row-remove" onclick="removeRequiredDoc(${i})" title="Remover">✕</button>
+      </div>
+      <input type="text" class="field-input" placeholder="Documento" value="${escHtml(d.doc)}" oninput="setRequiredDoc(${i},'doc',this.value)">
+      <input type="text" class="field-input" placeholder="Descrição" value="${escHtml(d.desc)}" oninput="setRequiredDoc(${i},'desc',this.value)">
+      <input type="text" class="field-input" placeholder="Aplicável a" value="${escHtml(d.who)}" oninput="setRequiredDoc(${i},'who',this.value)">
+    </div>`; }).join('');
+}
+
+// ── Persistence: the cover / understanding / documents fields ──
+// Every field defaults, so drafts saved before this release still load clean.
+function coverStatePayload() {
+  return {
+    coverSubject, refCode, refCodeAuto, validityDays, clientLogo, openingNote,
+    understanding: Object.assign({}, understanding),
+    requiredDocsIntro,
+    requiredDocs: JSON.parse(JSON.stringify(requiredDocs)),
+  };
+}
+function applyCoverState(src) {
+  const d = src || {};
+  coverSubject      = d.coverSubject || '';
+  refCode           = d.refCode || '';
+  refCodeAuto       = d.refCodeAuto !== false;
+  validityDays      = Number(d.validityDays) > 0 ? Number(d.validityDays) : 10;
+  clientLogo        = d.clientLogo || '';
+  openingNote       = d.openingNote || '';
+  understanding     = Object.assign({ what: '', objective: '', scope: '', recommendation: '' }, d.understanding || {});
+  requiredDocsIntro = d.requiredDocsIntro || '';
+  requiredDocs      = Array.isArray(d.requiredDocs) && d.requiredDocs.length
+    ? d.requiredDocs.map(r => ({ doc: r.doc || '', desc: r.desc || '', who: r.who || '' }))
+    : [{ doc: '', desc: '', who: '' }];
+  syncCoverFields();
+}
+function syncCoverFields() {
+  const set = (id, v) => { const el = document.getElementById(id); if (el) el.value = v; };
+  set('f-subject', coverSubject);
+  set('f-validity', validityDays);
+  set('f-opening', openingNote);
+  set('f-und-what', understanding.what);
+  set('f-und-obj', understanding.objective);
+  set('f-und-scope', understanding.scope);
+  set('f-und-rec', understanding.recommendation);
+  set('f-docs-intro', requiredDocsIntro);
+  const ref = document.getElementById('f-refcode');
+  if (ref && !refCodeAuto) ref.value = refCode;
+  refreshRefCodeField();
+  renderRequiredDocs();
+  renderAssetPreviews();
+}
+
+// ── Document builders ──
+function paras(text) {
+  return String(text || '').trim().split(/\n/).filter(function (l) { return l.trim(); })
+    .map(function (l) { return `<p>${escHtml(l.trim())}</p>`; }).join('');
+}
+function bulletList(text) {
+  const items = String(text || '').split('\n')
+    .map(function (l) { return l.replace(/^\s*[-•▪*]\s*/, '').trim(); })
+    .filter(Boolean);
+  if (!items.length) return '';
+  return `<ul class="doc-bullets">${items.map(function (i) { return `<li>${escHtml(i)}</li>`; }).join('')}</ul>`;
+}
+function fillPrompt(msg) {
+  return `<div class="doc-placeholder"><strong>${dl().fillPrompt}</strong> ${msg}</div>`;
+}
+function secHead(num, title) {
+  return `<div class="doc-sec-head">
+      <div class="doc-sec-eyebrow">${dl().secao} ${num}</div>
+      <div class="doc-sec-title">${title}</div>
+    </div>`;
+}
+
+function buildCover(ctx) {
+  const D = dl();
+  const preparedFor = [ctx.client || '—', ctx.careOf ? `${ctx.careOfPrefix} ${ctx.careOf}` : '', ctx.extraLine]
+    .filter(Boolean).map(escHtml).join('<br>');
+  const marks = ctx.triva
+    ? `<img class="cover-fgc" src="${LOGO_TRIVA}" alt="Triva">`
+    : `<img class="cover-fgc" src="${LOGO_DARK}" alt="FGC.">`;
+  return `
+    <div class="doc-cover">
+      <div class="doc-cover-top">
+        <div class="doc-cover-marks">
+          ${marks}
+          ${clientLogo ? `<div class="doc-cover-divider"></div><img class="cover-client-logo" src="${clientLogo}" alt="">` : ''}
+        </div>
+        <div class="doc-cover-rule"></div>
+      </div>
+      <div class="doc-cover-mid">
+        <div class="doc-cover-kicker">${D.kicker}</div>
+        ${coverSubject.trim() ? `<div class="doc-cover-subject">${escHtml(coverSubject.trim())}</div>` : ''}
+      </div>
+      <div class="doc-cover-meta">
+        <div class="doc-cover-meta-item">
+          <div class="doc-cover-meta-label">${D.preparedFor}</div>
+          <div class="doc-cover-meta-value">${preparedFor}</div>
+        </div>
+        <div class="doc-cover-meta-item">
+          <div class="doc-cover-meta-label">${D.preparedBy}</div>
+          <div class="doc-cover-meta-value">${escHtml(ctx.advisor || 'FGC Advisors')}</div>
+        </div>
+        <div class="doc-cover-meta-item">
+          <div class="doc-cover-meta-label">${D.date}</div>
+          <div class="doc-cover-meta-value">${escHtml(ctx.dateStr)}</div>
+        </div>
+        <div class="doc-cover-meta-item">
+          <div class="doc-cover-meta-label">${D.validity}</div>
+          <div class="doc-cover-meta-value">${escHtml(D.validityFmt(validityDays))}</div>
+        </div>
+        <div class="doc-cover-meta-item">
+          <div class="doc-cover-meta-label">${D.ref}</div>
+          <div class="doc-cover-meta-value is-ref">${escHtml(currentRefCode())}</div>
+        </div>
+      </div>
+      <div class="doc-cover-foot">
+        <span><strong>fgcadvisors.com</strong></span>
+        <span>+1 305 432 3009</span>
+        <span>1001 Brickell Bay Drive #2110 &nbsp; Miami, FL 33131</span>
+      </div>
+    </div>`;
+}
+
+function buildSignoff(ctx) {
+  const mark = ctx.signature
+    ? `<img class="doc-signoff-mark" src="${ctx.signature}" alt="">`
+    : `<div class="doc-signoff-cursive">${escHtml(ctx.signerCursive)}</div>`;
+  const valediction = { pt: 'Abs,', es: 'Saludos,', en: 'Best,' }[lang];
+  return `
+    <div class="doc-signoff">
+      <div class="doc-signoff-valediction">${valediction}</div>
+      ${mark}
+      <div class="doc-signoff-name">${escHtml(ctx.signerFormal)}</div>
+      ${ctx.signerRole ? `<div class="doc-signoff-role">${escHtml(ctx.signerRole)}</div>` : ''}
+    </div>`;
+}
+
+function buildApresentacao(ctx) {
+  const D = dl();
+  const body = openingNote.trim()
+    ? paras(openingNote)
+    : `<p><strong>${ctx.salutation}</strong></p>${ctx.autoOpening}`;
+  return `
+    <div class="doc-sec">
+      <div class="doc-sec-head">
+        <div class="doc-sec-eyebrow">${D.apresentacao}</div>
+        <div class="doc-sec-title">${D.apresentacaoTitle}</div>
+      </div>
+      <div class="doc-note-body">${body}</div>
+      ${buildSignoff(ctx)}
+    </div>`;
+}
+
+function buildEntendimento(num) {
+  const D = dl();
+  const u = understanding;
+  const scopeList = bulletList(u.scope);
+  return `
+    <div class="doc-sec">
+      ${secHead(num, D.entendimento)}
+      <div class="doc-block">
+        <div class="doc-block-label">${D.whatLabel}</div>
+        ${u.what.trim() ? paras(u.what) : fillPrompt(D.promptWhat)}
+      </div>
+      <div class="doc-block">
+        <div class="doc-block-label">${D.objectiveLabel}</div>
+        ${u.objective.trim() ? paras(u.objective) : fillPrompt(D.promptObjective)}
+      </div>
+      <div class="doc-block">
+        <div class="doc-block-label">${D.scopeLabel}</div>
+        ${scopeList || fillPrompt(D.promptScope)}
+      </div>
+      ${u.recommendation.trim() ? `
+      <div class="doc-callout">
+        <div class="doc-block-label">${D.recLabel}</div>
+        ${paras(u.recommendation)}
+      </div>` : ''}
+    </div>`;
+}
+
+function buildRequiredDocsSection(num) {
+  const D = dl();
+  const rows = requiredDocs.filter(function (d) { return (d.doc || '').trim() || (d.desc || '').trim(); });
+  const intro = requiredDocsIntro.trim() || D.docsIntroDefault;
+  return `
+    <div class="doc-sec">
+      ${secHead(num, D.docsTitle)}
+      <div class="doc-block"><p>${escHtml(intro)}</p></div>
+      ${rows.length ? `
+      <table class="doc-grid-table">
+        <thead><tr><th>${D.colDoc}</th><th>${D.colDesc}</th><th>${D.colWho}</th></tr></thead>
+        <tbody>${rows.map(function (d) { return `<tr>
+          <td>${escHtml(d.doc)}</td>
+          <td>${escHtml(d.desc)}</td>
+          <td>${escHtml(d.who)}</td>
+        </tr>`; }).join('')}</tbody>
+      </table>` : fillPrompt(D.promptDocs)}
+    </div>`;
+}
+
+function buildAceite(ctx) {
+  const D = dl();
+  const mark = ctx.signature
+    ? `<img class="doc-aceite-mark" src="${ctx.signature}" alt="">`
+    : `<div class="doc-aceite-cursive">${escHtml(ctx.signerCursive)}</div>`;
+  const blankDate = { pt: 'Data: ____ / ____ / ______', es: 'Fecha: ____ / ____ / ______', en: 'Date: ____ / ____ / ______' }[lang];
+  return `
+    <div class="doc-aceite">
+      <div class="doc-aceite-intro">${escHtml(D.aceiteIntro)}</div>
+      <div class="doc-aceite-grid">
+        <div class="doc-aceite-party">
+          <div class="doc-aceite-party-label">FGC Advisors</div>
+          ${mark}
+          <div class="doc-aceite-name">${escHtml(ctx.signerFormal)}</div>
+          <div class="doc-aceite-line">${D.dateLine} ${escHtml(ctx.dateStr)}</div>
+        </div>
+        <div class="doc-aceite-party">
+          <div class="doc-aceite-party-label">${D.clientParty}</div>
+          <div class="doc-aceite-rule"></div>
+          <div class="doc-aceite-line">${D.nameLine} ${escHtml(ctx.client || '')}</div>
+          <div class="doc-aceite-line">${blankDate}</div>
+        </div>
+      </div>
+      <div class="doc-aceite-contact">
+        <strong>${D.contactLabel}</strong> &nbsp; ${escHtml(ctx.signerEmail)} &nbsp;·&nbsp; +1 305 432 3009
+      </div>
+      <div class="doc-confidential">${escHtml(D.confidential)}</div>
+    </div>`;
+}
+
 function setGender(g) {
   gender = g;
   document.querySelectorAll('.gender-btn').forEach(b => b.classList.remove('active'));
@@ -5418,6 +6300,7 @@ let _lastTrivaMode = null;
 let _editMode = false;
 
 function debouncedUpdate() {
+  refreshRefCodeField();
   clearTimeout(debTimer);
   debTimer = setTimeout(function() {
     updateTopbar();
@@ -5457,6 +6340,7 @@ function writeAutoSave() {
       scopeNotes: Object.assign({}, scopeNotes),
       scopeOverrides: Object.assign({}, scopeOverrides),
       proposalNotes,
+      cover: coverStatePayload(),
       savedAt: new Date().toISOString(),
     };
     localStorage.setItem('fgc_autosave', JSON.stringify(snapshot));
@@ -5503,6 +6387,7 @@ function restoreAutoSave() {
     if (snap.scopeNotes)     scopeNotes     = snap.scopeNotes;
     if (snap.scopeOverrides) scopeOverrides = snap.scopeOverrides;
     proposalNotes = snap.proposalNotes || '';
+    applyCoverState(snap.cover);
     document.getElementById('f-client').value  = snap.client || '';
     if (document.getElementById('f-email'))   document.getElementById('f-email').value   = snap.clientEmail || '';
     document.getElementById('f-advisor').value = snap.advisor || '';
@@ -5937,7 +6822,7 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
   // All fee content lives in Section I. Items numbered continuously 1.1, 1.2, 1.3...
   let feeItemSub = 0;
   const hasFeeContent = sec1Items.length > 0 || secSuccItems.length > 0 || secMaintItems.length > 0 || secAcctItems.length > 0 || sec3Items.length > 0;
-  const feeSecHeader = 'I. ' + { pt: 'Honorários', es: 'Honorarios', en: 'Fees' }[lang];
+  const feeSecTitle = { pt: 'Honorários', es: 'Honorarios', en: 'Fees' }[lang];
 
   // Sub-labels (shown inside Section I, no Roman numerals)
   const hasSec1Content = sec1Items.length > 0;
@@ -5988,10 +6873,14 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
 
   // Scope = II, Not Included = III, T&C = IV
   const secTermsNum = 2;
-  const secTermsHeader = 'II. ' + L.secTermsLabel;
+  const secTermsTitle = L.secTermsLabel;
   const secNotIncNum = 3;
-  const secTCNum = 4;
-  const secTCHeader = 'IV. ' + L.secTCLabel;
+  const secTCTitle = L.secTCLabel;
+  // Section numbers are assigned as the document renders, so optional
+  // sections dropping out never leaves a gap in the sequence.
+  let _secNo = 0;
+  const nextSecNo = () => String(++_secNo).padStart(2, '0');
+  let secTCNum = 5;   // set when the Terms section actually renders
 
   // (Per-section subtotals are computed inline in the document assembly)
 
@@ -6473,91 +7362,83 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
   const selectedServiceNames = [...new Set(sigServiceGroups)];
 
   // Build named signature lines — always show at least one client line
-  const sigNames = [];
-  const sigClientLabel = client || { pt: 'Beneficiário / Representante Autorizado', es: 'Beneficiario / Representante Autorizado', en: 'Beneficiary / Authorized Representative' }[lang];
-  sigNames.push(sigClientLabel);
+  // ── Signer identity: advisor → display name, role, email, scanned signature ──
   const advisorVal = document.getElementById('f-advisor').value.trim();
+  const signerMap = {
+    'fabiana': { cursive: 'Fabiana Ciobataru', formal: 'Fabiana G. Ciobataru', role: 'Founder & Managing Partner', email: 'fabiana@fgcadvisors.com' },
+    'claudia': { cursive: 'Claudia Grosman',   formal: 'Claudia F. Grosman',   role: '', email: 'claudia@fgcadvisors.com' },
+  };
+  const advisorLower = advisorVal.toLowerCase();
+  let signer = null;
+  for (const key of Object.keys(signerMap)) {
+    if (advisorLower.includes(key)) { signer = signerMap[key]; break; }
+  }
+  if (!signer) {
+    signer = advisorVal
+      ? { cursive: advisorVal, formal: advisorVal, role: '', email: 'contact@fgcadvisors.com' }
+      : signerMap['fabiana'];
+  }
 
-  // Closing paragraph (Fabiana signature block) — before the acceptance section
-  const closingHTML = L.closingText ? (() => {
-    // Signer map: advisor name → { cursive, formal }
-    const signerMap = {
-      'fabiana': { cursive: 'Fabiana Ciobataru', formal: 'Fabiana G. Ciobataru' },
-      'claudia': { cursive: 'Claudia Grosman', formal: 'Claudia F. Grosman' },
-    };
-    const advisorLower = (document.getElementById('f-advisor').value || '').trim().toLowerCase();
-    // Match advisor to signer (check if advisor name contains any key)
-    let signer = signerMap['fabiana']; // default
-    for (const [key, val] of Object.entries(signerMap)) {
-      if (advisorLower.includes(key)) { signer = val; break; }
-    }
-    // Replace the default name with the matched signer + cursive signature
-    const styledText = L.closingText.replace(/\n/g, '<br>').replace('Fabiana G. Ciobataru',
-      '<span style="font-family:\'Dancing Script\',cursive;font-size:22px;font-weight:700;display:block;margin:4px 0 2px;">' + signer.cursive + '</span><span style="font-size:11px;color:var(--text-light);">' + signer.formal + '</span>');
-    return `<div style="font-size:12px;line-height:1.7;color:var(--text);margin-top:32px;margin-bottom:32px;">${styledText}</div>`;
-  })() : '';
+  const docCtx = {
+    client, careOf, extraLine, dateStr, triva,
+    careOfPrefix: L.careOfPrefix,
+    advisor: advisorVal || signer.formal,
+    salutation: `${getSalutation()} ${(client || 'Client').split(' ')[0]},`,
+    autoOpening: `<p>${openingParagraph}</p>`,
+    signerCursive: signer.cursive,
+    signerFormal: signer.formal,
+    signerRole: signer.role,
+    signerEmail: signer.email,
+    signature: getSignatureFor(advisorVal),
+  };
 
-  const signatureHTML = `
-    ${closingHTML}
-    <div class="signature-section">
-      <div style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:12px;">${L.sigHeader}</div>
-      <div style="font-size:12px;color:var(--text);line-height:1.6;margin-bottom:18px;">${FGC_CONFIG.sigIntro[lang]}</div>
-      <div style="font-size:11px;font-weight:600;margin-bottom:8px;">${L.sigServicesLabel}</div>
-      <div style="margin-bottom:24px;">
-        ${selectedServiceNames.map(name => {
-          const yesLabel = lang === 'en' ? 'Yes' : lang === 'es' ? 'Sí' : 'Sim';
-          const noLabel  = lang === 'en' ? 'No'  : lang === 'es' ? 'No' : 'Não';
-          const radioName = 'sig_' + name.replace(/[^a-zA-Z0-9]/g, '_').substring(0, 30);
-          return `
-          <div style="display:flex;align-items:center;gap:10px;font-size:11px;margin-bottom:6px;padding:4px 0;">
-            <span style="flex:1;">${name}</span>
-            <span style="display:flex;align-items:center;gap:3px;font-size:10px;font-weight:600;"><span style="display:inline-block;width:11px;height:11px;border-radius:50%;border:1.5px solid var(--dark);flex-shrink:0;"></span> ${yesLabel}</span>
-            <span style="display:flex;align-items:center;gap:3px;font-size:10px;font-weight:600;"><span style="display:inline-block;width:11px;height:11px;border-radius:50%;border:1.5px solid var(--dark);flex-shrink:0;"></span> ${noLabel}</span>
-          </div>`;
-        }).join('')}
-      </div>
-      ${sigNames.map(name => `
-      <div style="margin-bottom:28px;">
-        <div style="display:grid;grid-template-columns:2fr 1fr;gap:24px;">
-          <div>
-            <div style="border-bottom:1px solid var(--dark);height:36px;"></div>
-            <div style="font-size:9px;color:var(--text-light);margin-top:4px;">${L.sigLine1}</div>
-          </div>
-          <div>
-            <div style="border-bottom:1px solid var(--dark);height:36px;"></div>
-            <div style="font-size:9px;color:var(--text-light);margin-top:4px;">${L.sigLine2}</div>
-          </div>
-        </div>
-      </div>
-      `).join('')}
-      <div style="font-size:10px;color:var(--text-light);margin-top:16px;">${L.sigValidity}</div>
-    </div>
-  `;
+  // "Please sign and return" lead-in. The valediction and name are stripped —
+  // the Aceite grid below carries the signature and name.
+  const closingLead = (L.closingText || '').split('\n')
+    .filter(l => l.trim()
+      && !/^(Atenciosamente|Atentamente|Sincerely)\s*,?$/i.test(l.trim())
+      && !l.includes('Fabiana G. Ciobataru'))
+    .join('\n');
+
+  function buildAceiteSection() {
+    return `
+    <div class="doc-sec">
+      ${secHead(nextSecNo(), dl().aceite)}
+      ${closingLead ? `<div class="doc-block">${paras(closingLead)}</div>` : ''}
+      ${buildAceite(docCtx)}
+    </div>`;
+  }
 
   // ── Assemble document ──
   const docHTML = `
+    ${buildCover(docCtx)}
+
+    <!-- Repeats on every printed page (print CSS only) -->
+    <div class="doc-running-header">
+      <img src="${LOGO_DARK}" alt="FGC.">
+      <span>${dl().runningHeader}</span>
+    </div>
+    <div class="doc-running-footer">
+      <span>fgcadvisors.com</span>
+      <span>${escHtml(currentRefCode())}</span>
+    </div>
+
     <div class="doc-header">
       <div class="doc-logo">${triva
-        ? `<span style="display:inline-flex;align-items:center;"><img src="${LOGO_TRIVA}" alt="Triva" style="height:18px;display:block;margin-right:14px;"><span style="font-size:11px;font-weight:400;color:var(--text-light);font-family:var(--font);margin-right:2px;">by</span><img src="${LOGO_DARK}" alt="FGC." style="height:22px;display:block;"></span>`
-        : `<img src="${LOGO_DARK}" alt="FGC." style="height:44px;display:block;">`}</div>
-      <div class="doc-header-label">${L.lblProposal}</div>
+        ? `<span style="display:inline-flex;align-items:center;"><img src="${LOGO_TRIVA}" alt="Triva" style="height:16px;display:block;margin-right:12px;"><span style="font-size:10px;font-weight:400;color:var(--text-light);font-family:var(--font);margin-right:2px;">by</span><img src="${LOGO_DARK}" alt="FGC." style="height:18px;display:block;"></span>`
+        : `<img src="${LOGO_DARK}" alt="FGC." style="height:26px;display:block;">`}</div>
+      <div class="doc-header-label">${L.lblProposal} · ${escHtml(currentRefCode())}</div>
     </div>
 
     <div class="doc-body">
-      <div style="font-size:12px;line-height:1.7;margin-bottom:24px;">
-        <div style="font-weight:600;">${client || 'Client'}</div>
-        ${careOf ? `<div style="font-size:11px;color:var(--text-light);">${L.careOfPrefix} ${careOf}</div>` : ''}
-        ${extraLine ? `<div style="font-size:11px;color:var(--text-light);">${extraLine}</div>` : ''}
-        ${clientEmail ? `<div>${clientEmail}</div>` : ''}
-        <div>${dateStr}</div>
-      </div>
+      ${buildApresentacao(docCtx)}
 
-      <div class="opening-text"><strong>${getSalutation()} ${(client || 'Client').split(' ')[0]},</strong><br>${openingParagraph}</div>
+      ${buildEntendimento(nextSecNo())}
 
-      <!-- SECTION I: HONORÁRIOS — all fee sub-sections under one header -->
+      <!-- HONORÁRIOS — all fee sub-sections under one header -->
       ${hasFeeContent ? `
       <div class="doc-section">
-        <div class="doc-section-header">${feeSecHeader}</div>
+        ${secHead(nextSecNo(), feeSecTitle)}
 
         ${hasSec1Content ? `
           <div class="doc-section-subheader" style="margin-top:24px;">${sec1SubLabel}</div>
@@ -6610,7 +7491,7 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
       <!-- SECTION: Scope of Services -->
       ${termsHTML ? `
       <div class="doc-section">
-        <div class="doc-section-header">${secTermsHeader}</div>
+        ${secHead(nextSecNo(), secTermsTitle)}
         ${termsHTML}
       </div>
       ` : ''}
@@ -6646,15 +7527,18 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
         }
         return `
       <div class="doc-section">
-        <div class="doc-section-header">III. ${clauseSet.notIncluded.title}</div>
+        ${secHead(nextSecNo(), clauseSet.notIncluded.title)}
         <ul class="terms-list">
           ${notIncItems.map(i => '<li>' + i + '</li>').join('')}
         </ul>
       </div>
 
+      <!-- SECTION: Documentos necessários -->
+      ${buildRequiredDocsSection(nextSecNo())}
+
       <!-- SECTION: Terms & Conditions -->
       <div class="doc-section">
-        <div class="doc-section-header">${secTCHeader}</div>
+        ${(secTCNum = Number(nextSecNo()), secHead(String(secTCNum).padStart(2, '0'), secTCTitle))}
         <div class="terms-section">
           <div class="terms-section-heading">${secTCNum}.1 — ${clauseSet.payment.title}</div>
           <ul class="terms-list">${payText ? payText.replace(/\. /g, '.|').split('|').filter(Boolean).map(s => '<li>' + s + '</li>').join('') : ''}${(() => {
@@ -6694,8 +7578,8 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
       </div>`;
       })()}
 
-      <!-- Signature Section -->
-      ${signatureHTML}
+      <!-- Aceite -->
+      ${buildAceiteSection()}
     </div>
 
     <div class="doc-footer">
@@ -6842,6 +7726,7 @@ function addAdvisorFromInput() {
 function selectAdvisorChip(name) {
   document.getElementById('f-advisor').value = name;
   renderAdvisorChips();
+  renderAssetPreviews();
   debouncedUpdate();
 }
 function renderAdvisorChips() {
@@ -6935,6 +7820,9 @@ function resetProposal() {
   if (extraEl) extraEl.value = '';
   const notesEl = document.getElementById('f-notes');
   if (notesEl) notesEl.value = '';
+  // Cover / understanding / documents back to defaults (signature images are
+  // kept — they belong to the advisor, not to the proposal)
+  applyCoverState(null);
   // Reset date to today
   const today = new Date();
   document.getElementById('f-date').value = today.getFullYear() + '-' + String(today.getMonth()+1).padStart(2,'0') + '-' + String(today.getDate()).padStart(2,'0');
@@ -7165,6 +8053,7 @@ function saveDraft() {
     scopeNotes: Object.assign({}, scopeNotes),
     scopeOverrides: Object.assign({}, scopeOverrides),
     proposalNotes: proposalNotes,
+    cover: coverStatePayload(),
     savedBy: user,
     savedAt: new Date().toISOString(),
     status: 'draft',
@@ -7253,6 +8142,9 @@ function loadDraft(id) {
   if (draft.scopeNotes) scopeNotes = draft.scopeNotes;
   if (draft.scopeOverrides) scopeOverrides = draft.scopeOverrides;
   proposalNotes = draft.proposalNotes || '';
+  // Drafts saved before the v2 cover release have no `cover` key —
+  // applyCoverState resets every field to its default, so they load clean.
+  applyCoverState(draft.cover);
   const notesEl = document.getElementById('f-notes');
   if (notesEl) notesEl.value = proposalNotes;
   document.getElementById('f-client').value = draft.client || '';
@@ -7356,6 +8248,7 @@ document.addEventListener('DOMContentLoaded', () => {
   renderServicePicker();
   renderUI();
   renderAdvisorChips();
+  syncCoverFields();
   updateDraftCountBadge();
   // Focus username input
   document.getElementById('pw-username').focus();
