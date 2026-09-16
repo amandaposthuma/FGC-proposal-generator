@@ -1172,6 +1172,19 @@
   }
   #proposal-doc .fee-table tbody tr:last-child td { border-bottom: none; }
 
+  /* Column proportions from the source table (4329 / 2071 / 3012 twips) */
+  #proposal-doc .fee-table { table-layout: fixed; margin-bottom: 0; }
+  #proposal-doc .fee-table th:nth-child(1), #proposal-doc .fee-table td:nth-child(1) { width: 46%; }
+  #proposal-doc .fee-table th:nth-child(2), #proposal-doc .fee-table td:nth-child(2) { width: 22%; text-align: left; }
+  #proposal-doc .fee-table th:nth-child(3), #proposal-doc .fee-table td:nth-child(3) { width: 32%; text-align: right; }
+  #proposal-doc .fee-table td .row-payment,
+  #proposal-doc .fee-table td .row-anual { text-align: left; }
+
+  /* Subtotal continues the table above it, under a navy rule */
+  #proposal-doc .fee-subtotal-table { margin-top: 0; }
+  #proposal-doc .fee-subtotal-table td { font-weight: 600; padding-top: 10px; }
+  #proposal-doc .fee-subtotal-table td:nth-child(2) { font-weight: 400; color: var(--doc-muted); }
+
   /* ── Documents table: same rule system ── */
   #proposal-doc .doc-grid-table th { border-bottom: 1px solid var(--doc-rule-head); }
   #proposal-doc .doc-grid-table td { border-bottom: 1px solid var(--doc-rule-row); }
@@ -5105,6 +5118,9 @@ let clientLogo         = '';   // dataURL
 let openingNote        = '';   // overrides the auto-generated opening when non-empty
 let understanding      = { what: '', objective: '', scope: '', recommendation: '' };
 let requiredDocsIntro  = '';
+// Bump whenever the generated document structure changes. loadDraft replays a
+// draft's stored HTML only when it was produced by this same format.
+const DOC_FORMAT = 3;
 let oneOffTitle        = '';   // Seção 02 title; blank = derive from services
 let nextSteps          = '';
 let requiredDocs       = [{ doc: '', desc: '', who: '' }];
@@ -5125,6 +5141,9 @@ const DOC_L = {
     docsTitle: 'Documentos necessários',
     docsIntroDefault: 'Documentos solicitados por acionista e diretor da sociedade, necessários para a atualização de KYC.',
     colDoc: 'Documento', colDesc: 'Descrição', colWho: 'Aplicável a',
+    colDescription: 'Descrição', colModel: 'Modelo', colInvestment: 'Investimento',
+    subtotalLabel: 'Subtotal estimado', annualTotalLabel: 'Total anual estimado',
+    annualNote: 'Cobrado uma vez por ano',
     aceite: 'Aceite', aceiteLabel: 'Aceite',
     maintTitle: 'Manutenção anual',
     termsNextTitle: 'Termos e próximos passos',
@@ -5157,6 +5176,9 @@ const DOC_L = {
     docsTitle: 'Documentos necesarios',
     docsIntroDefault: 'Documentos solicitados por accionista y director de la sociedad, necesarios para la actualización de KYC.',
     colDoc: 'Documento', colDesc: 'Descripción', colWho: 'Aplicable a',
+    colDescription: 'Descripción', colModel: 'Modelo', colInvestment: 'Inversión',
+    subtotalLabel: 'Subtotal estimado', annualTotalLabel: 'Total anual estimado',
+    annualNote: 'Cobrado una vez al año',
     aceite: 'Aceptación', aceiteLabel: 'Aceptación',
     maintTitle: 'Mantenimiento anual',
     termsNextTitle: 'Términos y próximos pasos',
@@ -5189,6 +5211,9 @@ const DOC_L = {
     docsTitle: 'Required documents',
     docsIntroDefault: 'Documents requested from the shareholder and director of the company, required for the KYC update.',
     colDoc: 'Document', colDesc: 'Description', colWho: 'Applies to',
+    colDescription: 'Description', colModel: 'Model', colInvestment: 'Investment',
+    subtotalLabel: 'Estimated subtotal', annualTotalLabel: 'Estimated annual total',
+    annualNote: 'Billed once per year',
     aceite: 'Acceptance', aceiteLabel: 'Acceptance',
     maintTitle: 'Annual maintenance',
     termsNextTitle: 'Terms and next steps',
@@ -7522,11 +7547,11 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
           ${!it.noRef ? `<div class="row-ref">${L.colRef} ${it.termsRef || it.num}</div>` : ''}
         </td>
         <td>
-          <div class="row-amount">${amountStr}</div>
-        </td>
-        <td>
           <div class="row-payment">${(it.pay||'').split('\n')[0]}</div>
           ${(it.pay||'').includes('\n') ? (it.pay||'').split('\n').slice(1).map(l => `<div class="row-anual">${l}</div>`).join('') : ''}
+        </td>
+        <td>
+          <div class="row-amount">${amountStr}</div>
         </td>
       </tr>
     `;
@@ -7539,11 +7564,12 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
   }
 
   function buildFeeTable(items) {
-    const thRow = `<thead><tr><th>${L.colService}</th><th style="white-space:nowrap">${L.colAmount}</th><th>${L.colPayment}</th></tr></thead>`;
+    const D = dl();
+    const thRow = `<thead><tr><th>${D.colDescription}</th><th>${D.colModel}</th><th>${D.colInvestment}</th></tr></thead>`;
     return `<table class="fee-table">${thRow}<tbody>${buildTableRows(items)}</tbody></table>`;
   }
 
-  function buildSectionSubtotal(items) {
+  function buildSectionSubtotal(items, kind, kindNote) {
     // year1: items paid on acceptance (formation + maintenance when timing='acceptance')
     // year2: all annual recurring items (maintenance always recurs) + year2-only items (mailing)
     // safeAmt: treat null/undefined/NaN/complimentary as 0
@@ -7555,14 +7581,23 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
     const year1Total = items.filter(it => it.pay === L.payOnAcceptance && !it.complimentary).reduce((s, it) => s + safeAmt(it), 0);
     const year2Total = items.filter(it => it.recurring || (it.pay !== L.payOnAcceptance && !it.complimentary && it.amount != null)).reduce((s, it) => s + safeAmt(it), 0);
     if (year1Total <= 0 && year2Total <= 0) return '';
-    const lblYear1 = { pt: 'Valor 1º ano', es: 'Valor 1er año', en: 'Year 1 Total' }[lang];
     const lblYear2 = { pt: 'Valor anual a partir do 2º ano', es: 'Valor anual a partir del 2º año', en: 'Annual Total from Year 2' }[lang];
-    let html = '<div style="text-align:right;font-size:12px;font-weight:600;color:var(--dark);padding:8px 0 4px;border-top:1px solid var(--border-light);margin-top:4px;">';
-    if (year1Total > 0) html += `${lblYear1}: ${fmt(year1Total)}`;
-    if (year1Total > 0 && year2Total > 0) html += '<br>';
-    if (year2Total > 0) html += `${lblYear2}: ${fmt(year2Total)}`;
-    html += '</div>';
-    return html;
+    // Rendered as a ruled row continuing the fee table, matching the source's
+    // "Subtotal estimado" / "Total anual estimado" rows.
+    const D = dl();
+    const rows = [];
+    if (year1Total > 0) rows.push([kind === 'annual' ? D.annualTotalLabel : D.subtotalLabel, kindNote || '', fmt(year1Total)]);
+    // In the annual section the year-2 figure is the same recurring amount, so
+    // showing it twice just reads as a duplicate line to the client.
+    const year2Redundant = kind === 'annual' && year2Total === year1Total;
+    if (year2Total > 0 && !year2Redundant) rows.push([lblYear2, '', fmt(year2Total)]);
+    if (!rows.length) return '';
+    return `<table class="fee-table fee-subtotal-table"><tbody>${rows.map(r => `
+      <tr class="subtotal-row">
+        <td>${r[0]}</td>
+        <td>${r[1]}</td>
+        <td>${r[2]}</td>
+      </tr>`).join('')}</tbody></table>`;
   }
 
   const sec1PIC   = sec1Items.filter(it => it.group === 'pic');
@@ -7747,7 +7782,7 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
         ${secMaintUS.length > 0  ? macroHeader(L.macroUS)  + buildFeeTable(secMaintUS)  : ''}
         ${secMaintOther.filter(it => it.key === 'trustMaint').length > 0 ? macroHeader({ pt: 'Share Trust', es: 'Share Trust', en: 'Share Trust' }[lang]) + buildFeeTable(secMaintOther.filter(it => it.key === 'trustMaint')) : ''}
         ${secMaintOther.filter(it => it.key !== 'trustMaint').length > 0 ? buildFeeTable(secMaintOther.filter(it => it.key !== 'trustMaint')) : ''}
-        ${buildSectionSubtotal(secMaintItems)}
+        ${buildSectionSubtotal(secMaintItems, 'annual', dl().annualNote)}
         ${termsMaintHTML ? `
           <div class="doc-block-label doc-included-label">${dl().annualCoversLabel}</div>
           ${termsMaintHTML}
@@ -8319,6 +8354,7 @@ function saveDraft() {
     scopeOverrides: Object.assign({}, scopeOverrides),
     proposalNotes: proposalNotes,
     cover: coverStatePayload(),
+    docFormat: DOC_FORMAT,
     savedBy: user,
     savedAt: new Date().toISOString(),
     status: 'draft',
@@ -8421,6 +8457,13 @@ function loadDraft(id) {
   renderAdvisorChips();
   updateTopbar();
   const _loadDocEl = document.getElementById('proposal-doc');
+  // Stored HTML from an older document format would render the old sections.
+  // Regenerate from the draft's data instead so it picks up the current format.
+  if (draft.proposalHTML && draft.docFormat !== DOC_FORMAT) {
+    generateProposal(false);
+    closeDraftsPanel();
+    return;
+  }
   if (draft.proposalHTML && _loadDocEl) {
     _lastTrivaMode = null; // prevent debouncedUpdate from regenerating over the restored HTML
     _loadDocEl.innerHTML = draft.proposalHTML;

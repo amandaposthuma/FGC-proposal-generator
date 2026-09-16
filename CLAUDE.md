@@ -143,6 +143,12 @@ Payload fields: `client`, `user`, `device`, `services`, `language`, `brand`, `ge
 | `fgc_failed_logs` | Array of proposals that failed to log to Notion |
 | `fgc_signatures` | `{ advisorSlug: dataURL }` — scanned signatures, per browser |
 
+**`DOC_FORMAT`** (currently `3`) stamps every saved draft. `saveDraft` stores the
+rendered `proposalHTML` so manual edits survive, but replaying that HTML after the
+document structure changes shows the *old* layout. `loadDraft` therefore replays
+stored HTML only when `draft.docFormat === DOC_FORMAT`, and regenerates otherwise.
+**Bump `DOC_FORMAT` whenever the generated document structure changes.**
+
 ---
 
 ## Deployment
@@ -180,6 +186,7 @@ fs.writeFileSync('/tmp/fgc_check.js',s.join('\n'));
 - **Version Sept 15** — v2 proposal aesthetic matching `Proposta_template_Reinstatement.docx`: full-bleed navy cover with metadata grid, Apresentação opening note with scanned-signature slot, always-on Entendimento e escopo (Seção 01), Documentos necessários table, template-matching Aceite block (per-service Yes/No checklist removed), auto-generated `FGC-PROP-*` reference codes, client logo upload, `Seção NN` numbering. Added the `fgc-understanding-scope` Claude skill.
 - **Version Sept 16** — template-fidelity pass: cover metadata rebuilt as ruled label/value rows (44%/56%, matching the source table); all document rules taken from the docx (`#041725` 1pt headers, `#D5D8DA` 0.5pt rows, `#DAD5CC` cover); cell shading removed everywhere (the source has none); one square bullet marker across every list; standard house text pre-fills the opening note and Entendimento e escopo, with `⟦tokens⟧` highlighted until filled.
 - **Version Sept 16 (b)** — section titles matched to the template: annual maintenance split out as its own `Seção 03`, Seção 02 named after the service (derived, overridable), `Aceite` demoted to a block inside `Termos e próximos passos`, scope split into "O que está incluído" / "O que o valor anual cobre", added "Condições" and "Próximos passos".
+- **Version Sept 16 (c)** — fee tables to the source's `Descrição | Modelo | Investimento` columns (46/22/32) with `Subtotal estimado` / `Total anual estimado` as ruled rows; added `DOC_FORMAT` draft stamping so drafts saved under an older structure regenerate instead of replaying stale HTML.
 - **Version June 17** — fixed fsAnterior/trAnterior crash; full draft save/load (custom items + overrides); Observações field (section 4.6); hasScope toggle on custom items; print margin CSS; loadDraft stale-data reset; custom transfer group fix (no more "PRIVATE INVESTMENT COMPANY" on non-PIC items); item ordering fix
 
 ## Known draft behavior
