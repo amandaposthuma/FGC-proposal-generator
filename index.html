@@ -5245,7 +5245,7 @@ const DOC_FORMAT = 3;
 // Shown in the sidebar so the running build is always identifiable, and
 // compared against the deployed file so a stale cached copy announces
 // itself instead of silently showing an old proposal format.
-const BUILD = '2026-09-16-o';
+const BUILD = '2026-09-16-s';
 
 function showUpdateBanner() {
   if (document.getElementById('update-banner')) return;
@@ -5396,23 +5396,23 @@ const FGC_DEFAULTS = {
     opening:
       'Prezado ⟦Nome⟧,\n' +
       'Esta proposta apresenta o escopo, os documentos necessários e os honorários estimados para ⟦o trabalho contratado⟧, incluindo ⟦as frentes envolvidas⟧.\n' +
-      'Nas próximas seções: o escopo do trabalho, o investimento e a documentação necessária para dar início ao processo.\n' +
-      'Mais do que o trabalho pontual, a FGC permanece à frente da manutenção anual da estrutura como único ponto de contato, de forma a assegurar que todas as obrigações sejam cumpridas.\n' +
-      'Fica um convite para conduzirmos esse processo com a agilidade e o cuidado que a continuidade da sua estrutura exige.\n' +
+      'Nas próximas seções: o escopo do trabalho, o investimento (one-off e anual) e a documentação necessária para dar início ao processo.\n' +
+      'Mais do que ⟦o trabalho⟧ pontual, a FGC permanece à frente da manutenção anual da sociedade como único ponto de contato e de forma a assegurar que todas as obrigações sejam cumpridas.\n' +
+      'Fica um convite para conduzirmos esse processo com a agilidade e o cuidado que a continuidade da sua estrutura em ⟦jurisdição⟧ exige.\n' +
       'Agradecemos desde já essa oportunidade.',
     undWhat:
-      'A ⟦Nome do cliente⟧ encontra-se ⟦situação atual⟧ junto ao ⟦órgão competente⟧ de ⟦jurisdição⟧ desde ⟦data⟧. Na prática, isso significa que a sociedade ⟦o que fica impedido: operar, assinar contratos, movimentar contas⟧ até que a situação seja regularizada.\n' +
-      'O agente registrado da sociedade ⟦renunciou à sua função⟧, normalmente por falta de pagamento das taxas anuais. Toda sociedade em ⟦jurisdição⟧ é obrigada por lei a manter um agente registrado; sem ele, a irregularidade se soma à anterior.',
-    undObjective: '⟦Restaurar / Constituir / Transferir⟧ a sociedade junto ao ⟦órgão competente⟧, ⟦segunda ação, se houver⟧ e regularizar compliance, KYC e as obrigações em aberto.',
+      'A ⟦Nome do cliente⟧ encontra-se ⟦situação atual⟧ do registro pelo ⟦órgão competente⟧ de ⟦jurisdição⟧ desde ⟦data⟧. Isso significa que a sociedade ⟦perdeu sua existência legal⟧, ou seja, não pode operar, assinar contratos ou movimentar contas até ser regularizada junto ao ⟦órgão competente⟧.\n' +
+      'O agente registrado (registered agent/registered office) da sociedade renunciou à sua função, normalmente por falta de pagamento das taxas anuais. Toda sociedade em ⟦jurisdição⟧ é obrigada por lei a manter um agente registrado; sem ele, a irregularidade se soma à anterior.',
+    undObjective: '⟦Restaurar / Constituir / Transferir⟧ a sociedade junto ao ⟦órgão competente⟧, ⟦segunda ação, se houver⟧ e regularizar compliance, KYC e as taxas governamentais em aberto.',
     undScope:
-      '⟦Frente principal do trabalho⟧ junto ao ⟦órgão competente⟧, incluindo ⟦etapas relevantes⟧.\n' +
-      'Manutenção anual ⟦compliance, Economic Substance e demonstrações financeiras⟧.\n' +
+      '⟦Frente principal do trabalho⟧ da sociedade junto ao ⟦órgão competente⟧ (incluindo ⟦etapas relevantes⟧), atualização de KYC/compliance.\n' +
+      'Manutenção anual (compliance, Economic Substance e demonstrações financeiras).\n' +
       'Contabilidade anual.',
-    undRec: 'Concluído ⟦o trabalho⟧, sugerimos ⟦uma análise de planejamento sucessório⟧ da estrutura.',
+    undRec: 'Concluído ⟦o trabalho⟧, sugerimos ⟦uma análise de planejamento sucessório⟧ da estrutura em ⟦jurisdição⟧.',
     sec2Intro: 'Os valores abaixo referem-se aos honorários da FGC para ⟦o trabalho descrito acima⟧. Custos de terceiros — taxas governamentais, agente registrado e cartório — são repassados ao cliente e permanecem estimados até a confirmação final.',
-    timeline: 'O prazo estimado é de ⟦prazo⟧, contado a partir de ⟦marco inicial⟧. Havendo aprovação prévia necessária, esse processo costuma levar ⟦prazo adicional⟧. Obtida a aprovação, ⟦etapa final⟧ é concluída em ⟦prazo⟧.',
-    sec3Intro: 'A manutenção da sociedade é apresentada como um valor anual único, que reúne todas as obrigações recorrentes sob uma só relação.',
-    vencimento: 'O vencimento da anuidade se dará sempre no dia ⟦dia e mês⟧ de todo ano, sendo a primeira em ⟦ano⟧. Emitimos as invoices com antecedência, para que haja tempo hábil de pagamento e de cumprimento dos prazos.',
+    timeline: '⟦Contexto que afeta o prazo⟧. Por experiência, esse processo pode levar ⟦prazo⟧. Obtida a aprovação, ⟦etapa final⟧ costuma ser concluída no prazo de ⟦prazo⟧.',
+    sec3Intro: 'A manutenção da sociedade é apresentada como um valor anual único, que reúne todas as obrigações recorrentes em ⟦jurisdição⟧ sob uma só relação.',
+    vencimento: 'O vencimento da anuidade se dará sempre no dia ⟦dia e mês⟧ de todo ano, sendo a primeira em ⟦ano⟧. Emitimos as invoices em ⟦mês⟧, para que haja tempo hábil de pagamento e de cumprimento dos prazos junto ao ⟦órgão competente⟧.',
     conditions: 'Validade desta proposta: {VALIDADE} dias a partir da data de emissão.\nPremissas: legislação vigente, jurisdição de constituição e dados fornecidos pelo cliente nesta data.\nA contratação formaliza-se por contrato de prestação de serviços específico.',
     nextSteps: 'Alinhamento final de escopo e condições.\nAssinatura do aceite.\nInício dos trabalhos.',
     requiredDocs: [
@@ -5543,19 +5543,22 @@ let _autoTokens = {};
 function currentJurisdiction() {
   const on = k => !!state[k];
   const offshore = [
-    [['cayman','transCayman','transCaymanRA','dissolucaoCayman'], 'Cayman', 'Registrar of Companies'],
-    [['bvi','transBVI','transBVIRA','dissolucaoBVI'],             'BVI',    'Registrar of Corporate Affairs'],
-    [['bahamas','transBahamas','transBahamasRA','dissolucaoBahamas'], 'Bahamas', 'Registrar General'],
-    [['nevis','transNevis','transNevisRA','dissolucaoNevis'],      'Nevis',  'Registrar of Companies'],
+    [['cayman','transCayman','transCaymanRA','dissolucaoCayman'], 'Cayman', 'de Cayman', 'Registrar of Companies'],
+    [['bvi','transBVI','transBVIRA','dissolucaoBVI'],             'BVI',    'das Ilhas Virgens Britânicas', 'Registrar of Corporate Affairs'],
+    [['bahamas','transBahamas','transBahamasRA','dissolucaoBahamas'], 'Bahamas', 'das Bahamas', 'Registrar General'],
+    [['nevis','transNevis','transNevisRA','dissolucaoNevis'],      'Nevis',  'de Nevis', 'Registrar of Companies'],
   ];
-  for (const [keys, name, registry] of offshore) {
-    if (keys.some(on)) return { name, registry };
+  for (const [keys, name, ofName, registry] of offshore) {
+    if (keys.some(on)) return { name, ofName, registry };
   }
-  const usStates = { fl: 'Florida', de: 'Delaware', ny: 'Nova York', sd: 'South Dakota', wi: 'Wisconsin', mn: 'Minnesota' };
+  const usStates = {
+    fl: ['Flórida', 'da Flórida'], de: ['Delaware', 'de Delaware'], ny: ['Nova York', 'de Nova York'],
+    sd: ['South Dakota', 'de South Dakota'], wi: ['Wisconsin', 'de Wisconsin'], mn: ['Minnesota', 'de Minnesota'],
+  };
   for (const k of Object.keys(usStates)) {
     const K = k.toUpperCase();
     if (on(k) || on('trans' + K) || on('trans' + K + 'RA') || on('dissolucao' + K)) {
-      return { name: usStates[k], registry: 'Secretary of State' };
+      return { name: usStates[k][0], ofName: usStates[k][1], registry: 'Secretary of State' };
     }
   }
   return null;
@@ -7992,7 +7995,38 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
   (function () {
     const jur = currentJurisdiction();
     const firstName = (careOf || client || '').trim().split(' ')[0] || '';
-    const workSummary = (_oneOffCandidates[0] || '').toLowerCase();
+    // A few group labels are adjectival ("Contábil e Fiscal") and don't take an
+    // article cleanly — they get a proper noun phrase instead.
+    const PHRASE_OVERRIDES = {
+      pt: { 'contábil e fiscal': 'os serviços contábeis e fiscais', 'sucessão': 'o planejamento sucessório' },
+      es: { 'contable y fiscal': 'los servicios contables y fiscales', 'sucesión': 'la planificación sucesoria' },
+      en: { 'accounting & tax': 'the accounting and tax services', 'succession': 'the succession planning' },
+    };
+    const phrase = function (w) {
+      const t = (w || '').trim().toLowerCase();
+      const o = (PHRASE_OVERRIDES[lang] || {})[t];
+      return o || (article(t) + t);
+    };
+    const article = function (w) {
+      // Gender follows the head noun, not the whole phrase — "manutenção anual"
+      // is feminine because of "manutenção", not "anual".
+      const head = (w || '').trim().toLowerCase().split(/\s+/)[0] || '';
+      if (lang === 'en') return 'the ';
+      if (lang === 'es') return /(ción|encia|a)$/.test(head) ? 'la ' : 'el ';
+      return /(ção|ncia|a)$/.test(head) ? 'a ' : 'o ';
+    };
+    const headline = (_oneOffCandidates[0] || '').toLowerCase();
+    const ofWord = { pt: ' da ', es: ' de ', en: ' for ' }[lang];
+    const atWord = { pt: ' junto ao ', es: ' ante el ', en: ' with the ' }[lang];
+    // Short form for "Mais do que ⟦o trabalho⟧ pontual"
+    const workSummary = headline ? phrase(headline) : '';
+    // Long form, mirroring Fabiana: "a transferência da S&W junto ao Registrar of Companies de Cayman"
+    const jurTail = jur
+      ? atWord + jur.registry + ' ' + (lang === 'pt' ? jur.ofName : { es: 'de ', en: 'of ' }[lang] + jur.name)
+      : '';
+    const workFull = headline
+      ? phrase(headline) + (client ? ofWord + client : '') + jurTail
+      : '';
     const andWord = { pt: ' e ', es: ' y ', en: ' and ' }[lang];
     const others = [].concat(
       hasSec1Content      ? [sec1SubLabel]    : [],
@@ -8000,7 +8034,8 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
       secMaintItems.length? [dl().maintTitle] : [],
       secAcctItems.length ? [secAcctSubLabel] : [],
       sec3Items.length    ? [sec3SubLabel]    : []
-    ).filter(Boolean).map(x => x.toLowerCase()).filter(x => x !== workSummary);
+    ).filter(Boolean).map(x => x.toLowerCase()).filter(x => x !== headline)
+     .map(x => phrase(x));
     const groupStr = others.length > 1
       ? others.slice(0, -1).join(', ') + andWord + others[others.length - 1]
       : (others[0] || '');
@@ -8017,10 +8052,10 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
       'órgão competente': jur ? jur.registry : '', 'órgano competente': jur ? jur.registry : '',
       'competent authority': jur ? jur.registry : '',
       // the work
-      'o trabalho contratado': workSummary, 'el trabajo contratado': workSummary,
-      'the engagement': workSummary,
-      'o trabalho descrito acima': workSummary, 'el trabajo descrito arriba': workSummary,
-      'the work described above': workSummary,
+      'o trabalho contratado': workFull, 'el trabajo contratado': workFull,
+      'the engagement': workFull,
+      'o trabalho descrito acima': workFull, 'el trabajo descrito arriba': workFull,
+      'the work described above': workFull,
       'o trabalho': workSummary, 'el trabajo': workSummary, 'the work': workSummary,
       'frente principal do trabalho': _oneOffCandidates[0] ? _oneOffCandidates[0].toLowerCase() : '',
       'frente principal del trabajo': _oneOffCandidates[0] ? _oneOffCandidates[0].toLowerCase() : '',
