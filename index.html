@@ -1079,6 +1079,99 @@
     #proposal-doc .doc-header, #proposal-doc .doc-body { padding-left: 0; padding-right: 0; }
   }
 
+  /* ══════════════════════════════════════════════════════════════
+     TEMPLATE FIDELITY PASS — borders, rules and markers taken
+     directly from Proposta_template_Reinstatement.docx:
+       header rules   single / sz 8 / #041725   (1pt navy)
+       body row rules single / sz 4 / #D5D8DA   (0.5pt cool grey)
+       cover rules    single / sz 4 / #DAD5CC   (0.5pt warm grey)
+     No cell shading anywhere in the source document.
+     ══════════════════════════════════════════════════════════════ */
+  #proposal-doc {
+    --doc-rule-head: #041725;
+    --doc-rule-row:  #D5D8DA;
+    --doc-rule-cover: rgba(218, 213, 204, 0.42);
+  }
+
+  /* ── Cover metadata: one column of label/value rows, ruled underneath ── */
+  .doc-cover-meta {
+    display: block;
+    width: 72%;            /* 6804 / 9412 twips in the source */
+    margin-bottom: 30px;
+  }
+  .doc-cover-meta-row {
+    display: grid;
+    grid-template-columns: 44% 56%;   /* 3012 / 3792 twips */
+    align-items: baseline;
+    padding: 9px 0 7px;
+    border-bottom: 1px solid var(--doc-rule-cover);
+  }
+  .doc-cover-meta-label { margin-bottom: 0; }
+  .doc-cover-meta-value { font-weight: 500; }
+
+  /* ── Unfilled tokens in standard text — impossible to send by accident ── */
+  .doc-token {
+    color: var(--doc-accent);
+    background: rgba(176, 84, 47, 0.08);
+    border-bottom: 1px dotted var(--doc-accent);
+    padding: 0 2px;
+    font-style: italic;
+  }
+  .doc-cover .doc-token,
+  .doc-cover-subject .doc-token {
+    color: #E0A183;
+    background: rgba(224, 161, 131, 0.12);
+    border-bottom-color: rgba(224, 161, 131, 0.6);
+  }
+
+  /* ── One bullet marker across the whole document (source uses ▪) ──
+     Drawn as a box rather than a glyph so it can't fall back to a
+     different shape depending on which font resolves it. */
+  .doc-bullets li::before { content: none; }
+  #proposal-doc .doc-bullets,
+  #proposal-doc .terms-list { list-style: none; padding-left: 16px; margin: 0; }
+  #proposal-doc .doc-bullets li,
+  #proposal-doc .terms-list li {
+    position: relative; padding-left: 14px; margin-left: 0;
+    font-size: 12px; line-height: 1.72; color: var(--doc-ink);
+    margin-bottom: 6px;
+  }
+  #proposal-doc .doc-bullets li::before,
+  #proposal-doc .terms-list li::before {
+    content: ''; position: absolute; left: 0; top: 0.66em;
+    width: 4px; height: 4px; background: var(--doc-muted-2);
+  }
+
+  /* ── Fee table: no shading, navy header rule, grey row rules ── */
+  #proposal-doc .fee-table th {
+    background: none; padding: 0 12px 7px 0;
+    border-bottom: 1px solid var(--doc-rule-head);
+  }
+  #proposal-doc .fee-table th:last-child { padding-right: 0; }
+  #proposal-doc .fee-table td {
+    padding: 9px 12px 9px 0;
+    border-bottom: 1px solid var(--doc-rule-row);
+  }
+  #proposal-doc .fee-table td:last-child { padding-right: 0; }
+  #proposal-doc .fee-table tr.subtotal-row td {
+    background: none;
+    border-top: 1px solid var(--doc-rule-head);
+    border-bottom: none;
+    padding-top: 10px;
+  }
+  #proposal-doc .fee-table tbody tr:last-child td { border-bottom: none; }
+
+  /* ── Documents table: same rule system ── */
+  #proposal-doc .doc-grid-table th { border-bottom: 1px solid var(--doc-rule-head); }
+  #proposal-doc .doc-grid-table td { border-bottom: 1px solid var(--doc-rule-row); }
+  #proposal-doc .doc-grid-table tr:last-child td { border-bottom: none; }
+
+  /* ── Sub-labels above each fee group ── */
+  #proposal-doc .macro-category {
+    border-bottom: 1px solid var(--doc-rule-row);
+    padding: 6px 0; margin: 20px 0 8px;
+  }
+
 </style>
 </head>
 <body>
@@ -4992,7 +5085,8 @@ let requiredDocs       = [{ doc: '', desc: '', who: '' }];
 // Document copy, per language
 const DOC_L = {
   pt: {
-    kicker: 'Proposta', preparedFor: 'Preparado para', preparedBy: 'Preparado por',
+    kicker: 'Proposta', subjectPrompt: '⟦Insira o objeto da proposta⟧',
+    preparedFor: 'Preparado para', preparedBy: 'Preparado por',
     date: 'Data', validity: 'Validade', ref: 'Referência',
     validityFmt: d => `${d} dias a partir da emissão`,
     runningHeader: 'Proposta comercial · Confidencial',
@@ -5016,7 +5110,8 @@ const DOC_L = {
     promptDocs: 'adicione os documentos necessários na barra lateral.',
   },
   es: {
-    kicker: 'Propuesta', preparedFor: 'Preparado para', preparedBy: 'Preparado por',
+    kicker: 'Propuesta', subjectPrompt: '⟦Inserte el objeto de la propuesta⟧',
+    preparedFor: 'Preparado para', preparedBy: 'Preparado por',
     date: 'Fecha', validity: 'Validez', ref: 'Referencia',
     validityFmt: d => `${d} días desde la emisión`,
     runningHeader: 'Propuesta comercial · Confidencial',
@@ -5040,7 +5135,8 @@ const DOC_L = {
     promptDocs: 'agregue los documentos necesarios en la barra lateral.',
   },
   en: {
-    kicker: 'Proposal', preparedFor: 'Prepared for', preparedBy: 'Prepared by',
+    kicker: 'Proposal', subjectPrompt: '⟦Insert the subject of the proposal⟧',
+    preparedFor: 'Prepared for', preparedBy: 'Prepared by',
     date: 'Date', validity: 'Validity', ref: 'Reference',
     validityFmt: d => `${d} days from issuance`,
     runningHeader: 'Commercial proposal · Confidential',
@@ -5065,6 +5161,105 @@ const DOC_L = {
   },
 };
 function dl() { return DOC_L[lang] || DOC_L.pt; }
+
+// ═══════════════════════════════════════════════════════════════════
+//  STANDARD TEXT — the house draft every proposal starts from.
+//  Modelled on Proposta_template_Reinstatement.docx. Anything still
+//  wrapped in ⟦ ⟧ renders as a highlighted token, so an unfilled
+//  proposal can't be sent by accident.
+// ═══════════════════════════════════════════════════════════════════
+const FGC_DEFAULTS = {
+  pt: {
+    subject: '⟦Objeto da proposta⟧',
+    opening:
+      'Prezado ⟦Nome⟧,\n' +
+      'Esta proposta apresenta o escopo, os documentos necessários e os honorários estimados para ⟦o objeto do trabalho⟧, incluindo ⟦as frentes envolvidas⟧.\n' +
+      'Nas próximas seções: o escopo do trabalho, o investimento e a documentação necessária para dar início ao processo.\n' +
+      'Mais do que o trabalho pontual, a FGC permanece à frente da manutenção anual da estrutura como único ponto de contato, de forma a assegurar que todas as obrigações sejam cumpridas.\n' +
+      'Fica um convite para conduzirmos esse processo com a agilidade e o cuidado que a continuidade da sua estrutura exige.\n' +
+      'Agradecemos desde já essa oportunidade.',
+    undWhat:
+      '⟦A situação hoje: entidade, jurisdição, desde quando — e o que esse status significa na prática para o cliente.⟧\n' +
+      '⟦Se houver um segundo fato, ele entra aqui, dizendo como se soma ao primeiro.⟧',
+    undObjective: '⟦O estado final, em uma frase: o que será restaurado, constituído, transferido ou regularizado.⟧',
+    undScope:
+      '⟦Frente principal do trabalho⟧\n' +
+      '⟦Manutenção anual, se aplicável⟧\n' +
+      '⟦Contabilidade anual, se aplicável⟧',
+    undRec: 'Concluído o trabalho, sugerimos ⟦o próximo passo recomendado⟧.',
+  },
+  es: {
+    subject: '⟦Objeto de la propuesta⟧',
+    opening:
+      'Estimado ⟦Nombre⟧,\n' +
+      'Esta propuesta presenta el alcance, los documentos necesarios y los honorarios estimados para ⟦el objeto del trabajo⟧, incluyendo ⟦los frentes involucrados⟧.\n' +
+      'En las próximas secciones: el alcance del trabajo, la inversión y la documentación necesaria para iniciar el proceso.\n' +
+      'Más allá del trabajo puntual, FGC permanece al frente del mantenimiento anual de la estructura como único punto de contacto, de modo que todas las obligaciones se cumplan.\n' +
+      'Queda la invitación para conducir este proceso con la agilidad y el cuidado que la continuidad de su estructura exige.\n' +
+      'Agradecemos desde ya esta oportunidad.',
+    undWhat:
+      '⟦La situación hoy: entidad, jurisdicción, desde cuándo — y qué significa ese estado en la práctica para el cliente.⟧\n' +
+      '⟦Si hay un segundo hecho, entra aquí, indicando cómo se suma al primero.⟧',
+    undObjective: '⟦El estado final, en una frase: qué será restaurado, constituido, transferido o regularizado.⟧',
+    undScope:
+      '⟦Frente principal del trabajo⟧\n' +
+      '⟦Mantenimiento anual, si aplica⟧\n' +
+      '⟦Contabilidad anual, si aplica⟧',
+    undRec: 'Concluido el trabajo, sugerimos ⟦el próximo paso recomendado⟧.',
+  },
+  en: {
+    subject: '⟦Subject of the proposal⟧',
+    opening:
+      'Dear ⟦Name⟧,\n' +
+      'This proposal sets out the scope, the required documents and the estimated fees for ⟦the engagement⟧, including ⟦the workstreams involved⟧.\n' +
+      'In the sections that follow: the scope of work, the investment, and the documentation needed to begin.\n' +
+      'Beyond the one-off work, FGC stays ahead of the annual maintenance of the structure as your single point of contact, so that every obligation is met on time.\n' +
+      'We would welcome the chance to run this process with the speed and care the continuity of your structure requires.\n' +
+      'Thank you in advance for the opportunity.',
+    undWhat:
+      '⟦The situation today: entity, jurisdiction, since when — and what that status means in practice for the client.⟧\n' +
+      '⟦If there is a second fact, it goes here, saying how it compounds the first.⟧',
+    undObjective: '⟦The end state, in one sentence: what will be restored, formed, transferred or brought back into good standing.⟧',
+    undScope:
+      '⟦Primary workstream⟧\n' +
+      '⟦Annual maintenance, if applicable⟧\n' +
+      '⟦Annual accounting, if applicable⟧',
+    undRec: 'Once the work is complete, we suggest ⟦the recommended next step⟧.',
+  },
+};
+function fgcDefaults() { return FGC_DEFAULTS[lang] || FGC_DEFAULTS.pt; }
+
+// Tracks what we last wrote, so switching language rewrites untouched
+// boilerplate but never overwrites something an advisor typed.
+let _appliedDefaults = {};
+function applyStandardText() {
+  const D = fgcDefaults();
+  const map = {
+    'f-subject':    D.subject,
+    'f-opening':    D.opening,
+    'f-und-what':   D.undWhat,
+    'f-und-obj':    D.undObjective,
+    'f-und-scope':  D.undScope,
+    'f-und-rec':    D.undRec,
+    'f-docs-intro': dl().docsIntroDefault,
+  };
+  Object.keys(map).forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const cur = (el.value || '').trim();
+    const untouched = !cur || cur === (_appliedDefaults[id] || '').trim();
+    if (!untouched) return;
+    el.value = map[id];
+    _appliedDefaults[id] = map[id];
+    el.dispatchEvent(new Event('input', { bubbles: true }));
+  });
+}
+
+// ⟦token⟧ → highlighted span. Runs after escaping; the brackets are
+// not HTML-special, so ordering is safe.
+function markTokens(html) {
+  return String(html).replace(/⟦[^⟧]*⟧/g, m => `<span class="doc-token">${m}</span>`);
+}
 
 // ── Signature images (per advisor, this browser) ──
 function advisorSlug(name) { return (name || '').trim().toLowerCase().replace(/[^a-z0-9]/g, '') || 'default'; }
@@ -5242,19 +5437,20 @@ function syncCoverFields() {
   refreshRefCodeField();
   renderRequiredDocs();
   renderAssetPreviews();
+  applyStandardText();
 }
 
 // ── Document builders ──
 function paras(text) {
   return String(text || '').trim().split(/\n/).filter(function (l) { return l.trim(); })
-    .map(function (l) { return `<p>${escHtml(l.trim())}</p>`; }).join('');
+    .map(function (l) { return `<p>${markTokens(escHtml(l.trim()))}</p>`; }).join('');
 }
 function bulletList(text) {
   const items = String(text || '').split('\n')
     .map(function (l) { return l.replace(/^\s*[-•▪*]\s*/, '').trim(); })
     .filter(Boolean);
   if (!items.length) return '';
-  return `<ul class="doc-bullets">${items.map(function (i) { return `<li>${escHtml(i)}</li>`; }).join('')}</ul>`;
+  return `<ul class="doc-bullets">${items.map(function (i) { return `<li>${markTokens(escHtml(i))}</li>`; }).join('')}</ul>`;
 }
 function fillPrompt(msg) {
   return `<div class="doc-placeholder"><strong>${dl().fillPrompt}</strong> ${msg}</div>`;
@@ -5284,29 +5480,20 @@ function buildCover(ctx) {
       </div>
       <div class="doc-cover-mid">
         <div class="doc-cover-kicker">${D.kicker}</div>
-        ${coverSubject.trim() ? `<div class="doc-cover-subject">${escHtml(coverSubject.trim())}</div>` : ''}
+        <div class="doc-cover-subject">${markTokens(escHtml(coverSubject.trim() || dl().subjectPrompt))}</div>
       </div>
       <div class="doc-cover-meta">
-        <div class="doc-cover-meta-item">
-          <div class="doc-cover-meta-label">${D.preparedFor}</div>
-          <div class="doc-cover-meta-value">${preparedFor}</div>
-        </div>
-        <div class="doc-cover-meta-item">
-          <div class="doc-cover-meta-label">${D.preparedBy}</div>
-          <div class="doc-cover-meta-value">${escHtml(ctx.advisor || 'FGC Advisors')}</div>
-        </div>
-        <div class="doc-cover-meta-item">
-          <div class="doc-cover-meta-label">${D.date}</div>
-          <div class="doc-cover-meta-value">${escHtml(ctx.dateStr)}</div>
-        </div>
-        <div class="doc-cover-meta-item">
-          <div class="doc-cover-meta-label">${D.validity}</div>
-          <div class="doc-cover-meta-value">${escHtml(D.validityFmt(validityDays))}</div>
-        </div>
-        <div class="doc-cover-meta-item">
-          <div class="doc-cover-meta-label">${D.ref}</div>
-          <div class="doc-cover-meta-value is-ref">${escHtml(currentRefCode())}</div>
-        </div>
+        ${[
+          [D.preparedFor, preparedFor, ''],
+          [D.preparedBy,  escHtml(ctx.advisor || 'FGC Advisors'), ''],
+          [D.date,        escHtml(ctx.dateStr), ''],
+          [D.validity,    escHtml(D.validityFmt(validityDays)), ''],
+          [D.ref,         escHtml(currentRefCode()), ' is-ref'],
+        ].map(function (row) { return `
+        <div class="doc-cover-meta-row">
+          <div class="doc-cover-meta-label">${row[0]}</div>
+          <div class="doc-cover-meta-value${row[2]}">${row[1]}</div>
+        </div>`; }).join('')}
       </div>
       <div class="doc-cover-foot">
         <span><strong>fgcadvisors.com</strong></span>
@@ -5619,6 +5806,8 @@ function setLang(l) {
   lang = l;
   document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
   document.querySelector(`.lang-btn[onclick="setLang('${l}')"]`).classList.add('active');
+  // Rewrite boilerplate that is still untouched; anything typed is left alone
+  applyStandardText();
   renderUI();
 }
 function tl(key) { return T[lang][key] || T['pt'][key] || key; }
