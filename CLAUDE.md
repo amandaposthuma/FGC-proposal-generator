@@ -110,6 +110,17 @@ in the matching scope heading. They come from `termsSub` in `buildTermsForItems`
 so **build order must match render order** — maintenance is built last because it
 renders last, under Seção 03.
 
+**Placeholder colouring.** A block whose field still holds the untouched default
+carries `.is-placeholder` and renders in `--doc-placeholder` (#A9714F). Editing one
+character clears it. `isUntouchedDefault(id)` compares against `_appliedDefaults`,
+so this is driven by the standard-text mechanism, not a separate flag.
+
+**Note on the template's Seção 02 intro.** Fabiana's Reinstatement doc says the
+amounts "refletem os custos apresentados pelo agente registrado" — true only when
+a third party sets them. The generator's default speaks of FGC's own fees and
+prompts for the pass-through case, so a copied sentence can't assert something
+false.
+
 **Always-on sections.** Entendimento e escopo and Documentos necessários render
 on every proposal. When a field is empty the document shows a terracotta dashed
 `.doc-placeholder` prompt instead of silently omitting it.
@@ -221,6 +232,7 @@ fs.writeFileSync('/tmp/fgc_check.js',s.join('\n'));
 - **Version Sept 16 (d)** — collapsed two competing heading systems into one: removed all `N.N` decimal numbering (section, scope and clause headings), unified every sub-heading to the source's bold navy sentence-case block label, flattened the clause groups to siblings of Próximos passos and Aceite, and re-ordered scope building to match render order so inline item numbers run 1-2-3 down the page.
 - **Version Sept 16 (e)** — added `BUILD` stamp, no-cache meta tags and a self-check that offers a reload when the deployed build differs. This was the reason several shipped fixes appeared not to have landed.
 - **Version Sept 16 (g)** — remaining template prose added: Seção 02 intro and Timeline, Seção 03 intro and Vencimento, and the Condições list (with `{VALIDADE}` kept in sync with the cover). `O que não está incluído` moved into Seção 03 as the source has it, falling back to Seção 05 when there is no maintenance section. Scope headings collapse when a section has only one service, so bullets sit directly under the group label.
+- **Version Sept 16 (j)** — standard text rewritten as real recyclable prose in Fabiana's structure (O que entendemos, Objetivo, Escopo, Sugestão, Seção 02 intro), with `⟦tokens⟧` for the variable parts only. Untouched boilerplate now renders in `--doc-placeholder` and turns normal the moment the field is edited. "Objeto da proposta" renamed to "Título" everywhere; sign-off is "Abraços,".
 - **Version June 17** — fixed fsAnterior/trAnterior crash; full draft save/load (custom items + overrides); Observações field (section 4.6); hasScope toggle on custom items; print margin CSS; loadDraft stale-data reset; custom transfer group fix (no more "PRIVATE INVESTMENT COMPANY" on non-PIC items); item ordering fix
 
 ## Known draft behavior

@@ -1273,6 +1273,17 @@
   }
   #proposal-doc .terms-section-heading.is-scope-item + .terms-list { margin-left: 2px; }
 
+  /* ── Untouched boilerplate reads as a draft, not as final copy ──
+     Cleared the moment an advisor edits the field. */
+  #proposal-doc { --doc-placeholder: #A9714F; }
+  #proposal-doc .is-placeholder,
+  #proposal-doc .is-placeholder p,
+  #proposal-doc .is-placeholder li,
+  #proposal-doc .is-placeholder .doc-block-label { color: var(--doc-placeholder); }
+  #proposal-doc .is-placeholder li::before { background: var(--doc-placeholder); }
+  @media print { #proposal-doc .is-placeholder, #proposal-doc .is-placeholder p,
+    #proposal-doc .is-placeholder li { color: var(--doc-placeholder) !important; } }
+
 </style>
 </head>
 <body>
@@ -1409,7 +1420,7 @@
   <div class="sidebar-section">
     <div class="sidebar-section-title">Capa &amp; apresentação</div>
     <div class="field-group">
-      <label class="field-label">Objeto da proposta <span class="field-hint">(título da capa)</span></label>
+      <label class="field-label">Título da proposta <span class="field-hint">(capa)</span></label>
       <input type="text" id="f-subject" class="field-input" placeholder="ex: Reinstatement — S&amp;W Investment Company" oninput="coverSubject=this.value; debouncedUpdate()">
     </div>
     <div class="field-group">
@@ -5241,7 +5252,7 @@ const DOC_FORMAT = 3;
 // Shown in the sidebar so the running build is always identifiable, and
 // compared against the deployed file so a stale cached copy announces
 // itself instead of silently showing an old proposal format.
-const BUILD = '2026-09-16-g';
+const BUILD = '2026-09-16-j';
 
 function showUpdateBanner() {
   if (document.getElementById('update-banner')) return;
@@ -5273,7 +5284,7 @@ let requiredDocs       = [{ doc: '', desc: '', who: '' }];
 // Document copy, per language
 const DOC_L = {
   pt: {
-    kicker: 'Proposta', subjectPrompt: '⟦Insira o objeto da proposta⟧',
+    kicker: 'Proposta', subjectPrompt: '⟦Insira o título⟧',
     preparedFor: 'Preparado para', preparedBy: 'Preparado por',
     date: 'Data', validity: 'Validade', ref: 'Referência',
     validityFmt: d => `${d} dias a partir da emissão`,
@@ -5308,7 +5319,7 @@ const DOC_L = {
     promptDocs: 'adicione os documentos necessários na barra lateral.',
   },
   es: {
-    kicker: 'Propuesta', subjectPrompt: '⟦Inserte el objeto de la propuesta⟧',
+    kicker: 'Propuesta', subjectPrompt: '⟦Inserte el título⟧',
     preparedFor: 'Preparado para', preparedBy: 'Preparado por',
     date: 'Fecha', validity: 'Validez', ref: 'Referencia',
     validityFmt: d => `${d} días desde la emisión`,
@@ -5343,7 +5354,7 @@ const DOC_L = {
     promptDocs: 'agregue los documentos necesarios en la barra lateral.',
   },
   en: {
-    kicker: 'Proposal', subjectPrompt: '⟦Insert the subject of the proposal⟧',
+    kicker: 'Proposal', subjectPrompt: '⟦Insert the title⟧',
     preparedFor: 'Prepared for', preparedBy: 'Prepared by',
     date: 'Date', validity: 'Validity', ref: 'Reference',
     validityFmt: d => `${d} days from issuance`,
@@ -5388,24 +5399,24 @@ function dl() { return DOC_L[lang] || DOC_L.pt; }
 // ═══════════════════════════════════════════════════════════════════
 const FGC_DEFAULTS = {
   pt: {
-    subject: '⟦Objeto da proposta⟧',
+    subject: '⟦Título da proposta⟧',
     opening:
       'Prezado ⟦Nome⟧,\n' +
-      'Esta proposta apresenta o escopo, os documentos necessários e os honorários estimados para ⟦o objeto do trabalho⟧, incluindo ⟦as frentes envolvidas⟧.\n' +
+      'Esta proposta apresenta o escopo, os documentos necessários e os honorários estimados para ⟦o trabalho contratado⟧, incluindo ⟦as frentes envolvidas⟧.\n' +
       'Nas próximas seções: o escopo do trabalho, o investimento e a documentação necessária para dar início ao processo.\n' +
       'Mais do que o trabalho pontual, a FGC permanece à frente da manutenção anual da estrutura como único ponto de contato, de forma a assegurar que todas as obrigações sejam cumpridas.\n' +
       'Fica um convite para conduzirmos esse processo com a agilidade e o cuidado que a continuidade da sua estrutura exige.\n' +
       'Agradecemos desde já essa oportunidade.',
     undWhat:
-      '⟦A situação hoje: entidade, jurisdição, desde quando — e o que esse status significa na prática para o cliente.⟧\n' +
-      '⟦Se houver um segundo fato, ele entra aqui, dizendo como se soma ao primeiro.⟧',
-    undObjective: '⟦O estado final, em uma frase: o que será restaurado, constituído, transferido ou regularizado.⟧',
+      'A ⟦Nome da sociedade⟧ encontra-se ⟦situação atual⟧ junto ao ⟦órgão competente⟧ de ⟦jurisdição⟧ desde ⟦data⟧. Na prática, isso significa que a sociedade ⟦o que fica impedido: operar, assinar contratos, movimentar contas⟧ até que a situação seja regularizada.\n' +
+      '⟦Segundo fato, quando houver — por exemplo: o agente registrado renunciou à sua função, normalmente por falta de pagamento das taxas anuais. Toda sociedade na jurisdição é obrigada por lei a manter um agente registrado; sem ele, a irregularidade se soma à anterior.⟧',
+    undObjective: '⟦Restaurar / Constituir / Transferir⟧ a sociedade junto ao ⟦órgão competente⟧, ⟦segunda ação, se houver⟧ e regularizar compliance, KYC e as obrigações em aberto.',
     undScope:
-      '⟦Frente principal do trabalho⟧\n' +
-      '⟦Manutenção anual, se aplicável⟧\n' +
-      '⟦Contabilidade anual, se aplicável⟧',
-    undRec: 'Concluído o trabalho, sugerimos ⟦o próximo passo recomendado⟧.',
-    sec2Intro: 'Os valores abaixo refletem ⟦a origem dos custos⟧. Valores sujeitos a confirmação final conforme o andamento do processo.',
+      '⟦Frente principal do trabalho⟧ junto ao ⟦órgão competente⟧, incluindo ⟦etapas relevantes⟧.\n' +
+      'Manutenção anual ⟦compliance, Economic Substance e demonstrações financeiras⟧.\n' +
+      'Contabilidade anual.',
+    undRec: 'Concluído ⟦o trabalho⟧, sugerimos ⟦o próximo passo — por exemplo, uma análise de planejamento sucessório da estrutura⟧.',
+    sec2Intro: 'Os valores abaixo referem-se aos honorários da FGC para ⟦o trabalho descrito acima⟧. ⟦Havendo custos de terceiros — taxas governamentais, agente registrado, cartório —, registre aqui que são repassados ao cliente e permanecem estimados até a confirmação final.⟧',
     timeline: '⟦Prazo estimado e o que pode afetá-lo: aprovações necessárias, tempo típico de cada etapa e o que acontece depois de obtida cada aprovação.⟧',
     sec3Intro: 'A manutenção da sociedade é apresentada como um valor anual único, que reúne todas as obrigações recorrentes sob uma só relação.',
     vencimento: 'O vencimento da anuidade se dará sempre no dia ⟦dia e mês⟧ de todo ano, sendo a primeira em ⟦ano⟧. Emitimos as invoices com antecedência, para que haja tempo hábil de pagamento e de cumprimento dos prazos.',
@@ -5413,24 +5424,24 @@ const FGC_DEFAULTS = {
     nextSteps: 'Alinhamento final de escopo e condições.\nAssinatura do aceite.\nInício dos trabalhos.',
   },
   es: {
-    subject: '⟦Objeto de la propuesta⟧',
+    subject: '⟦Título de la propuesta⟧',
     opening:
       'Estimado ⟦Nombre⟧,\n' +
-      'Esta propuesta presenta el alcance, los documentos necesarios y los honorarios estimados para ⟦el objeto del trabajo⟧, incluyendo ⟦los frentes involucrados⟧.\n' +
+      'Esta propuesta presenta el alcance, los documentos necesarios y los honorarios estimados para ⟦el trabajo contratado⟧, incluyendo ⟦los frentes involucrados⟧.\n' +
       'En las próximas secciones: el alcance del trabajo, la inversión y la documentación necesaria para iniciar el proceso.\n' +
       'Más allá del trabajo puntual, FGC permanece al frente del mantenimiento anual de la estructura como único punto de contacto, de modo que todas las obligaciones se cumplan.\n' +
       'Queda la invitación para conducir este proceso con la agilidad y el cuidado que la continuidad de su estructura exige.\n' +
       'Agradecemos desde ya esta oportunidad.',
     undWhat:
-      '⟦La situación hoy: entidad, jurisdicción, desde cuándo — y qué significa ese estado en la práctica para el cliente.⟧\n' +
-      '⟦Si hay un segundo hecho, entra aquí, indicando cómo se suma al primero.⟧',
-    undObjective: '⟦El estado final, en una frase: qué será restaurado, constituido, transferido o regularizado.⟧',
+      'La ⟦Nombre de la sociedad⟧ se encuentra ⟦situación actual⟧ ante el ⟦órgano competente⟧ de ⟦jurisdicción⟧ desde ⟦fecha⟧. En la práctica, esto significa que la sociedad ⟦qué queda impedido: operar, firmar contratos, mover cuentas⟧ hasta que la situación se regularice.\n' +
+      '⟦Segundo hecho, cuando lo haya — por ejemplo: el agente registrado renunció a su función, normalmente por falta de pago de las tasas anuales. Toda sociedad en la jurisdicción está obligada por ley a mantener un agente registrado; sin él, la irregularidad se suma a la anterior.⟧',
+    undObjective: '⟦Restaurar / Constituir / Transferir⟧ la sociedad ante el ⟦órgano competente⟧, ⟦segunda acción, si la hay⟧ y regularizar compliance, KYC y las obligaciones pendientes.',
     undScope:
-      '⟦Frente principal del trabajo⟧\n' +
-      '⟦Mantenimiento anual, si aplica⟧\n' +
-      '⟦Contabilidad anual, si aplica⟧',
-    undRec: 'Concluido el trabajo, sugerimos ⟦el próximo paso recomendado⟧.',
-    sec2Intro: 'Los valores a continuación reflejan ⟦el origen de los costos⟧. Valores sujetos a confirmación final según el avance del proceso.',
+      '⟦Frente principal del trabajo⟧ ante el ⟦órgano competente⟧, incluyendo ⟦etapas relevantes⟧.\n' +
+      'Mantenimiento anual ⟦compliance, Economic Substance y estados financieros⟧.\n' +
+      'Contabilidad anual.',
+    undRec: 'Concluido ⟦el trabajo⟧, sugerimos ⟦el próximo paso — por ejemplo, un análisis de planificación sucesoria de la estructura⟧.',
+    sec2Intro: 'Los valores a continuación corresponden a los honorarios de FGC para ⟦el trabajo descrito arriba⟧. ⟦Si hay costos de terceros — tasas gubernamentales, agente registrado, notaría —, indique aquí que se trasladan al cliente y permanecen estimados hasta la confirmación final.⟧',
     timeline: '⟦Plazo estimado y qué puede afectarlo: aprobaciones necesarias, tiempo típico de cada etapa y qué ocurre tras cada aprobación.⟧',
     sec3Intro: 'El mantenimiento de la sociedad se presenta como un valor anual único, que reúne todas las obligaciones recurrentes en una sola relación.',
     vencimento: 'El vencimiento de la anualidad será siempre el día ⟦día y mes⟧ de cada año, siendo la primera en ⟦año⟧. Emitimos las facturas con antelación, para que haya tiempo de pago y de cumplimiento de los plazos.',
@@ -5438,7 +5449,7 @@ const FGC_DEFAULTS = {
     nextSteps: 'Alineación final de alcance y condiciones.\nFirma de la aceptación.\nInicio de los trabajos.',
   },
   en: {
-    subject: '⟦Subject of the proposal⟧',
+    subject: '⟦Proposal title⟧',
     opening:
       'Dear ⟦Name⟧,\n' +
       'This proposal sets out the scope, the required documents and the estimated fees for ⟦the engagement⟧, including ⟦the workstreams involved⟧.\n' +
@@ -5447,15 +5458,15 @@ const FGC_DEFAULTS = {
       'We would welcome the chance to run this process with the speed and care the continuity of your structure requires.\n' +
       'Thank you in advance for the opportunity.',
     undWhat:
-      '⟦The situation today: entity, jurisdiction, since when — and what that status means in practice for the client.⟧\n' +
-      '⟦If there is a second fact, it goes here, saying how it compounds the first.⟧',
-    undObjective: '⟦The end state, in one sentence: what will be restored, formed, transferred or brought back into good standing.⟧',
+      '⟦Company name⟧ is currently ⟦current status⟧ with the ⟦competent authority⟧ of ⟦jurisdiction⟧, and has been since ⟦date⟧. In practice this means the company ⟦what it cannot do: operate, sign contracts, move funds⟧ until the position is put right.\n' +
+      '⟦Second fact, where there is one — for example: the registered agent resigned, typically over unpaid annual fees. Every company in the jurisdiction is required by law to maintain a registered agent; without one, that irregularity compounds the first.⟧',
+    undObjective: '⟦Restore / Incorporate / Transfer⟧ the company with the ⟦competent authority⟧, ⟦second action, if any⟧, and bring compliance, KYC and outstanding obligations back into good standing.',
     undScope:
-      '⟦Primary workstream⟧\n' +
-      '⟦Annual maintenance, if applicable⟧\n' +
-      '⟦Annual accounting, if applicable⟧',
-    undRec: 'Once the work is complete, we suggest ⟦the recommended next step⟧.',
-    sec2Intro: 'The amounts below reflect ⟦the origin of the costs⟧. Amounts subject to final confirmation as the process advances.',
+      '⟦Primary workstream⟧ with the ⟦competent authority⟧, including ⟦relevant stages⟧.\n' +
+      'Annual maintenance ⟦compliance, Economic Substance and financial statements⟧.\n' +
+      'Annual accounting.',
+    undRec: 'Once ⟦the work⟧ is complete, we suggest ⟦the next step — for example, a succession planning review of the structure⟧.',
+    sec2Intro: 'The amounts below are FGC\'s fees for ⟦the work described above⟧. ⟦Where third-party costs apply — government fees, registered agent, notary — note here that they are passed through to the client and remain estimates until finally confirmed.⟧',
     timeline: '⟦Estimated timing and what can affect it: approvals required, typical duration of each stage, and what follows each approval.⟧',
     sec3Intro: 'Maintenance of the company is presented as a single annual amount, bringing every recurring obligation under one relationship.',
     vencimento: 'The annual fee falls due on ⟦day and month⟧ each year, the first in ⟦year⟧. We issue invoices in advance so there is time to pay and to meet the filing deadlines.',
@@ -5499,6 +5510,14 @@ function applyStandardText() {
 
 // ⟦token⟧ → highlighted span. Runs after escaping; the brackets are
 // not HTML-special, so ordering is safe.
+function isUntouchedDefault(id) {
+  const el = document.getElementById(id);
+  if (!el) return false;
+  const cur = (el.value || '').trim();
+  return !!cur && cur === (_appliedDefaults[id] || '').trim();
+}
+function phClass(id) { return isUntouchedDefault(id) ? ' is-placeholder' : ''; }
+
 function markTokens(html) {
   return String(html).replace(/⟦[^⟧]*⟧/g, m => `<span class="doc-token">${m}</span>`);
 }
@@ -5769,7 +5788,7 @@ function buildSignoff(ctx) {
   const mark = ctx.signature
     ? `<img class="doc-signoff-mark" src="${ctx.signature}" alt="">`
     : `<div class="doc-signoff-cursive">${escHtml(ctx.signerCursive)}</div>`;
-  const valediction = { pt: 'Abs,', es: 'Saludos,', en: 'Best,' }[lang];
+  const valediction = { pt: 'Abraços,', es: 'Saludos,', en: 'Best regards,' }[lang];
   return `
     <div class="doc-signoff">
       <div class="doc-signoff-valediction">${valediction}</div>
@@ -5790,7 +5809,7 @@ function buildApresentacao(ctx) {
         <div class="doc-sec-eyebrow">${D.apresentacao}</div>
         <div class="doc-sec-title">${D.apresentacaoTitle}</div>
       </div>
-      <div class="doc-note-body">${body}</div>
+      <div class="doc-note-body${phClass('f-opening')}">${body}</div>
       ${buildSignoff(ctx)}
     </div>`;
 }
@@ -5802,20 +5821,20 @@ function buildEntendimento(num) {
   return `
     <div class="doc-sec">
       ${secHead(num, D.entendimento)}
-      <div class="doc-block">
+      <div class="doc-block${phClass('f-und-what')}">
         <div class="doc-block-label">${D.whatLabel}</div>
         ${u.what.trim() ? paras(u.what) : fillPrompt(D.promptWhat)}
       </div>
-      <div class="doc-block">
+      <div class="doc-block${phClass('f-und-obj')}">
         <div class="doc-block-label is-objective">${D.objectiveLabel}</div>
         ${u.objective.trim() ? paras(u.objective) : fillPrompt(D.promptObjective)}
       </div>
-      <div class="doc-block">
+      <div class="doc-block${phClass('f-und-scope')}">
         <div class="doc-block-label">${D.scopeLabel}</div>
         ${scopeList || fillPrompt(D.promptScope)}
       </div>
       ${u.recommendation.trim() ? `
-      <div class="doc-callout">
+      <div class="doc-callout${phClass('f-und-rec')}">
         <div class="doc-block-label">${D.recLabel}</div>
         ${paras(u.recommendation)}
       </div>` : ''}
@@ -7946,7 +7965,7 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
       ${(hasOneOffFees || termsOneOffHTML) ? `
       <div class="doc-section">
         ${secHead(nextSecNo(), oneOffSecTitle)}
-        ${sec2Intro.trim() ? `<div class="doc-note-body">${paras(sec2Intro)}</div>` : ''}
+        ${sec2Intro.trim() ? `<div class="doc-note-body${phClass('f-sec2intro')}">${paras(sec2Intro)}</div>` : ''}
 
         ${hasSec1Content ? `
           ${sec1SubLabel === oneOffSecTitle ? '' : `<div class="doc-section-subheader">${sec1SubLabel}</div>`}
@@ -7988,7 +8007,7 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
         ` : ''}
         ${timelineText.trim() ? `
           <div class="doc-block-label doc-included-label">${dl().timelineLabel}</div>
-          <div class="doc-note-body">${paras(timelineText)}</div>
+          <div class="doc-note-body${phClass('f-timeline')}">${paras(timelineText)}</div>
         ` : ''}
       </div>
       ` : ''}
@@ -7997,7 +8016,7 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
       ${secMaintItems.length > 0 ? `
       <div class="doc-section">
         ${secHead(nextSecNo(), dl().maintTitle)}
-        ${sec3Intro.trim() ? `<div class="doc-note-body">${paras(sec3Intro)}</div>` : ''}
+        ${sec3Intro.trim() ? `<div class="doc-note-body${phClass('f-sec3intro')}">${paras(sec3Intro)}</div>` : ''}
         ${secMaintPIC.length > 0 ? macroHeader(L.macroPIC) + buildFeeTable(secMaintPIC) : ''}
         ${secMaintUS.length > 0  ? macroHeader(L.macroUS)  + buildFeeTable(secMaintUS)  : ''}
         ${secMaintOther.filter(it => it.key === 'trustMaint').length > 0 ? macroHeader({ pt: 'Share Trust', es: 'Share Trust', en: 'Share Trust' }[lang]) + buildFeeTable(secMaintOther.filter(it => it.key === 'trustMaint')) : ''}
@@ -8011,7 +8030,7 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
         <ul class="terms-list">${notIncItems.map(i => '<li>' + i + '</li>').join('')}</ul>
         ${vencimentoText.trim() ? `
           <div class="doc-block-label doc-included-label">${dl().vencimentoLabel}</div>
-          <div class="doc-note-body">${paras(vencimentoText)}</div>
+          <div class="doc-note-body${phClass('f-vencimento')}">${paras(vencimentoText)}</div>
         ` : ''}
       </div>
       ` : ''}
@@ -8027,7 +8046,7 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
         ${(secTCNum = Number(nextSecNo()), secHead(String(secTCNum).padStart(2, '0'), dl().termsNextTitle))}
 
         <div class="doc-block-label doc-included-label">${dl().conditionsLabel}</div>
-        <ul class="terms-list">${bulletItems(conditionsText.replace(/\{VALIDADE\}/g, String(validityDays))).map(i => '<li>' + i + '</li>').join('')}</ul>
+        <ul class="terms-list${phClass('f-conditions')}">${bulletItems(conditionsText.replace(/\{VALIDADE\}/g, String(validityDays))).map(i => '<li>' + i + '</li>').join('')}</ul>
 
         ${secMaintItems.length > 0 ? '' : `
         <div class="doc-block-label doc-included-label">${dl().notIncludedLabel}</div>
@@ -8072,7 +8091,7 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
 
         <div class="doc-block">
           <div class="doc-block-label doc-included-label">${dl().nextStepsLabel}</div>
-          <ul class="terms-list">${bulletItems(nextSteps).map(i => '<li>' + escHtml(i) + '</li>').join('')}</ul>
+          <ul class="terms-list${phClass('f-nextsteps')}">${bulletItems(nextSteps).map(i => '<li>' + escHtml(i) + '</li>').join('')}</ul>
         </div>
 
         ${buildAceiteSection()}
