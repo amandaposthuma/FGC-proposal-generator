@@ -110,10 +110,12 @@ in the matching scope heading. They come from `termsSub` in `buildTermsForItems`
 so **build order must match render order** — maintenance is built last because it
 renders last, under Seção 03.
 
-**Placeholder colouring.** A block whose field still holds the untouched default
-carries `.is-placeholder` and renders in `--doc-placeholder` (#A9714F). Editing one
-character clears it. `isUntouchedDefault(id)` compares against `_appliedDefaults`,
-so this is driven by the standard-text mechanism, not a separate flag.
+**Colour rule — only what gets personalised is marked.** Standard text is finished
+copy and reads black like the rest of the document; only the `⟦tokens⟧` inside it
+are copper (`#B0542F` on white, `#E0A183` on the navy cover). An earlier build
+coloured whole untouched blocks, which read as "all of this needs rewriting" and
+was wrong. `.is-placeholder` is still applied via `phClass()` as a semantic hook
+but carries no colour — don't give it one.
 
 **Note on the template's Seção 02 intro.** Fabiana's Reinstatement doc says the
 amounts "refletem os custos apresentados pelo agente registrado" — true only when
@@ -233,6 +235,7 @@ fs.writeFileSync('/tmp/fgc_check.js',s.join('\n'));
 - **Version Sept 16 (e)** — added `BUILD` stamp, no-cache meta tags and a self-check that offers a reload when the deployed build differs. This was the reason several shipped fixes appeared not to have landed.
 - **Version Sept 16 (g)** — remaining template prose added: Seção 02 intro and Timeline, Seção 03 intro and Vencimento, and the Condições list (with `{VALIDADE}` kept in sync with the cover). `O que não está incluído` moved into Seção 03 as the source has it, falling back to Seção 05 when there is no maintenance section. Scope headings collapse when a section has only one service, so bullets sit directly under the group label.
 - **Version Sept 16 (j)** — standard text rewritten as real recyclable prose in Fabiana's structure (O que entendemos, Objetivo, Escopo, Sugestão, Seção 02 intro), with `⟦tokens⟧` for the variable parts only. Untouched boilerplate now renders in `--doc-placeholder` and turns normal the moment the field is edited. "Objeto da proposta" renamed to "Título" everywhere; sign-off is "Abraços,".
+- **Version Sept 16 (l)** — documents table ships with the template's four model rows instead of a red "add documents" prompt; every field that feeds the document now starts from model text. Colour rule settled: standardised prose black, personalised `⟦tokens⟧` copper.
 - **Version June 17** — fixed fsAnterior/trAnterior crash; full draft save/load (custom items + overrides); Observações field (section 4.6); hasScope toggle on custom items; print margin CSS; loadDraft stale-data reset; custom transfer group fix (no more "PRIVATE INVESTMENT COMPANY" on non-PIC items); item ordering fix
 
 ## Known draft behavior

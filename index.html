@@ -1273,16 +1273,11 @@
   }
   #proposal-doc .terms-section-heading.is-scope-item + .terms-list { margin-left: 2px; }
 
-  /* ── Untouched boilerplate reads as a draft, not as final copy ──
-     Cleared the moment an advisor edits the field. */
+  /* Standard text is finished copy — it reads black like the rest of the
+     document. Only the ⟦tokens⟧ inside it are marked, because only they need
+     filling in. `.is-placeholder` stays as a hook but carries no colour. */
   #proposal-doc { --doc-placeholder: #A9714F; }
-  #proposal-doc .is-placeholder,
-  #proposal-doc .is-placeholder p,
-  #proposal-doc .is-placeholder li,
-  #proposal-doc .is-placeholder .doc-block-label { color: var(--doc-placeholder); }
-  #proposal-doc .is-placeholder li::before { background: var(--doc-placeholder); }
-  @media print { #proposal-doc .is-placeholder, #proposal-doc .is-placeholder p,
-    #proposal-doc .is-placeholder li { color: var(--doc-placeholder) !important; } }
+
 
 </style>
 </head>
@@ -5252,7 +5247,7 @@ const DOC_FORMAT = 3;
 // Shown in the sidebar so the running build is always identifiable, and
 // compared against the deployed file so a stale cached copy announces
 // itself instead of silently showing an old proposal format.
-const BUILD = '2026-09-16-j';
+const BUILD = '2026-09-16-l';
 
 function showUpdateBanner() {
   if (document.getElementById('update-banner')) return;
@@ -5422,6 +5417,12 @@ const FGC_DEFAULTS = {
     vencimento: 'O vencimento da anuidade se dará sempre no dia ⟦dia e mês⟧ de todo ano, sendo a primeira em ⟦ano⟧. Emitimos as invoices com antecedência, para que haja tempo hábil de pagamento e de cumprimento dos prazos.',
     conditions: 'Validade desta proposta: {VALIDADE} dias a partir da data de emissão.\nPremissas: legislação vigente, jurisdição de constituição e dados fornecidos pelo cliente nesta data.\nA contratação formaliza-se por contrato de prestação de serviços específico.',
     nextSteps: 'Alinhamento final de escopo e condições.\nAssinatura do aceite.\nInício dos trabalhos.',
+    requiredDocs: [
+      { doc: 'Passaporte', desc: 'Cópia digitalizada do passaporte válido.', who: '⟦Nome do sócio / diretor⟧' },
+      { doc: 'Comprovante de residência', desc: 'Cópia digitalizada, emitido nos últimos 3 meses.', who: '⟦Nome do sócio / diretor⟧' },
+      { doc: 'Questionário de compliance (KYC individual)', desc: 'Formulário preenchido e assinado.', who: '⟦Nome do sócio / diretor⟧' },
+      { doc: 'Formulários KYC', desc: 'Estrutura societária, objetivo, dados bancários e serviços selecionados.', who: 'Sociedade' },
+    ],
   },
   es: {
     subject: '⟦Título de la propuesta⟧',
@@ -5447,6 +5448,12 @@ const FGC_DEFAULTS = {
     vencimento: 'El vencimiento de la anualidad será siempre el día ⟦día y mes⟧ de cada año, siendo la primera en ⟦año⟧. Emitimos las facturas con antelación, para que haya tiempo de pago y de cumplimiento de los plazos.',
     conditions: 'Validez de esta propuesta: {VALIDADE} días desde la fecha de emisión.\nPremisas: legislación vigente, jurisdicción de constitución y datos proporcionados por el cliente en esta fecha.\nLa contratación se formaliza mediante contrato de prestación de servicios específico.',
     nextSteps: 'Alineación final de alcance y condiciones.\nFirma de la aceptación.\nInicio de los trabajos.',
+    requiredDocs: [
+      { doc: 'Pasaporte', desc: 'Copia digitalizada del pasaporte vigente.', who: '⟦Nombre del socio / director⟧' },
+      { doc: 'Comprobante de domicilio', desc: 'Copia digitalizada, emitido en los últimos 3 meses.', who: '⟦Nombre del socio / director⟧' },
+      { doc: 'Cuestionario de compliance (KYC individual)', desc: 'Formulario completado y firmado.', who: '⟦Nombre del socio / director⟧' },
+      { doc: 'Formularios KYC', desc: 'Estructura societaria, objetivo, datos bancarios y servicios seleccionados.', who: 'Sociedad' },
+    ],
   },
   en: {
     subject: '⟦Proposal title⟧',
@@ -5472,6 +5479,12 @@ const FGC_DEFAULTS = {
     vencimento: 'The annual fee falls due on ⟦day and month⟧ each year, the first in ⟦year⟧. We issue invoices in advance so there is time to pay and to meet the filing deadlines.',
     conditions: 'Validity of this proposal: {VALIDADE} days from the date of issuance.\nAssumptions: current legislation, jurisdiction of incorporation, and the data provided by the client as of this date.\nEngagement is formalised through a specific services agreement.',
     nextSteps: 'Final alignment of scope and conditions.\nSignature of the acceptance.\nWork begins.',
+    requiredDocs: [
+      { doc: 'Passport', desc: 'Scanned copy of a valid passport.', who: '⟦Shareholder / director name⟧' },
+      { doc: 'Proof of address', desc: 'Scanned copy, issued within the last 3 months.', who: '⟦Shareholder / director name⟧' },
+      { doc: 'Compliance questionnaire (individual KYC)', desc: 'Form completed and signed.', who: '⟦Shareholder / director name⟧' },
+      { doc: 'KYC forms', desc: 'Corporate structure, purpose, banking details and selected services.', who: 'Company' },
+    ],
   },
 };
 function fgcDefaults() { return FGC_DEFAULTS[lang] || FGC_DEFAULTS.pt; }
@@ -5496,6 +5509,14 @@ function applyStandardText() {
     'f-vencimento': D.vencimento,
     'f-conditions': D.conditions,
   };
+  // The documents table is an array rather than a field, but follows the same
+  // untouched-default rule so it starts from a model instead of an empty grid.
+  const docsEmpty = !requiredDocs.some(d => (d.doc || '').trim() || (d.desc || '').trim() || (d.who || '').trim());
+  if (docsEmpty || JSON.stringify(requiredDocs) === (_appliedDefaults.requiredDocs || '')) {
+    requiredDocs = JSON.parse(JSON.stringify(D.requiredDocs));
+    _appliedDefaults.requiredDocs = JSON.stringify(requiredDocs);
+    renderRequiredDocs();
+  }
   Object.keys(map).forEach(id => {
     const el = document.getElementById(id);
     if (!el) return;
@@ -5845,17 +5866,18 @@ function buildRequiredDocsSection(num) {
   const D = dl();
   const rows = requiredDocs.filter(function (d) { return (d.doc || '').trim() || (d.desc || '').trim(); });
   const intro = requiredDocsIntro.trim() || D.docsIntroDefault;
+  const docsPh = JSON.stringify(requiredDocs) === (_appliedDefaults.requiredDocs || '') ? ' is-placeholder' : '';
   return `
     <div class="doc-sec">
       ${secHead(num, D.docsTitle)}
-      <div class="doc-block"><p>${escHtml(intro)}</p></div>
+      <div class="doc-block${phClass('f-docs-intro')}"><p>${escHtml(intro)}</p></div>
       ${rows.length ? `
-      <table class="doc-grid-table">
+      <table class="doc-grid-table${docsPh}">
         <thead><tr><th>${D.colDoc}</th><th>${D.colDesc}</th><th>${D.colWho}</th></tr></thead>
         <tbody>${rows.map(function (d) { return `<tr>
-          <td>${escHtml(d.doc)}</td>
-          <td>${escHtml(d.desc)}</td>
-          <td>${escHtml(d.who)}</td>
+          <td>${markTokens(escHtml(d.doc))}</td>
+          <td>${markTokens(escHtml(d.desc))}</td>
+          <td>${markTokens(escHtml(d.who))}</td>
         </tr>`; }).join('')}</tbody>
       </table>` : fillPrompt(D.promptDocs)}
     </div>`;
