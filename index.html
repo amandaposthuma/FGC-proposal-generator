@@ -3,6 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <title>FGC. Proposal Generator</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1240,6 +1243,25 @@
   }
   #proposal-doc .terms-section { margin-bottom: 0; }
 
+  .build-stamp {
+    padding: 14px 0 4px; text-align: center;
+    font-family: var(--font); font-size: 9px; letter-spacing: 0.5px;
+    color: rgba(7,18,16,0.3);
+  }
+  #update-banner {
+    position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%);
+    z-index: 10001; display: flex; align-items: center; gap: 12px;
+    background: #041725; color: #fff; border-radius: 4px;
+    padding: 10px 14px; box-shadow: 0 4px 18px rgba(0,0,0,0.25);
+    font-family: var(--font); font-size: 12px; font-weight: 500;
+  }
+  #update-banner button {
+    background: #fff; color: #041725; border: none; border-radius: 3px;
+    padding: 6px 12px; font-family: inherit; font-size: 11px;
+    font-weight: 700; cursor: pointer;
+  }
+  @media print { #update-banner, .build-stamp { display: none !important; } }
+
 </style>
 </head>
 <body>
@@ -1477,6 +1499,7 @@
     <div id="service-picker"></div>
     <div id="sidebar-alert-area"></div>
   </div>
+    <div class="build-stamp" id="build-stamp"></div>
   </div><!-- end sidebar-body -->
 
   <div class="sidebar-footer">
@@ -5165,6 +5188,31 @@ let requiredDocsIntro  = '';
 // Bump whenever the generated document structure changes. loadDraft replays a
 // draft's stored HTML only when it was produced by this same format.
 const DOC_FORMAT = 3;
+
+// ── Build stamp ──────────────────────────────────────────────────────
+// Shown in the sidebar so the running build is always identifiable, and
+// compared against the deployed file so a stale cached copy announces
+// itself instead of silently showing an old proposal format.
+const BUILD = '2026-09-16-d';
+
+function showUpdateBanner() {
+  if (document.getElementById('update-banner')) return;
+  const bar = document.createElement('div');
+  bar.id = 'update-banner';
+  bar.innerHTML = '<span>Nova versão disponível.</span>' +
+    '<button onclick="location.reload()">Atualizar agora</button>';
+  document.body.appendChild(bar);
+}
+
+async function checkForUpdate() {
+  try {
+    const res = await fetch('index.html?cb=' + Date.now(), { cache: 'no-store' });
+    if (!res.ok) return;
+    const text = await res.text();
+    const m = text.match(/const BUILD = '([^']+)'/);
+    if (m && m[1] !== BUILD) showUpdateBanner();
+  } catch (e) { /* offline or blocked — stay quiet */ }
+}
 let oneOffTitle        = '';   // Seção 02 title; blank = derive from services
 let nextSteps          = '';
 let requiredDocs       = [{ doc: '', desc: '', who: '' }];
@@ -8600,6 +8648,10 @@ document.addEventListener('DOMContentLoaded', () => {
   renderAdvisorChips();
   syncCoverFields();
   updateDraftCountBadge();
+  const buildEl = document.getElementById('build-stamp');
+  if (buildEl) buildEl.textContent = 'build ' + BUILD;
+  checkForUpdate();
+  setInterval(checkForUpdate, 5 * 60 * 1000);
   // Focus username input
   document.getElementById('pw-username').focus();
   // Save on tab close / navigate away

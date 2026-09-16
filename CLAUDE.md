@@ -169,6 +169,19 @@ stored HTML only when `draft.docFormat === DOC_FORMAT`, and regenerates otherwis
 
 ---
 
+## Build stamp and caching — read this before debugging a "it's still broken"
+
+GitHub Pages serves `index.html` with a cache header, and browsers hold it well
+past the TTL. Users were running an old build and reporting fixes as broken that
+had already shipped; `curl` with a cache-buster showed the correct file the whole
+time. **Verifying with curl or a `?cb=` URL does not prove what the user sees.**
+
+- `const BUILD` near the top of the script block is shown in the sidebar footer.
+  **Bump it on every deploy.**
+- On load, and every 5 minutes, the page fetches itself with `cache: 'no-store'`
+  and compares `BUILD`. A mismatch shows an "Atualizar agora" banner.
+- When a user reports a stale-looking document, ask for the build stamp first.
+
 ## Deployment
 ```bash
 cd "/Users/amandaposthumacoelho/Desktop/Clients/FGC/Tools/Proposal Generator v2"
@@ -206,6 +219,7 @@ fs.writeFileSync('/tmp/fgc_check.js',s.join('\n'));
 - **Version Sept 16 (b)** — section titles matched to the template: annual maintenance split out as its own `Seção 03`, Seção 02 named after the service (derived, overridable), `Aceite` demoted to a block inside `Termos e próximos passos`, scope split into "O que está incluído" / "O que o valor anual cobre", added "Condições" and "Próximos passos".
 - **Version Sept 16 (c)** — fee tables to the source's `Descrição | Modelo | Investimento` columns (46/22/32) with `Subtotal estimado` / `Total anual estimado` as ruled rows; added `DOC_FORMAT` draft stamping so drafts saved under an older structure regenerate instead of replaying stale HTML.
 - **Version Sept 16 (d)** — collapsed two competing heading systems into one: removed all `N.N` decimal numbering (section, scope and clause headings), unified every sub-heading to the source's bold navy sentence-case block label, flattened the clause groups to siblings of Próximos passos and Aceite, and re-ordered scope building to match render order so inline item numbers run 1-2-3 down the page.
+- **Version Sept 16 (e)** — added `BUILD` stamp, no-cache meta tags and a self-check that offers a reload when the deployed build differs. This was the reason several shipped fixes appeared not to have landed.
 - **Version June 17** — fixed fsAnterior/trAnterior crash; full draft save/load (custom items + overrides); Observações field (section 4.6); hasScope toggle on custom items; print margin CSS; loadDraft stale-data reset; custom transfer group fix (no more "PRIVATE INVESTMENT COMPANY" on non-PIC items); item ordering fix
 
 ## Known draft behavior
