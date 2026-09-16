@@ -1228,10 +1228,8 @@
 
   /* Objetivo is the one label the source rules — a hairline above it */
   #proposal-doc .doc-block-label.is-objective {
-    color: var(--doc-accent); text-transform: uppercase;
-    font-size: 10px; letter-spacing: 1.2px;
     border-top: 1px solid var(--doc-rule-row);
-    padding-top: 14px; margin-top: 22px;
+    padding-top: 18px; margin-top: 22px;
   }
 
   /* Entity grouping inside a fee table stays subordinate to both levels */
@@ -5247,7 +5245,7 @@ const DOC_FORMAT = 3;
 // Shown in the sidebar so the running build is always identifiable, and
 // compared against the deployed file so a stale cached copy announces
 // itself instead of silently showing an old proposal format.
-const BUILD = '2026-09-16-l';
+const BUILD = '2026-09-16-o';
 
 function showUpdateBanner() {
   if (document.getElementById('update-banner')) return;
@@ -5403,16 +5401,16 @@ const FGC_DEFAULTS = {
       'Fica um convite para conduzirmos esse processo com a agilidade e o cuidado que a continuidade da sua estrutura exige.\n' +
       'Agradecemos desde já essa oportunidade.',
     undWhat:
-      'A ⟦Nome da sociedade⟧ encontra-se ⟦situação atual⟧ junto ao ⟦órgão competente⟧ de ⟦jurisdição⟧ desde ⟦data⟧. Na prática, isso significa que a sociedade ⟦o que fica impedido: operar, assinar contratos, movimentar contas⟧ até que a situação seja regularizada.\n' +
-      '⟦Segundo fato, quando houver — por exemplo: o agente registrado renunciou à sua função, normalmente por falta de pagamento das taxas anuais. Toda sociedade na jurisdição é obrigada por lei a manter um agente registrado; sem ele, a irregularidade se soma à anterior.⟧',
+      'A ⟦Nome do cliente⟧ encontra-se ⟦situação atual⟧ junto ao ⟦órgão competente⟧ de ⟦jurisdição⟧ desde ⟦data⟧. Na prática, isso significa que a sociedade ⟦o que fica impedido: operar, assinar contratos, movimentar contas⟧ até que a situação seja regularizada.\n' +
+      'O agente registrado da sociedade ⟦renunciou à sua função⟧, normalmente por falta de pagamento das taxas anuais. Toda sociedade em ⟦jurisdição⟧ é obrigada por lei a manter um agente registrado; sem ele, a irregularidade se soma à anterior.',
     undObjective: '⟦Restaurar / Constituir / Transferir⟧ a sociedade junto ao ⟦órgão competente⟧, ⟦segunda ação, se houver⟧ e regularizar compliance, KYC e as obrigações em aberto.',
     undScope:
       '⟦Frente principal do trabalho⟧ junto ao ⟦órgão competente⟧, incluindo ⟦etapas relevantes⟧.\n' +
       'Manutenção anual ⟦compliance, Economic Substance e demonstrações financeiras⟧.\n' +
       'Contabilidade anual.',
-    undRec: 'Concluído ⟦o trabalho⟧, sugerimos ⟦o próximo passo — por exemplo, uma análise de planejamento sucessório da estrutura⟧.',
-    sec2Intro: 'Os valores abaixo referem-se aos honorários da FGC para ⟦o trabalho descrito acima⟧. ⟦Havendo custos de terceiros — taxas governamentais, agente registrado, cartório —, registre aqui que são repassados ao cliente e permanecem estimados até a confirmação final.⟧',
-    timeline: '⟦Prazo estimado e o que pode afetá-lo: aprovações necessárias, tempo típico de cada etapa e o que acontece depois de obtida cada aprovação.⟧',
+    undRec: 'Concluído ⟦o trabalho⟧, sugerimos ⟦uma análise de planejamento sucessório⟧ da estrutura.',
+    sec2Intro: 'Os valores abaixo referem-se aos honorários da FGC para ⟦o trabalho descrito acima⟧. Custos de terceiros — taxas governamentais, agente registrado e cartório — são repassados ao cliente e permanecem estimados até a confirmação final.',
+    timeline: 'O prazo estimado é de ⟦prazo⟧, contado a partir de ⟦marco inicial⟧. Havendo aprovação prévia necessária, esse processo costuma levar ⟦prazo adicional⟧. Obtida a aprovação, ⟦etapa final⟧ é concluída em ⟦prazo⟧.',
     sec3Intro: 'A manutenção da sociedade é apresentada como um valor anual único, que reúne todas as obrigações recorrentes sob uma só relação.',
     vencimento: 'O vencimento da anuidade se dará sempre no dia ⟦dia e mês⟧ de todo ano, sendo a primeira em ⟦ano⟧. Emitimos as invoices com antecedência, para que haja tempo hábil de pagamento e de cumprimento dos prazos.',
     conditions: 'Validade desta proposta: {VALIDADE} dias a partir da data de emissão.\nPremissas: legislação vigente, jurisdição de constituição e dados fornecidos pelo cliente nesta data.\nA contratação formaliza-se por contrato de prestação de serviços específico.',
@@ -5434,16 +5432,16 @@ const FGC_DEFAULTS = {
       'Queda la invitación para conducir este proceso con la agilidad y el cuidado que la continuidad de su estructura exige.\n' +
       'Agradecemos desde ya esta oportunidad.',
     undWhat:
-      'La ⟦Nombre de la sociedad⟧ se encuentra ⟦situación actual⟧ ante el ⟦órgano competente⟧ de ⟦jurisdicción⟧ desde ⟦fecha⟧. En la práctica, esto significa que la sociedad ⟦qué queda impedido: operar, firmar contratos, mover cuentas⟧ hasta que la situación se regularice.\n' +
-      '⟦Segundo hecho, cuando lo haya — por ejemplo: el agente registrado renunció a su función, normalmente por falta de pago de las tasas anuales. Toda sociedad en la jurisdicción está obligada por ley a mantener un agente registrado; sin él, la irregularidad se suma a la anterior.⟧',
+      'La ⟦Nombre del cliente⟧ se encuentra ⟦situación actual⟧ ante el ⟦órgano competente⟧ de ⟦jurisdicción⟧ desde ⟦fecha⟧. En la práctica, esto significa que la sociedad ⟦qué queda impedido: operar, firmar contratos, mover cuentas⟧ hasta que la situación se regularice.\n' +
+      'El agente registrado de la sociedad ⟦renunció a su función⟧, normalmente por falta de pago de las tasas anuales. Toda sociedad en ⟦jurisdicción⟧ está obligada por ley a mantener un agente registrado; sin él, la irregularidad se suma a la anterior.',
     undObjective: '⟦Restaurar / Constituir / Transferir⟧ la sociedad ante el ⟦órgano competente⟧, ⟦segunda acción, si la hay⟧ y regularizar compliance, KYC y las obligaciones pendientes.',
     undScope:
       '⟦Frente principal del trabajo⟧ ante el ⟦órgano competente⟧, incluyendo ⟦etapas relevantes⟧.\n' +
       'Mantenimiento anual ⟦compliance, Economic Substance y estados financieros⟧.\n' +
       'Contabilidad anual.',
-    undRec: 'Concluido ⟦el trabajo⟧, sugerimos ⟦el próximo paso — por ejemplo, un análisis de planificación sucesoria de la estructura⟧.',
-    sec2Intro: 'Los valores a continuación corresponden a los honorarios de FGC para ⟦el trabajo descrito arriba⟧. ⟦Si hay costos de terceros — tasas gubernamentales, agente registrado, notaría —, indique aquí que se trasladan al cliente y permanecen estimados hasta la confirmación final.⟧',
-    timeline: '⟦Plazo estimado y qué puede afectarlo: aprobaciones necesarias, tiempo típico de cada etapa y qué ocurre tras cada aprobación.⟧',
+    undRec: 'Concluido ⟦el trabajo⟧, sugerimos ⟦un análisis de planificación sucesoria⟧ de la estructura.',
+    sec2Intro: 'Los valores a continuación corresponden a los honorarios de FGC para ⟦el trabajo descrito arriba⟧. Los costos de terceros — tasas gubernamentales, agente registrado y notaría — se trasladan al cliente y permanecen estimados hasta la confirmación final.',
+    timeline: 'El plazo estimado es de ⟦plazo⟧, contado desde ⟦hito inicial⟧. Si se requiere aprobación previa, ese proceso suele tomar ⟦plazo adicional⟧. Obtenida la aprobación, ⟦etapa final⟧ se concluye en ⟦plazo⟧.',
     sec3Intro: 'El mantenimiento de la sociedad se presenta como un valor anual único, que reúne todas las obligaciones recurrentes en una sola relación.',
     vencimento: 'El vencimiento de la anualidad será siempre el día ⟦día y mes⟧ de cada año, siendo la primera en ⟦año⟧. Emitimos las facturas con antelación, para que haya tiempo de pago y de cumplimiento de los plazos.',
     conditions: 'Validez de esta propuesta: {VALIDADE} días desde la fecha de emisión.\nPremisas: legislación vigente, jurisdicción de constitución y datos proporcionados por el cliente en esta fecha.\nLa contratación se formaliza mediante contrato de prestación de servicios específico.',
@@ -5465,16 +5463,16 @@ const FGC_DEFAULTS = {
       'We would welcome the chance to run this process with the speed and care the continuity of your structure requires.\n' +
       'Thank you in advance for the opportunity.',
     undWhat:
-      '⟦Company name⟧ is currently ⟦current status⟧ with the ⟦competent authority⟧ of ⟦jurisdiction⟧, and has been since ⟦date⟧. In practice this means the company ⟦what it cannot do: operate, sign contracts, move funds⟧ until the position is put right.\n' +
-      '⟦Second fact, where there is one — for example: the registered agent resigned, typically over unpaid annual fees. Every company in the jurisdiction is required by law to maintain a registered agent; without one, that irregularity compounds the first.⟧',
+      '⟦Client name⟧ is currently ⟦current status⟧ with the ⟦competent authority⟧ of ⟦jurisdiction⟧, and has been since ⟦date⟧. In practice this means the company ⟦what it cannot do: operate, sign contracts, move funds⟧ until the position is put right.\n' +
+      'The company\'s registered agent ⟦resigned⟧, typically over unpaid annual fees. Every company in ⟦jurisdiction⟧ is required by law to maintain a registered agent; without one, that irregularity compounds the first.',
     undObjective: '⟦Restore / Incorporate / Transfer⟧ the company with the ⟦competent authority⟧, ⟦second action, if any⟧, and bring compliance, KYC and outstanding obligations back into good standing.',
     undScope:
       '⟦Primary workstream⟧ with the ⟦competent authority⟧, including ⟦relevant stages⟧.\n' +
       'Annual maintenance ⟦compliance, Economic Substance and financial statements⟧.\n' +
       'Annual accounting.',
-    undRec: 'Once ⟦the work⟧ is complete, we suggest ⟦the next step — for example, a succession planning review of the structure⟧.',
-    sec2Intro: 'The amounts below are FGC\'s fees for ⟦the work described above⟧. ⟦Where third-party costs apply — government fees, registered agent, notary — note here that they are passed through to the client and remain estimates until finally confirmed.⟧',
-    timeline: '⟦Estimated timing and what can affect it: approvals required, typical duration of each stage, and what follows each approval.⟧',
+    undRec: 'Once ⟦the work⟧ is complete, we suggest ⟦a succession planning review⟧ of the structure.',
+    sec2Intro: 'The amounts below are FGC\'s fees for ⟦the work described above⟧. Third-party costs — government fees, registered agent and notary — are passed through to the client and remain estimates until finally confirmed.',
+    timeline: 'The estimated timeline is ⟦duration⟧ from ⟦starting point⟧. Where prior approval is required, that process typically takes ⟦additional duration⟧. Once approval is obtained, ⟦final stage⟧ completes within ⟦duration⟧.',
     sec3Intro: 'Maintenance of the company is presented as a single annual amount, bringing every recurring obligation under one relationship.',
     vencimento: 'The annual fee falls due on ⟦day and month⟧ each year, the first in ⟦year⟧. We issue invoices in advance so there is time to pay and to meet the filing deadlines.',
     conditions: 'Validity of this proposal: {VALIDADE} days from the date of issuance.\nAssumptions: current legislation, jurisdiction of incorporation, and the data provided by the client as of this date.\nEngagement is formalised through a specific services agreement.',
@@ -5538,6 +5536,37 @@ function isUntouchedDefault(id) {
   return !!cur && cur === (_appliedDefaults[id] || '').trim();
 }
 function phClass(id) { return isUntouchedDefault(id) ? ' is-placeholder' : ''; }
+
+let _autoTokens = {};
+
+// Jurisdiction and its registry, derived from the selected services
+function currentJurisdiction() {
+  const on = k => !!state[k];
+  const offshore = [
+    [['cayman','transCayman','transCaymanRA','dissolucaoCayman'], 'Cayman', 'Registrar of Companies'],
+    [['bvi','transBVI','transBVIRA','dissolucaoBVI'],             'BVI',    'Registrar of Corporate Affairs'],
+    [['bahamas','transBahamas','transBahamasRA','dissolucaoBahamas'], 'Bahamas', 'Registrar General'],
+    [['nevis','transNevis','transNevisRA','dissolucaoNevis'],      'Nevis',  'Registrar of Companies'],
+  ];
+  for (const [keys, name, registry] of offshore) {
+    if (keys.some(on)) return { name, registry };
+  }
+  const usStates = { fl: 'Florida', de: 'Delaware', ny: 'Nova York', sd: 'South Dakota', wi: 'Wisconsin', mn: 'Minnesota' };
+  for (const k of Object.keys(usStates)) {
+    const K = k.toUpperCase();
+    if (on(k) || on('trans' + K) || on('trans' + K + 'RA') || on('dissolucao' + K)) {
+      return { name: usStates[k], registry: 'Secretary of State' };
+    }
+  }
+  return null;
+}
+
+function resolveTokens(text) {
+  return String(text).replace(/⟦([^⟧]*)⟧/g, function (m, inner) {
+    const v = _autoTokens[inner.trim().toLowerCase()];
+    return (v === undefined || v === '') ? m : v;
+  });
+}
 
 function markTokens(html) {
   return String(html).replace(/⟦[^⟧]*⟧/g, m => `<span class="doc-token">${m}</span>`);
@@ -5740,7 +5769,7 @@ function syncCoverFields() {
 // ── Document builders ──
 function paras(text) {
   return String(text || '').trim().split(/\n/).filter(function (l) { return l.trim(); })
-    .map(function (l) { return `<p>${markTokens(escHtml(l.trim()))}</p>`; }).join('');
+    .map(function (l) { return `<p>${markTokens(escHtml(resolveTokens(l.trim())))}</p>`; }).join('');
 }
 function bulletItems(text) {
   return String(text || '').split('\n')
@@ -5752,7 +5781,7 @@ function bulletList(text) {
     .map(function (l) { return l.replace(/^\s*[-•▪*]\s*/, '').trim(); })
     .filter(Boolean);
   if (!items.length) return '';
-  return `<ul class="doc-bullets">${items.map(function (i) { return `<li>${markTokens(escHtml(i))}</li>`; }).join('')}</ul>`;
+  return `<ul class="doc-bullets">${items.map(function (i) { return `<li>${markTokens(escHtml(resolveTokens(i)))}</li>`; }).join('')}</ul>`;
 }
 function fillPrompt(msg) {
   return `<div class="doc-placeholder"><strong>${dl().fillPrompt}</strong> ${msg}</div>`;
@@ -5782,7 +5811,7 @@ function buildCover(ctx) {
       </div>
       <div class="doc-cover-mid">
         <div class="doc-cover-kicker">${D.kicker}</div>
-        <div class="doc-cover-subject">${markTokens(escHtml(coverSubject.trim() || dl().subjectPrompt))}</div>
+        <div class="doc-cover-subject">${markTokens(escHtml(resolveTokens(coverSubject.trim() || dl().subjectPrompt)))}</div>
       </div>
       <div class="doc-cover-meta">
         ${[
@@ -5875,9 +5904,9 @@ function buildRequiredDocsSection(num) {
       <table class="doc-grid-table${docsPh}">
         <thead><tr><th>${D.colDoc}</th><th>${D.colDesc}</th><th>${D.colWho}</th></tr></thead>
         <tbody>${rows.map(function (d) { return `<tr>
-          <td>${markTokens(escHtml(d.doc))}</td>
-          <td>${markTokens(escHtml(d.desc))}</td>
-          <td>${markTokens(escHtml(d.who))}</td>
+          <td>${markTokens(escHtml(resolveTokens(d.doc)))}</td>
+          <td>${markTokens(escHtml(resolveTokens(d.desc)))}</td>
+          <td>${markTokens(escHtml(resolveTokens(d.who)))}</td>
         </tr>`; }).join('')}</tbody>
       </table>` : fillPrompt(D.promptDocs)}
     </div>`;
@@ -7957,6 +7986,50 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
         notIncItems = notIncItems.filter(i => !removeForNotarization[lang].includes(i));
       }
 
+  // ── Auto-fill the tokens the tool can already answer ──
+  // Client, jurisdiction, registry and the selected services are all known by
+  // this point; anything else stays marked for a human.
+  (function () {
+    const jur = currentJurisdiction();
+    const firstName = (careOf || client || '').trim().split(' ')[0] || '';
+    const workSummary = (_oneOffCandidates[0] || '').toLowerCase();
+    const andWord = { pt: ' e ', es: ' y ', en: ' and ' }[lang];
+    const others = [].concat(
+      hasSec1Content      ? [sec1SubLabel]    : [],
+      secSuccItems.length ? [secSuccSubLabel] : [],
+      secMaintItems.length? [dl().maintTitle] : [],
+      secAcctItems.length ? [secAcctSubLabel] : [],
+      sec3Items.length    ? [sec3SubLabel]    : []
+    ).filter(Boolean).map(x => x.toLowerCase()).filter(x => x !== workSummary);
+    const groupStr = others.length > 1
+      ? others.slice(0, -1).join(', ') + andWord + others[others.length - 1]
+      : (others[0] || '');
+
+    _autoTokens = {
+      // client
+      'nome do cliente': client, 'nombre del cliente': client, 'client name': client,
+      'nome da sociedade': client, 'nombre de la sociedad': client, 'company name': client,
+      'nome': firstName, 'nombre': firstName, 'name': firstName,
+      'nome do sócio / diretor': careOf, 'nombre del socio / director': careOf,
+      'shareholder / director name': careOf,
+      // jurisdiction
+      'jurisdição': jur ? jur.name : '', 'jurisdicción': jur ? jur.name : '', 'jurisdiction': jur ? jur.name : '',
+      'órgão competente': jur ? jur.registry : '', 'órgano competente': jur ? jur.registry : '',
+      'competent authority': jur ? jur.registry : '',
+      // the work
+      'o trabalho contratado': workSummary, 'el trabajo contratado': workSummary,
+      'the engagement': workSummary,
+      'o trabalho descrito acima': workSummary, 'el trabajo descrito arriba': workSummary,
+      'the work described above': workSummary,
+      'o trabalho': workSummary, 'el trabajo': workSummary, 'the work': workSummary,
+      'frente principal do trabalho': _oneOffCandidates[0] ? _oneOffCandidates[0].toLowerCase() : '',
+      'frente principal del trabajo': _oneOffCandidates[0] ? _oneOffCandidates[0].toLowerCase() : '',
+      'primary workstream': _oneOffCandidates[0] ? _oneOffCandidates[0].toLowerCase() : '',
+      'as frentes envolvidas': groupStr, 'los frentes involucrados': groupStr,
+      'the workstreams involved': groupStr,
+    };
+  })();
+
   // ── Assemble document ──
   const docHTML = `
     ${buildCover(docCtx)}
@@ -8068,7 +8141,7 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
         ${(secTCNum = Number(nextSecNo()), secHead(String(secTCNum).padStart(2, '0'), dl().termsNextTitle))}
 
         <div class="doc-block-label doc-included-label">${dl().conditionsLabel}</div>
-        <ul class="terms-list${phClass('f-conditions')}">${bulletItems(conditionsText.replace(/\{VALIDADE\}/g, String(validityDays))).map(i => '<li>' + i + '</li>').join('')}</ul>
+        <ul class="terms-list${phClass('f-conditions')}">${bulletItems(conditionsText.replace(/\{VALIDADE\}/g, String(validityDays))).map(i => '<li>' + markTokens(escHtml(resolveTokens(i))) + '</li>').join('')}</ul>
 
         ${secMaintItems.length > 0 ? '' : `
         <div class="doc-block-label doc-included-label">${dl().notIncludedLabel}</div>
@@ -8113,7 +8186,7 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
 
         <div class="doc-block">
           <div class="doc-block-label doc-included-label">${dl().nextStepsLabel}</div>
-          <ul class="terms-list${phClass('f-nextsteps')}">${bulletItems(nextSteps).map(i => '<li>' + escHtml(i) + '</li>').join('')}</ul>
+          <ul class="terms-list${phClass('f-nextsteps')}">${bulletItems(nextSteps).map(i => '<li>' + markTokens(escHtml(resolveTokens(i))) + '</li>').join('')}</ul>
         </div>
 
         ${buildAceiteSection()}

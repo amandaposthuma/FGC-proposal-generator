@@ -110,6 +110,14 @@ in the matching scope heading. They come from `termsSub` in `buildTermsForItems`
 so **build order must match render order** — maintenance is built last because it
 renders last, under Seção 03.
 
+**Token auto-fill.** `_autoTokens` is rebuilt on every generate, just before the
+document is assembled, and `resolveTokens()` substitutes any `⟦token⟧` the tool can
+already answer: client name, first name, A/C contact, jurisdiction, its registry,
+the headline service and the other workstreams. Resolved tokens read as normal
+prose; only what genuinely needs a human stays marked. Order matters —
+`resolveTokens` → `escHtml` → `markTokens`. To auto-fill a new token, add its exact
+inner text (lower-cased, all three languages) to the map.
+
 **Colour rule — only what gets personalised is marked.** Standard text is finished
 copy and reads black like the rest of the document; only the `⟦tokens⟧` inside it
 are copper (`#B0542F` on white, `#E0A183` on the navy cover). An earlier build
@@ -236,6 +244,7 @@ fs.writeFileSync('/tmp/fgc_check.js',s.join('\n'));
 - **Version Sept 16 (g)** — remaining template prose added: Seção 02 intro and Timeline, Seção 03 intro and Vencimento, and the Condições list (with `{VALIDADE}` kept in sync with the cover). `O que não está incluído` moved into Seção 03 as the source has it, falling back to Seção 05 when there is no maintenance section. Scope headings collapse when a section has only one service, so bullets sit directly under the group label.
 - **Version Sept 16 (j)** — standard text rewritten as real recyclable prose in Fabiana's structure (O que entendemos, Objetivo, Escopo, Sugestão, Seção 02 intro), with `⟦tokens⟧` for the variable parts only. Untouched boilerplate now renders in `--doc-placeholder` and turns normal the moment the field is edited. "Objeto da proposta" renamed to "Título" everywhere; sign-off is "Abraços,".
 - **Version Sept 16 (l)** — documents table ships with the template's four model rows instead of a red "add documents" prompt; every field that feeds the document now starts from model text. Colour rule settled: standardised prose black, personalised `⟦tokens⟧` copper.
+- **Version Sept 16 (o)** — tokens the tool can answer now fill themselves (client, jurisdiction, registry, A/C contact, services), cutting a fresh proposal from ~28 manual blanks to 16 real ones. Whole-paragraph instruction tokens rewritten as model prose. `Objetivo` label no longer copper — that colour means "personalise this".
 - **Version June 17** — fixed fsAnterior/trAnterior crash; full draft save/load (custom items + overrides); Observações field (section 4.6); hasScope toggle on custom items; print margin CSS; loadDraft stale-data reset; custom transfer group fix (no more "PRIVATE INVESTMENT COMPANY" on non-PIC items); item ordering fix
 
 ## Known draft behavior
