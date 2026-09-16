@@ -923,6 +923,17 @@
     padding: 14px 16px; margin-top: 4px;
   }
   .doc-callout .doc-block-label { color: var(--doc-accent); margin-bottom: 5px; }
+  /* Sub-block heading inside a section ("O que está incluído", "Condições",
+     "Próximos passos", "Aceite") — matches the template's inner headings */
+  #proposal-doc .doc-included-label {
+    margin: 26px 0 12px; padding-bottom: 6px;
+    border-bottom: 1px solid var(--doc-rule-row);
+    color: var(--doc-muted);
+  }
+  #proposal-doc .doc-thirdparty {
+    margin: 18px 0 4px; padding: 10px 0 0;
+    border-top: 1px solid var(--doc-rule-row);
+  }
   .doc-callout p { font-size: 12px; line-height: 1.7; margin: 0; }
 
   /* Placeholder prompt for an unfilled always-on section */
@@ -1334,6 +1345,10 @@
       <div id="signature-preview" class="asset-preview"></div>
     </div>
     <div class="field-group">
+      <label class="field-label">Título da Seção 02 <span class="field-hint">(vazio = derivado dos serviços)</span></label>
+      <input type="text" id="f-sec2title" class="field-input" placeholder="ex: Restabelecimento" oninput="oneOffTitle=this.value; debouncedUpdate()">
+    </div>
+    <div class="field-group">
       <label class="field-label">Nota de abertura <span class="field-hint">(deixe vazio para gerar automaticamente)</span></label>
       <textarea id="f-opening" class="field-input" rows="4" style="resize:vertical;min-height:64px;"
         placeholder="Uma palavra antes da proposta..."
@@ -1379,6 +1394,16 @@
     </div>
     <div id="req-docs-list"></div>
     <button class="doc-row-add" onclick="addRequiredDoc()">+ Adicionar documento</button>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-section-title">Próximos passos</div>
+    <div class="field-group">
+      <label class="field-label">Itens <span class="field-hint">(um por linha)</span></label>
+      <textarea id="f-nextsteps" class="field-input" rows="3" style="resize:vertical;min-height:52px;"
+        placeholder="Um passo por linha..."
+        oninput="nextSteps=this.value; debouncedUpdate()"></textarea>
+    </div>
   </div>
 
   <div class="sidebar-section">
@@ -5080,6 +5105,8 @@ let clientLogo         = '';   // dataURL
 let openingNote        = '';   // overrides the auto-generated opening when non-empty
 let understanding      = { what: '', objective: '', scope: '', recommendation: '' };
 let requiredDocsIntro  = '';
+let oneOffTitle        = '';   // Seção 02 title; blank = derive from services
+let nextSteps          = '';
 let requiredDocs       = [{ doc: '', desc: '', who: '' }];
 
 // Document copy, per language
@@ -5098,7 +5125,14 @@ const DOC_L = {
     docsTitle: 'Documentos necessários',
     docsIntroDefault: 'Documentos solicitados por acionista e diretor da sociedade, necessários para a atualização de KYC.',
     colDoc: 'Documento', colDesc: 'Descrição', colWho: 'Aplicável a',
-    aceite: 'Aceite',
+    aceite: 'Aceite', aceiteLabel: 'Aceite',
+    maintTitle: 'Manutenção anual',
+    termsNextTitle: 'Termos e próximos passos',
+    includedLabel: 'O que está incluído',
+    annualCoversLabel: 'O que o valor anual cobre',
+    notIncludedLabel: 'O que não está incluído',
+    conditionsLabel: 'Condições',
+    nextStepsLabel: 'Próximos passos',
     aceiteIntro: 'Ao assinar, as partes concordam com o escopo e as condições desta proposta.',
     clientParty: 'Cliente', nameLine: 'Nome:', dateLine: 'Data:',
     contactLabel: 'Contato',
@@ -5123,7 +5157,14 @@ const DOC_L = {
     docsTitle: 'Documentos necesarios',
     docsIntroDefault: 'Documentos solicitados por accionista y director de la sociedad, necesarios para la actualización de KYC.',
     colDoc: 'Documento', colDesc: 'Descripción', colWho: 'Aplicable a',
-    aceite: 'Aceptación',
+    aceite: 'Aceptación', aceiteLabel: 'Aceptación',
+    maintTitle: 'Mantenimiento anual',
+    termsNextTitle: 'Términos y próximos pasos',
+    includedLabel: 'Qué está incluido',
+    annualCoversLabel: 'Qué cubre el valor anual',
+    notIncludedLabel: 'Qué no está incluido',
+    conditionsLabel: 'Condiciones',
+    nextStepsLabel: 'Próximos pasos',
     aceiteIntro: 'Al firmar, las partes aceptan el alcance y las condiciones de esta propuesta.',
     clientParty: 'Cliente', nameLine: 'Nombre:', dateLine: 'Fecha:',
     contactLabel: 'Contacto',
@@ -5148,7 +5189,14 @@ const DOC_L = {
     docsTitle: 'Required documents',
     docsIntroDefault: 'Documents requested from the shareholder and director of the company, required for the KYC update.',
     colDoc: 'Document', colDesc: 'Description', colWho: 'Applies to',
-    aceite: 'Acceptance',
+    aceite: 'Acceptance', aceiteLabel: 'Acceptance',
+    maintTitle: 'Annual maintenance',
+    termsNextTitle: 'Terms and next steps',
+    includedLabel: 'What is included',
+    annualCoversLabel: 'What the annual fee covers',
+    notIncludedLabel: 'What is not included',
+    conditionsLabel: 'Conditions',
+    nextStepsLabel: 'Next steps',
     aceiteIntro: 'By signing, the parties agree to the scope and conditions of this proposal.',
     clientParty: 'Client', nameLine: 'Name:', dateLine: 'Date:',
     contactLabel: 'Contact',
@@ -5187,6 +5235,7 @@ const FGC_DEFAULTS = {
       '⟦Manutenção anual, se aplicável⟧\n' +
       '⟦Contabilidade anual, se aplicável⟧',
     undRec: 'Concluído o trabalho, sugerimos ⟦o próximo passo recomendado⟧.',
+    nextSteps: 'Alinhamento final de escopo e condições.\nAssinatura do aceite.\nInício dos trabalhos.',
   },
   es: {
     subject: '⟦Objeto de la propuesta⟧',
@@ -5206,6 +5255,7 @@ const FGC_DEFAULTS = {
       '⟦Mantenimiento anual, si aplica⟧\n' +
       '⟦Contabilidad anual, si aplica⟧',
     undRec: 'Concluido el trabajo, sugerimos ⟦el próximo paso recomendado⟧.',
+    nextSteps: 'Alineación final de alcance y condiciones.\nFirma de la aceptación.\nInicio de los trabajos.',
   },
   en: {
     subject: '⟦Subject of the proposal⟧',
@@ -5225,6 +5275,7 @@ const FGC_DEFAULTS = {
       '⟦Annual maintenance, if applicable⟧\n' +
       '⟦Annual accounting, if applicable⟧',
     undRec: 'Once the work is complete, we suggest ⟦the recommended next step⟧.',
+    nextSteps: 'Final alignment of scope and conditions.\nSignature of the acceptance.\nWork begins.',
   },
 };
 function fgcDefaults() { return FGC_DEFAULTS[lang] || FGC_DEFAULTS.pt; }
@@ -5242,6 +5293,7 @@ function applyStandardText() {
     'f-und-scope':  D.undScope,
     'f-und-rec':    D.undRec,
     'f-docs-intro': dl().docsIntroDefault,
+    'f-nextsteps':  D.nextSteps,
   };
   Object.keys(map).forEach(id => {
     const el = document.getElementById(id);
@@ -5402,6 +5454,7 @@ function renderRequiredDocs() {
 function coverStatePayload() {
   return {
     coverSubject, refCode, refCodeAuto, validityDays, clientLogo, openingNote,
+    oneOffTitle, nextSteps,
     understanding: Object.assign({}, understanding),
     requiredDocsIntro,
     requiredDocs: JSON.parse(JSON.stringify(requiredDocs)),
@@ -5415,6 +5468,8 @@ function applyCoverState(src) {
   validityDays      = Number(d.validityDays) > 0 ? Number(d.validityDays) : 10;
   clientLogo        = d.clientLogo || '';
   openingNote       = d.openingNote || '';
+  oneOffTitle       = d.oneOffTitle || '';
+  nextSteps         = d.nextSteps || '';
   understanding     = Object.assign({ what: '', objective: '', scope: '', recommendation: '' }, d.understanding || {});
   requiredDocsIntro = d.requiredDocsIntro || '';
   requiredDocs      = Array.isArray(d.requiredDocs) && d.requiredDocs.length
@@ -5432,6 +5487,8 @@ function syncCoverFields() {
   set('f-und-scope', understanding.scope);
   set('f-und-rec', understanding.recommendation);
   set('f-docs-intro', requiredDocsIntro);
+  set('f-sec2title', oneOffTitle);
+  set('f-nextsteps', nextSteps);
   const ref = document.getElementById('f-refcode');
   if (ref && !refCodeAuto) ref.value = refCode;
   refreshRefCodeField();
@@ -7063,6 +7120,15 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
   // Scope = II, Not Included = III, T&C = IV
   const secTermsNum = 2;
   const secTermsTitle = L.secTermsLabel;
+  const hasOneOffFees = sec1Items.length > 0 || secSuccItems.length > 0
+                     || secAcctItems.length > 0 || sec3Items.length > 0;
+  const _oneOffCandidates = [
+    hasSec1Content         ? sec1SubLabel     : '',
+    secSuccItems.length    ? secSuccSubLabel  : '',
+    secAcctItems.length    ? secAcctSubLabel  : '',
+    sec3Items.length       ? sec3SubLabel     : '',
+  ].filter(Boolean);
+  const oneOffSecTitle = (oneOffTitle || '').trim() || _oneOffCandidates[0] || feeSecTitle;
   const secNotIncNum = 3;
   const secTCTitle = L.secTCLabel;
   // Section numbers are assigned as the document renders, so optional
@@ -7286,11 +7352,16 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
     es: 'Gestión de plazos críticos, con alertas proactivas para prevenir multas o penalidades',
     en: 'Management of critical deadlines, with proactive alerts to prevent fines or penalties',
   };
+  const _termsMarkA = termsHTML.length;
   buildTermsForItems(secMaintItems, state.will ? { extraBullet: { key: 'bviMaint', text: willMaintExtra[lang] } } : null);
+  const _termsMarkB = termsHTML.length;
   // Accounting terms
   buildTermsForItems(secAcctItems, { partnerKey: 'tr' });
   // Sec III terms
   buildTermsForItems(sec3Items);
+  // Annual-maintenance scope is rendered under Seção 03; everything else under Seção 02
+  const termsMaintHTML  = termsHTML.slice(_termsMarkA, _termsMarkB);
+  const termsOneOffHTML = termsHTML.slice(0, _termsMarkA) + termsHTML.slice(_termsMarkB);
 
   // ── Payment text ──
   let payText = '';
@@ -7591,11 +7662,9 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
 
   function buildAceiteSection() {
     return `
-    <div class="doc-sec">
-      ${secHead(nextSecNo(), dl().aceite)}
-      ${closingLead ? `<div class="doc-block">${paras(closingLead)}</div>` : ''}
-      ${buildAceite(docCtx)}
-    </div>`;
+      <div class="doc-block-label doc-included-label">${dl().aceiteLabel}</div>
+      ${closingLead ? `<div class="doc-note-body">${paras(closingLead)}</div>` : ''}
+      ${buildAceite(docCtx)}`;
   }
 
   // ── Assemble document ──
@@ -7624,10 +7693,10 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
 
       ${buildEntendimento(nextSecNo())}
 
-      <!-- HONORÁRIOS — all fee sub-sections under one header -->
-      ${hasFeeContent ? `
+      <!-- SEÇÃO: the one-off work, titled after the service -->
+      ${(hasOneOffFees || termsOneOffHTML) ? `
       <div class="doc-section">
-        ${secHead(nextSecNo(), feeSecTitle)}
+        ${secHead(nextSecNo(), oneOffSecTitle)}
 
         ${hasSec1Content ? `
           <div class="doc-section-subheader" style="margin-top:24px;">${sec1SubLabel}</div>
@@ -7643,15 +7712,6 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
           ${buildSectionSubtotal(secSuccItems)}
         ` : ''}
 
-        ${secMaintItems.length > 0 ? `
-          <div class="doc-section-subheader" style="margin-top:20px;">${secMaintSubLabel}</div>
-          ${secMaintPIC.length > 0 ? macroHeader(L.macroPIC) + buildFeeTable(secMaintPIC) : ''}
-          ${secMaintUS.length > 0  ? macroHeader(L.macroUS)  + buildFeeTable(secMaintUS)  : ''}
-          ${secMaintOther.filter(it => it.key === 'trustMaint').length > 0 ? macroHeader({ pt: 'Share Trust', es: 'Share Trust', en: 'Share Trust' }[lang]) + buildFeeTable(secMaintOther.filter(it => it.key === 'trustMaint')) : ''}
-          ${secMaintOther.filter(it => it.key !== 'trustMaint').length > 0 ? buildFeeTable(secMaintOther.filter(it => it.key !== 'trustMaint')) : ''}
-          ${buildSectionSubtotal(secMaintItems)}
-        ` : ''}
-
         ${secAcctItems.length > 0 ? `
           <div class="doc-section-subheader" style="margin-top:20px;">${secAcctSubLabel}</div>
           ${secAcctPIC.length > 0 ? macroHeader(L.macroPIC) + buildFeeTable(secAcctPIC) : ''}
@@ -7665,23 +7725,33 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
           ${buildFeeTable(sec3Items)}
         ` : ''}
 
+        ${(has3rdPartyFS || has3rdPartyTR) ? `
+        <div class="doc-thirdparty">
+          <div class="doc-block-label">${lang==='pt'?'Serviços por Terceiros':lang==='es'?'Servicios por Terceros':'Third-Party Services'}</div>
+          ${has3rdPartyFS ? `<div class="third-party-note">⚑ ${FGC_CONFIG.thirdPartyNotes[lang].fs}</div>` : ''}
+          ${has3rdPartyTR ? `<div class="third-party-note">⚑ ${FGC_CONFIG.thirdPartyNotes[lang].tr}</div>` : ''}
+        </div>` : ''}
+
+        ${termsOneOffHTML ? `
+          <div class="doc-block-label doc-included-label">${dl().includedLabel}</div>
+          ${termsOneOffHTML}
+        ` : ''}
       </div>
       ` : ''}
 
-      <!-- Third-party FS/TR notes (rendered as sub-notes within Accounting section, not as separate section header) -->
-      ${(has3rdPartyFS || has3rdPartyTR) ? `
-      <div style="margin-top:4px;margin-bottom:24px;padding:8px 12px;background:rgba(7,18,16,0.03);border-left:3px solid var(--border);border-radius:2px;">
-        <div style="font-size:10px;font-weight:700;letter-spacing:0.8px;text-transform:uppercase;color:var(--text-light);margin-bottom:6px;">${lang==='pt'?'Serviços por Terceiros':lang==='es'?'Servicios por Terceros':'Third-Party Services'}</div>
-        ${has3rdPartyFS ? `<div class="third-party-note" style="margin-bottom:6px;">⚑ ${FGC_CONFIG.thirdPartyNotes[lang].fs}</div>` : ''}
-        ${has3rdPartyTR ? `<div class="third-party-note">⚑ ${FGC_CONFIG.thirdPartyNotes[lang].tr}</div>` : ''}
-      </div>
-      ` : ''}
-
-      <!-- SECTION: Scope of Services -->
-      ${termsHTML ? `
+      <!-- SEÇÃO: Manutenção anual -->
+      ${secMaintItems.length > 0 ? `
       <div class="doc-section">
-        ${secHead(nextSecNo(), secTermsTitle)}
-        ${termsHTML}
+        ${secHead(nextSecNo(), dl().maintTitle)}
+        ${secMaintPIC.length > 0 ? macroHeader(L.macroPIC) + buildFeeTable(secMaintPIC) : ''}
+        ${secMaintUS.length > 0  ? macroHeader(L.macroUS)  + buildFeeTable(secMaintUS)  : ''}
+        ${secMaintOther.filter(it => it.key === 'trustMaint').length > 0 ? macroHeader({ pt: 'Share Trust', es: 'Share Trust', en: 'Share Trust' }[lang]) + buildFeeTable(secMaintOther.filter(it => it.key === 'trustMaint')) : ''}
+        ${secMaintOther.filter(it => it.key !== 'trustMaint').length > 0 ? buildFeeTable(secMaintOther.filter(it => it.key !== 'trustMaint')) : ''}
+        ${buildSectionSubtotal(secMaintItems)}
+        ${termsMaintHTML ? `
+          <div class="doc-block-label doc-included-label">${dl().annualCoversLabel}</div>
+          ${termsMaintHTML}
+        ` : ''}
       </div>
       ` : ''}
 
@@ -7715,19 +7785,21 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
           notIncItems = notIncItems.filter(i => !removeForNotarization[lang].includes(i));
         }
         return `
-      <div class="doc-section">
-        ${secHead(nextSecNo(), clauseSet.notIncluded.title)}
-        <ul class="terms-list">
-          ${notIncItems.map(i => '<li>' + i + '</li>').join('')}
-        </ul>
-      </div>
-
-      <!-- SECTION: Documentos necessários -->
+      <!-- SEÇÃO: Documentos necessários -->
       ${buildRequiredDocsSection(nextSecNo())}
 
-      <!-- SECTION: Terms & Conditions -->
+      <!-- SEÇÃO: Termos e próximos passos -->
       <div class="doc-section">
-        ${(secTCNum = Number(nextSecNo()), secHead(String(secTCNum).padStart(2, '0'), secTCTitle))}
+        ${(secTCNum = Number(nextSecNo()), secHead(String(secTCNum).padStart(2, '0'), dl().termsNextTitle))}
+
+        <div class="doc-block">
+          <div class="doc-block-label">${dl().notIncludedLabel}</div>
+          <ul class="terms-list">
+            ${notIncItems.map(i => '<li>' + i + '</li>').join('')}
+          </ul>
+        </div>
+
+        <div class="doc-block-label doc-included-label">${dl().conditionsLabel}</div>
         <div class="terms-section">
           <div class="terms-section-heading">${secTCNum}.1 — ${clauseSet.payment.title}</div>
           <ul class="terms-list">${payText ? payText.replace(/\. /g, '.|').split('|').filter(Boolean).map(s => '<li>' + s + '</li>').join('') : ''}${(() => {
@@ -7764,11 +7836,15 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
           <div class="terms-section-heading">${secTCNum}.6 — ${{ pt: 'Observações', es: 'Observaciones', en: 'Observations' }[lang]}</div>
           <p style="font-size:12px;line-height:1.65;color:var(--text);margin:0;">${proposalNotes.trim().replace(/\n/g, '<br>')}</p>
         </div>` : ''}
+
+        <div class="doc-block">
+          <div class="doc-block-label doc-included-label">${dl().nextStepsLabel}</div>
+          ${bulletList(nextSteps)}
+        </div>
+
+        ${buildAceiteSection()}
       </div>`;
       })()}
-
-      <!-- Aceite -->
-      ${buildAceiteSection()}
     </div>
 
     <div class="doc-footer">

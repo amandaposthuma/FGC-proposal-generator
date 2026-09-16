@@ -72,9 +72,21 @@ Mirrors `Proposta_template_Reinstatement.docx`. Palette and type are scoped to
 
 Type: Hanken Grotesk body · **Georgia** section titles · **Roboto Mono** eyebrows and metadata.
 
-Document order: **cover** → Apresentação (opening note + signature) → `Seção 01`
-Entendimento e escopo → Honorários → Escopo dos serviços → O que não está incluído
-→ Documentos necessários → Termos e Condições → Aceite.
+Section titles are the template's, not invented. Document order:
+
+| | Title | Contains |
+|---|-------|----------|
+| — | Apresentação → *Uma palavra antes da proposta* | opening note + signature |
+| 01 | Entendimento e escopo | O que entendemos · Objetivo · Escopo · Sugestão |
+| 02 | *named after the service* | one-off fee tables · O que está incluído |
+| 03 | Manutenção anual | annual fee table · O que o valor anual cobre |
+| 04 | Documentos necessários | KYC document table |
+| 05 | Termos e próximos passos | O que não está incluído · Condições · Próximos passos · Aceite |
+
+The template titles its Seção 02 after the work itself ("Reinstatement"), so the
+generator derives that title from the dominant selected service (Constituição,
+Transferência, …). `f-sec2title` overrides it for bespoke cases — e.g.
+"Restabelecimento". **Aceite is a block inside Seção 05, not a section.**
 
 Section numbers are assigned by `nextSecNo()` as the document renders, so an
 empty optional section never leaves a gap. `secTCNum` is captured at render time
@@ -167,6 +179,7 @@ fs.writeFileSync('/tmp/fgc_check.js',s.join('\n'));
 - **Version June 1** — per-user login, device nickname, draft saving, Notion audit log, local fallback logging, Make.com unbreakable setup
 - **Version Sept 15** — v2 proposal aesthetic matching `Proposta_template_Reinstatement.docx`: full-bleed navy cover with metadata grid, Apresentação opening note with scanned-signature slot, always-on Entendimento e escopo (Seção 01), Documentos necessários table, template-matching Aceite block (per-service Yes/No checklist removed), auto-generated `FGC-PROP-*` reference codes, client logo upload, `Seção NN` numbering. Added the `fgc-understanding-scope` Claude skill.
 - **Version Sept 16** — template-fidelity pass: cover metadata rebuilt as ruled label/value rows (44%/56%, matching the source table); all document rules taken from the docx (`#041725` 1pt headers, `#D5D8DA` 0.5pt rows, `#DAD5CC` cover); cell shading removed everywhere (the source has none); one square bullet marker across every list; standard house text pre-fills the opening note and Entendimento e escopo, with `⟦tokens⟧` highlighted until filled.
+- **Version Sept 16 (b)** — section titles matched to the template: annual maintenance split out as its own `Seção 03`, Seção 02 named after the service (derived, overridable), `Aceite` demoted to a block inside `Termos e próximos passos`, scope split into "O que está incluído" / "O que o valor anual cobre", added "Condições" and "Próximos passos".
 - **Version June 17** — fixed fsAnterior/trAnterior crash; full draft save/load (custom items + overrides); Observações field (section 4.6); hasScope toggle on custom items; print margin CSS; loadDraft stale-data reset; custom transfer group fix (no more "PRIVATE INVESTMENT COMPANY" on non-PIC items); item ordering fix
 
 ## Known draft behavior
