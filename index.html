@@ -1293,6 +1293,26 @@
   .block-toggle input { margin: 0; accent-color: #041725; cursor: pointer; }
   .block-toggle:hover { color: var(--dark); }
 
+  /* ── One input per remaining blank ── */
+  .token-badge {
+    display: inline-block; min-width: 16px; padding: 1px 5px; margin-left: 4px;
+    border-radius: 8px; background: #B0542F; color: #fff;
+    font-family: var(--font); font-size: 9px; font-weight: 700;
+    text-align: center; letter-spacing: 0;
+  }
+  .token-field { margin-bottom: 8px; }
+  .token-label {
+    display: block; font-size: 9.5px; font-weight: 600; letter-spacing: 0.2px;
+    color: #B0542F; margin-bottom: 3px; cursor: help;
+  }
+  .token-field.is-filled .token-label { color: rgba(7,18,16,0.45); font-weight: 500; }
+  .token-input {
+    font-size: 11px; padding: 6px 8px; min-height: 30px;
+    resize: vertical; line-height: 1.45;
+    border-color: rgba(176,84,47,0.35);
+  }
+  .token-field.is-filled .token-input { border-color: rgba(7,18,16,0.15); }
+
 </style>
 </head>
 <body>
@@ -1424,6 +1444,12 @@
         <div class="advisor-chips" id="advisor-chips"></div>
       </div>
     </div>
+  </div>
+
+  <div class="sidebar-section" id="token-section" style="display:none;">
+    <div class="sidebar-section-title">A preencher <span class="token-badge" id="token-count"></span></div>
+    <div class="field-hint" style="margin-bottom:8px;">Um campo por espaço em branco da proposta.</div>
+    <div id="token-inputs"></div>
   </div>
 
   <div class="sidebar-section">
@@ -5266,7 +5292,7 @@ const DOC_FORMAT = 3;
 // Shown in the sidebar so the running build is always identifiable, and
 // compared against the deployed file so a stale cached copy announces
 // itself instead of silently showing an old proposal format.
-const BUILD = '2026-09-17-c';
+const BUILD = '2026-09-17-e';
 
 function showUpdateBanner() {
   if (document.getElementById('update-banner')) return;
@@ -5578,10 +5604,53 @@ function isUntouchedDefault(id) {
 function phClass(id) { return isUntouchedDefault(id) ? ' is-placeholder' : ''; }
 
 let _autoTokens = {};
+let tokenValues = {};     // { 'situação atual': 'struck-off', … }
+
+// Every ⟦token⟧ still unanswered, in the order it appears in the document
+function collectOpenTokens() {
+  const sources = [
+    coverSubject, openingNote, understanding.what, understanding.objective,
+    understanding.scope, understanding.recommendation, sec2Intro, timelineText,
+    sec3Intro, vencimentoText, conditionsText, nextSteps, requiredDocsIntro,
+  ].concat(requiredDocs.map(d => [d.doc, d.desc, d.who].join('\n')));
+  const seen = [];
+  String(sources.join('\n')).replace(/⟦([^⟧]*)⟧/g, function (m, inner) {
+    const k = inner.trim();
+    const auto = _autoTokens[k.toLowerCase()];
+    if (auto) return m;                       // the tool answers this one
+    if (seen.indexOf(k) === -1) seen.push(k);
+    return m;
+  });
+  return seen;
+}
+
+function setTokenValue(k, v) { tokenValues[k] = v; debouncedUpdate(); }
+
+function renderTokenInputs() {
+  const box = document.getElementById('token-inputs');
+  const wrap = document.getElementById('token-section');
+  if (!box || !wrap) return;
+  const open = collectOpenTokens();
+  const unanswered = open.filter(k => !(tokenValues[k] || '').trim());
+  wrap.style.display = open.length ? '' : 'none';
+  const badge = document.getElementById('token-count');
+  if (badge) badge.textContent = unanswered.length ? unanswered.length : '✓';
+  box.innerHTML = open.map(function (k) {
+    const short = k.length > 46 ? k.slice(0, 46).replace(/[\s—,:.]+$/, '') + '…' : k;
+    const filled = (tokenValues[k] || '').trim() ? ' is-filled' : '';
+    return `
+      <div class="token-field${filled}">
+        <label class="token-label" title="${escHtml(k)}">${escHtml(short)}</label>
+        <textarea class="field-input token-input" rows="1" placeholder="${escHtml(k)}"
+          oninput="setTokenValue('${escHtml(k).replace(/'/g, "\\'")}', this.value)">${escHtml(tokenValues[k] || '')}</textarea>
+      </div>`;
+  }).join('');
+}
 
 // Jurisdiction and its registry, derived from the selected services
-function currentJurisdiction() {
+function currentJurisdictions() {
   const on = k => !!state[k];
+  const found = [];
   const offshore = [
     [['cayman','transCayman','transCaymanRA','dissolucaoCayman'], 'Cayman', 'de Cayman', 'em Cayman', 'Registrar of Companies'],
     [['bvi','transBVI','transBVIRA','dissolucaoBVI'],             'BVI',    'das Ilhas Virgens Britânicas', 'nas Ilhas Virgens Britânicas', 'Registrar of Corporate Affairs'],
@@ -5589,7 +5658,7 @@ function currentJurisdiction() {
     [['nevis','transNevis','transNevisRA','dissolucaoNevis'],      'Nevis',  'de Nevis', 'em Nevis', 'Registrar of Companies'],
   ];
   for (const [keys, name, ofName, inName, registry] of offshore) {
-    if (keys.some(on)) return { name, ofName, inName, registry };
+    if (keys.some(on)) found.push({ name, ofName, inName, registry });
   }
   const usStates = {
     fl: ['Flórida', 'da Flórida', 'na Flórida'], de: ['Delaware', 'de Delaware', 'em Delaware'],
@@ -5599,15 +5668,31 @@ function currentJurisdiction() {
   for (const k of Object.keys(usStates)) {
     const K = k.toUpperCase();
     if (on(k) || on('trans' + K) || on('trans' + K + 'RA') || on('dissolucao' + K)) {
-      return { name: usStates[k][0], ofName: usStates[k][1], inName: usStates[k][2], registry: 'Secretary of State' };
+      found.push({ name: usStates[k][0], ofName: usStates[k][1], inName: usStates[k][2], registry: 'Secretary of State' });
     }
   }
-  return null;
+  return found;
+}
+// Single jurisdiction when there is exactly one, otherwise null — callers that
+// need a registry name only make sense for one.
+function currentJurisdiction() {
+  const all = currentJurisdictions();
+  return all.length === 1 ? all[0] : null;
+}
+// "nas Bahamas, em Cayman e na Flórida"
+function joinJurisdictions(list, key) {
+  const and = { pt: ' e ', es: ' y ', en: ' and ' }[lang];
+  const parts = list.map(j => key === 'in' ? j.inName : (key === 'of' ? j.ofName : j.name));
+  if (parts.length <= 1) return parts[0] || '';
+  return parts.slice(0, -1).join(', ') + and + parts[parts.length - 1];
 }
 
 function resolveTokens(text) {
   return String(text).replace(/⟦([^⟧]*)⟧/g, function (m, inner) {
-    const v = _autoTokens[inner.trim().toLowerCase()];
+    const k = inner.trim();
+    const typed = tokenValues[k];
+    if (typed && typed.trim()) return typed.trim();
+    const v = _autoTokens[k.toLowerCase()];
     return (v === undefined || v === '') ? m : v;
   });
 }
@@ -5759,6 +5844,7 @@ function coverStatePayload() {
     coverSubject, refCode, refCodeAuto, validityDays, clientLogo, openingNote,
     oneOffTitle, nextSteps, sec2Intro, timelineText, sec3Intro, vencimentoText, conditionsText,
     blocks: Object.assign({}, blocks),
+    tokenValues: Object.assign({}, tokenValues),
     understanding: Object.assign({}, understanding),
     requiredDocsIntro,
     requiredDocs: JSON.parse(JSON.stringify(requiredDocs)),
@@ -5783,6 +5869,7 @@ function applyCoverState(src) {
   // Drafts saved before per-block toggles have no `blocks` key — default all on
   blocks = {};
   BLOCK_KEYS.forEach(k => { blocks[k] = (d.blocks && k in d.blocks) ? !!d.blocks[k] : true; });
+  tokenValues = Object.assign({}, d.tokenValues || {});
   understanding     = Object.assign({ what: '', objective: '', scope: '', recommendation: '' }, d.understanding || {});
   requiredDocsIntro = d.requiredDocsIntro || '';
   requiredDocs      = Array.isArray(d.requiredDocs) && d.requiredDocs.length
@@ -8045,7 +8132,16 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
   // Client, jurisdiction, registry and the selected services are all known by
   // this point; anything else stays marked for a human.
   (function () {
-    const jur = currentJurisdiction();
+    const jurs = currentJurisdictions();
+    const jur = jurs.length === 1 ? jurs[0] : null;
+    const jurNames = joinJurisdictions(jurs, 'name');
+    const jurIn = joinJurisdictions(jurs, 'in');
+    // With several jurisdictions, listing every registry reads as a run-on
+    // ("junto ao Registrar of Companies, Registrar General e Secretary of
+    // State de Cayman, Bahamas e Flórida"). Leave it blank so it surfaces as
+    // its own box instead of generating something clumsy.
+    const uniqRegistries = [...new Set(jurs.map(j => j.registry))];
+    const registries = uniqRegistries.length === 1 ? uniqRegistries[0] : '';
     const firstName = (careOf || client || '').trim().split(' ')[0] || '';
     // A few group labels are adjectival ("Contábil e Fiscal") and don't take an
     // article cleanly — they get a proper noun phrase instead.
@@ -8075,7 +8171,7 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
     // Long form, mirroring Fabiana: "a transferência da S&W junto ao Registrar of Companies de Cayman"
     const jurTail = jur
       ? atWord + jur.registry + ' ' + (lang === 'pt' ? jur.ofName : { es: 'de ', en: 'of ' }[lang] + jur.name)
-      : '';
+      : (jurs.length > 1 ? ' ' + jurIn : '');
     const workFull = headline
       ? phrase(headline) + (client ? ofWord + client : '') + jurTail
       : '';
@@ -8100,9 +8196,9 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
       'nome do sócio / diretor': careOf, 'nombre del socio / director': careOf,
       'shareholder / director name': careOf,
       // jurisdiction
-      'jurisdição': jur ? jur.name : '', 'jurisdicción': jur ? jur.name : '', 'jurisdiction': jur ? jur.name : '',
-      'órgão competente': jur ? jur.registry : '', 'órgano competente': jur ? jur.registry : '',
-      'competent authority': jur ? jur.registry : '',
+      'jurisdição': jurNames, 'jurisdicción': jurNames, 'jurisdiction': jurNames,
+      'órgão competente': registries, 'órgano competente': registries,
+      'competent authority': registries,
       // the work
       'o trabalho contratado': workFull, 'el trabajo contratado': workFull,
       'the engagement': workFull,
@@ -8123,7 +8219,9 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
   // into the sidebar so it stays in step with the document, and an advisor's
   // own text is never overwritten.
   (function () {
-    const jur = currentJurisdiction();
+    const jurs = currentJurisdictions();
+    const jur = jurs.length === 1 ? jurs[0] : null;
+    const jurIn = joinJurisdictions(jurs, 'in');
     const headline = (_oneOffCandidates[0] || '').toLowerCase();
     const cap = t => t ? t.charAt(0).toUpperCase() + t.slice(1) : '';
     const verb = (function () {
@@ -8134,8 +8232,13 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
     })();
 
     // Scope: one line per selected group
+    // One line per entity, so a three-jurisdiction proposal lists all three
     const scopeLines = [];
-    if (headline) scopeLines.push(cap(headline) + { pt: ' da sociedade junto ao ', es: ' de la sociedad ante el ', en: ' of the company with the ' }[lang] + (jur ? jur.registry : '') + '.');
+    if (sec1Items.length) {
+      sec1Items.forEach(it => scopeLines.push(it.label.replace(/^\d+x\s*/, '') + '.'));
+    } else if (headline) {
+      scopeLines.push(cap(headline) + { pt: ' da sociedade', es: ' de la sociedad', en: ' of the company' }[lang] + (jur ? { pt: ' junto ao ', es: ' ante el ', en: ' with the ' }[lang] + jur.registry : '') + '.');
+    }
     if (secMaintItems.length) scopeLines.push({ pt: 'Manutenção anual (compliance, Economic Substance e demonstrações financeiras).', es: 'Mantenimiento anual (compliance, Economic Substance y estados financieros).', en: 'Annual maintenance (compliance, Economic Substance and financial statements).' }[lang]);
     if (secAcctItems.length)  scopeLines.push({ pt: 'Contabilidade anual.', es: 'Contabilidad anual.', en: 'Annual accounting.' }[lang]);
     if (secSuccItems.length)  scopeLines.push({ pt: 'Planejamento sucessório.', es: 'Planificación sucesoria.', en: 'Succession planning.' }[lang]);
@@ -8147,10 +8250,12 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
 
     const auto = {
       'f-subject': (headline && client)
-        ? cap(headline) + { pt: ' da ', es: ' de ', en: ' for ' }[lang] + client + (jur ? ' ' + jur.inName : '')
+        ? cap(headline) + { pt: ' da ', es: ' de ', en: ' for ' }[lang] + client + (jurIn ? ' ' + jurIn : '')
         : '',
-      'f-und-obj': (verb && jur)
-        ? verb + { pt: ' a sociedade junto ao ', es: ' la sociedad ante el ', en: ' the company with the ' }[lang] + jur.registry +
+      'f-und-obj': (verb && jurs.length)
+        ? verb + (jurs.length > 1
+            ? { pt: ' as sociedades ', es: ' las sociedades ', en: ' the companies ' }[lang] + jurIn
+            : { pt: ' a sociedade junto ao ', es: ' la sociedad ante el ', en: ' the company with the ' }[lang] + jur.registry) +
           { pt: ' e regularizar as obrigações de compliance e KYC.', es: ' y regularizar las obligaciones de compliance y KYC.', en: ', and bring compliance and KYC obligations into good standing.' }[lang]
         : '',
       'f-und-scope': scopeLines.length ? scopeLines.join('\n') : '',
@@ -8363,6 +8468,7 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
   document.getElementById('btn-new-proposal').style.display = '';
   updateTopbar();
   updateEmailPanel();
+  renderTokenInputs();
   logProposalToNotion(triva);
 }
 

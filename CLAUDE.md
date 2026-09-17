@@ -132,6 +132,19 @@ boilerplate, and got overwritten with a blank placeholder.
 **Each section starts a new page in print** (Fabiana's request) — `break-before: page`
 on `.doc-body > .doc-sec` and `> .doc-section`, with the first child exempt.
 
+**One box per blank.** `renderTokenInputs()` lists every `⟦token⟧` the document
+still has and gives each its own input in the "A preencher" panel, with a count
+badge. `tokenValues` wins over `_autoTokens` in `resolveTokens()`, and is saved with
+the draft. The panel refreshes at the end of `generateProposal`, once `_autoTokens`
+is known — a token the tool answers never gets a box.
+
+**Multiple jurisdictions.** `currentJurisdictions()` returns every selected
+jurisdiction; `currentJurisdiction()` returns one only when there is exactly one.
+Título, opening letter and Objetivo list them all via `joinJurisdictions()`, and
+Escopo emits one line per `sec1Items` entry. `⟦órgão competente⟧` is deliberately
+left blank when the registries differ — listing them reads as a run-on, so it
+surfaces as its own box instead.
+
 **Token auto-fill.** `_autoTokens` is rebuilt on every generate, just before the
 document is assembled, and `resolveTokens()` substitutes any `⟦token⟧` the tool can
 already answer: client name, first name, A/C contact, jurisdiction, its registry,
@@ -299,6 +312,7 @@ fs.writeFileSync('/tmp/fgc_check.js',s.join('\n'));
 - **Version Sept 16 (x)** — "Sugestão · recomendação" is now just "Recomendação"; every `·` separator removed from the document and the app in favour of plain spacing, the way the source sets its own contact line. Don't reintroduce middle dots as separators.
 - **Version Sept 16 (z)** — first real PDF check. Removed the `position: fixed` running header/footer, which printed over the body text on every page after the cover; enlarged the document mark; added `break-after: avoid` on all block labels so headings stay with their text; kept the whole Aceite block on one page.
 - **Version Sept 17** — Claudia's feedback: Título, Objetivo, Escopo, Vencimento and Timeline generate themselves from the selected services (17 blanks → 5, or 0 with the bespoke blocks off). Added per-block on/off toggles, all on by default. Fabiana's feedback: each section opens its own page in print, and the cover text sits higher.
+- **Version Sept 17 (e)** — fixed multi-jurisdiction: a Bahamas + Cayman + Florida proposal printed "em Cayman" everywhere; title, letter, objetivo and escopo now cover every selected jurisdiction. Added the "A preencher" panel — one input per remaining blank, with a count badge, saved with the draft.
 - **Version June 17** — fixed fsAnterior/trAnterior crash; full draft save/load (custom items + overrides); Observações field (section 4.6); hasScope toggle on custom items; print margin CSS; loadDraft stale-data reset; custom transfer group fix (no more "PRIVATE INVESTMENT COMPANY" on non-PIC items); item ordering fix
 
 ## Known draft behavior
