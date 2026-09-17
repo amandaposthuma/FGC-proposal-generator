@@ -842,7 +842,11 @@
     background: rgba(255,255,255,0.28);
   }
   .doc-cover-rule { height: 1px; background: rgba(255,255,255,0.45); }
-  .doc-cover-mid { flex: 1; position: relative; z-index: 2; display: flex; flex-direction: column; justify-content: center; }
+  .doc-cover-mid {
+    flex: 1; position: relative; z-index: 2;
+    display: flex; flex-direction: column;
+    justify-content: flex-start; padding-top: 9%;
+  }
   .doc-cover-kicker {
     font-family: var(--doc-mono);
     font-size: 11px; font-weight: 500; letter-spacing: 5px;
@@ -1064,8 +1068,16 @@
       position: relative; z-index: 10;
     }
     .doc-cover-subject { font-size: 27pt; }
+    /* Fabiana: lift the cover text on page 1 */
+    .doc-cover-mid { padding-top: 6%; }
+    .doc-cover-meta { margin-bottom: 42px; }
 
     .doc-sec { break-inside: auto; page-break-inside: auto; }
+    /* Each section opens its own page — the first block after the cover
+       starts page 2 on its own, so it is exempt. */
+    #proposal-doc .doc-body > .doc-sec,
+    #proposal-doc .doc-body > .doc-section { break-before: page; page-break-before: always; }
+    #proposal-doc .doc-body > *:first-child { break-before: auto; page-break-before: auto; }
     .doc-sec-head { break-after: avoid; page-break-after: avoid; }
     #proposal-doc .doc-block-label,
     #proposal-doc .doc-included-label,
@@ -1106,6 +1118,7 @@
     display: block;
     width: 72%;            /* 6804 / 9412 twips in the source */
     margin-bottom: 30px;
+    margin-top: auto;      /* sits above the rule, lifted with the rest */
   }
   .doc-cover-meta-row {
     display: grid;
@@ -1271,6 +1284,15 @@
   #proposal-doc { --doc-placeholder: #A9714F; }
 
 
+  .block-toggles { display: grid; grid-template-columns: 1fr 1fr; gap: 2px 8px; }
+  .block-toggle {
+    display: flex; align-items: center; gap: 5px; cursor: pointer;
+    font-family: var(--font); font-size: 10px; color: rgba(7,18,16,0.65);
+    padding: 3px 0; user-select: none;
+  }
+  .block-toggle input { margin: 0; accent-color: #041725; cursor: pointer; }
+  .block-toggle:hover { color: var(--dark); }
+
 </style>
 </head>
 <body>
@@ -1402,6 +1424,11 @@
         <div class="advisor-chips" id="advisor-chips"></div>
       </div>
     </div>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-section-title">Blocos do documento <span class="field-hint">(desmarque para omitir)</span></div>
+    <div id="block-toggles" class="block-toggles"></div>
   </div>
 
   <div class="sidebar-section">
@@ -5239,7 +5266,7 @@ const DOC_FORMAT = 3;
 // Shown in the sidebar so the running build is always identifiable, and
 // compared against the deployed file so a stale cached copy announces
 // itself instead of silently showing an old proposal format.
-const BUILD = '2026-09-16-z';
+const BUILD = '2026-09-17-c';
 
 function showUpdateBanner() {
   if (document.getElementById('update-banner')) return;
@@ -5267,6 +5294,25 @@ let vencimentoText     = '';
 let conditionsText     = '';
 let nextSteps          = '';
 let requiredDocs       = [{ doc: '', desc: '', who: '' }];
+const BLOCK_KEYS = ['opening','entendimento','what','objective','scope','recommendation','timeline','vencimento','docs','conditions','nextSteps'];
+let blocks = {};
+BLOCK_KEYS.forEach(k => { blocks[k] = true; });
+function setBlock(k, v) { blocks[k] = !!v; debouncedUpdate(); }
+function renderBlockToggles() {
+  const box = document.getElementById('block-toggles');
+  if (!box) return;
+  const labels = {
+    opening: 'Nota de abertura', entendimento: 'Seção 01 inteira',
+    what: 'O que entendemos', objective: 'Objetivo', scope: 'Escopo',
+    recommendation: 'Recomendação', timeline: 'Timeline', vencimento: 'Vencimento',
+    docs: 'Documentos necessários', conditions: 'Condições', nextSteps: 'Próximos passos',
+  };
+  box.innerHTML = BLOCK_KEYS.map(k => `
+    <label class="block-toggle">
+      <input type="checkbox" ${blocks[k] ? 'checked' : ''} onchange="setBlock('${k}', this.checked)">
+      <span>${labels[k]}</span>
+    </label>`).join('');
+}
 
 // Document copy, per language
 const DOC_L = {
@@ -5537,22 +5583,23 @@ let _autoTokens = {};
 function currentJurisdiction() {
   const on = k => !!state[k];
   const offshore = [
-    [['cayman','transCayman','transCaymanRA','dissolucaoCayman'], 'Cayman', 'de Cayman', 'Registrar of Companies'],
-    [['bvi','transBVI','transBVIRA','dissolucaoBVI'],             'BVI',    'das Ilhas Virgens Britânicas', 'Registrar of Corporate Affairs'],
-    [['bahamas','transBahamas','transBahamasRA','dissolucaoBahamas'], 'Bahamas', 'das Bahamas', 'Registrar General'],
-    [['nevis','transNevis','transNevisRA','dissolucaoNevis'],      'Nevis',  'de Nevis', 'Registrar of Companies'],
+    [['cayman','transCayman','transCaymanRA','dissolucaoCayman'], 'Cayman', 'de Cayman', 'em Cayman', 'Registrar of Companies'],
+    [['bvi','transBVI','transBVIRA','dissolucaoBVI'],             'BVI',    'das Ilhas Virgens Britânicas', 'nas Ilhas Virgens Britânicas', 'Registrar of Corporate Affairs'],
+    [['bahamas','transBahamas','transBahamasRA','dissolucaoBahamas'], 'Bahamas', 'das Bahamas', 'nas Bahamas', 'Registrar General'],
+    [['nevis','transNevis','transNevisRA','dissolucaoNevis'],      'Nevis',  'de Nevis', 'em Nevis', 'Registrar of Companies'],
   ];
-  for (const [keys, name, ofName, registry] of offshore) {
-    if (keys.some(on)) return { name, ofName, registry };
+  for (const [keys, name, ofName, inName, registry] of offshore) {
+    if (keys.some(on)) return { name, ofName, inName, registry };
   }
   const usStates = {
-    fl: ['Flórida', 'da Flórida'], de: ['Delaware', 'de Delaware'], ny: ['Nova York', 'de Nova York'],
-    sd: ['South Dakota', 'de South Dakota'], wi: ['Wisconsin', 'de Wisconsin'], mn: ['Minnesota', 'de Minnesota'],
+    fl: ['Flórida', 'da Flórida', 'na Flórida'], de: ['Delaware', 'de Delaware', 'em Delaware'],
+    ny: ['Nova York', 'de Nova York', 'em Nova York'], sd: ['South Dakota', 'de South Dakota', 'em South Dakota'],
+    wi: ['Wisconsin', 'de Wisconsin', 'em Wisconsin'], mn: ['Minnesota', 'de Minnesota', 'em Minnesota'],
   };
   for (const k of Object.keys(usStates)) {
     const K = k.toUpperCase();
     if (on(k) || on('trans' + K) || on('trans' + K + 'RA') || on('dissolucao' + K)) {
-      return { name: usStates[k][0], ofName: usStates[k][1], registry: 'Secretary of State' };
+      return { name: usStates[k][0], ofName: usStates[k][1], inName: usStates[k][2], registry: 'Secretary of State' };
     }
   }
   return null;
@@ -5711,6 +5758,7 @@ function coverStatePayload() {
   return {
     coverSubject, refCode, refCodeAuto, validityDays, clientLogo, openingNote,
     oneOffTitle, nextSteps, sec2Intro, timelineText, sec3Intro, vencimentoText, conditionsText,
+    blocks: Object.assign({}, blocks),
     understanding: Object.assign({}, understanding),
     requiredDocsIntro,
     requiredDocs: JSON.parse(JSON.stringify(requiredDocs)),
@@ -5718,6 +5766,7 @@ function coverStatePayload() {
 }
 function applyCoverState(src) {
   const d = src || {};
+  _appliedDefaults = {};
   coverSubject      = d.coverSubject || '';
   refCode           = d.refCode || '';
   refCodeAuto       = d.refCodeAuto !== false;
@@ -5731,6 +5780,9 @@ function applyCoverState(src) {
   sec3Intro         = d.sec3Intro || '';
   vencimentoText    = d.vencimentoText || '';
   conditionsText    = d.conditionsText || '';
+  // Drafts saved before per-block toggles have no `blocks` key — default all on
+  blocks = {};
+  BLOCK_KEYS.forEach(k => { blocks[k] = (d.blocks && k in d.blocks) ? !!d.blocks[k] : true; });
   understanding     = Object.assign({ what: '', objective: '', scope: '', recommendation: '' }, d.understanding || {});
   requiredDocsIntro = d.requiredDocsIntro || '';
   requiredDocs      = Array.isArray(d.requiredDocs) && d.requiredDocs.length
@@ -5758,6 +5810,7 @@ function syncCoverFields() {
   const ref = document.getElementById('f-refcode');
   if (ref && !refCodeAuto) ref.value = refCode;
   refreshRefCodeField();
+  renderBlockToggles();
   renderRequiredDocs();
   renderAssetPreviews();
   applyStandardText();
@@ -5868,19 +5921,22 @@ function buildEntendimento(num) {
   return `
     <div class="doc-sec">
       ${secHead(num, D.entendimento)}
+      ${blocks.what ? `
       <div class="doc-block${phClass('f-und-what')}">
         <div class="doc-block-label">${D.whatLabel}</div>
         ${u.what.trim() ? paras(u.what) : fillPrompt(D.promptWhat)}
-      </div>
+      </div>` : ''}
+      ${blocks.objective ? `
       <div class="doc-block${phClass('f-und-obj')}">
         <div class="doc-block-label is-objective">${D.objectiveLabel}</div>
         ${u.objective.trim() ? paras(u.objective) : fillPrompt(D.promptObjective)}
-      </div>
+      </div>` : ''}
+      ${blocks.scope ? `
       <div class="doc-block${phClass('f-und-scope')}">
         <div class="doc-block-label">${D.scopeLabel}</div>
         ${scopeList || fillPrompt(D.promptScope)}
-      </div>
-      ${u.recommendation.trim() ? `
+      </div>` : ''}
+      ${(blocks.recommendation && u.recommendation.trim()) ? `
       <div class="doc-callout${phClass('f-und-rec')}">
         <div class="doc-block-label">${D.recLabel}</div>
         ${paras(u.recommendation)}
@@ -8061,6 +8117,73 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
     };
   })();
 
+  // ── Fields the tool can write for itself ───────────────────────────
+  // Claudia's point: the scope can be derived from the services already
+  // selected, and the title shouldn't come out blank. These are written back
+  // into the sidebar so it stays in step with the document, and an advisor's
+  // own text is never overwritten.
+  (function () {
+    const jur = currentJurisdiction();
+    const headline = (_oneOffCandidates[0] || '').toLowerCase();
+    const cap = t => t ? t.charAt(0).toUpperCase() + t.slice(1) : '';
+    const verb = (function () {
+      if (/constitu/.test(headline)) return { pt: 'Constituir', es: 'Constituir', en: 'Incorporate' }[lang];
+      if (/transfer/.test(headline)) return { pt: 'Transferir', es: 'Transferir', en: 'Transfer' }[lang];
+      if (/dissol/.test(headline))   return { pt: 'Dissolver',  es: 'Disolver',   en: 'Dissolve' }[lang];
+      return '';
+    })();
+
+    // Scope: one line per selected group
+    const scopeLines = [];
+    if (headline) scopeLines.push(cap(headline) + { pt: ' da sociedade junto ao ', es: ' de la sociedad ante el ', en: ' of the company with the ' }[lang] + (jur ? jur.registry : '') + '.');
+    if (secMaintItems.length) scopeLines.push({ pt: 'Manutenção anual (compliance, Economic Substance e demonstrações financeiras).', es: 'Mantenimiento anual (compliance, Economic Substance y estados financieros).', en: 'Annual maintenance (compliance, Economic Substance and financial statements).' }[lang]);
+    if (secAcctItems.length)  scopeLines.push({ pt: 'Contabilidade anual.', es: 'Contabilidad anual.', en: 'Annual accounting.' }[lang]);
+    if (secSuccItems.length)  scopeLines.push({ pt: 'Planejamento sucessório.', es: 'Planificación sucesoria.', en: 'Succession planning.' }[lang]);
+    sec3Items.forEach(it => scopeLines.push(it.label + '.'));
+
+    // Renewal date is already a config constant used by the fee table
+    const renewal = String(L.payJanuary || '').replace(/\s*\(.*\)\s*$/, '').trim();
+    const firstYear = (new Date(dateStr.length ? Date.now() : Date.now())).getFullYear() + 1;
+
+    const auto = {
+      'f-subject': (headline && client)
+        ? cap(headline) + { pt: ' da ', es: ' de ', en: ' for ' }[lang] + client + (jur ? ' ' + jur.inName : '')
+        : '',
+      'f-und-obj': (verb && jur)
+        ? verb + { pt: ' a sociedade junto ao ', es: ' la sociedad ante el ', en: ' the company with the ' }[lang] + jur.registry +
+          { pt: ' e regularizar as obrigações de compliance e KYC.', es: ' y regularizar las obligaciones de compliance y KYC.', en: ', and bring compliance and KYC obligations into good standing.' }[lang]
+        : '',
+      'f-und-scope': scopeLines.length ? scopeLines.join('\n') : '',
+      'f-vencimento': (secMaintItems.length && renewal)
+        ? { pt: `O vencimento da anuidade se dará sempre no dia ${renewal} de todo ano, sendo a primeira em ${firstYear}. Emitimos as invoices com antecedência, para que haja tempo hábil de pagamento e de cumprimento dos prazos${jur ? ' junto ao ' + jur.registry : ''}.`,
+            es: `El vencimiento de la anualidad será siempre el ${renewal} de cada año, siendo la primera en ${firstYear}. Emitimos las facturas con antelación para que haya tiempo de pago y de cumplimiento de los plazos.`,
+            en: `The annual fee falls due on ${renewal} each year, the first in ${firstYear}. We issue invoices in advance so there is time to pay and to meet the filing deadlines.` }[lang]
+        : '',
+      'f-timeline': (clauseSet.timelines && clauseSet.timelines.items && clauseSet.timelines.items.length)
+        ? clauseSet.timelines.items.join(' ')
+        : '',
+    };
+
+    Object.keys(auto).forEach(id => {
+      if (!auto[id]) return;
+      const el = document.getElementById(id);
+      if (!el) return;
+      const cur = (el.value || '').trim();
+      const untouched = !cur || cur === (_appliedDefaults[id] || '').trim();
+      if (!untouched) return;            // advisor wrote their own — leave it
+      el.value = auto[id];
+      _appliedDefaults[id] = auto[id];
+    });
+
+    // Re-read so the document renders what the sidebar now shows
+    const val = id => (document.getElementById(id) || {}).value || '';
+    coverSubject            = val('f-subject');
+    understanding.objective = val('f-und-obj');
+    understanding.scope     = val('f-und-scope');
+    vencimentoText          = val('f-vencimento');
+    timelineText            = val('f-timeline');
+  })();
+
   // ── Assemble document ──
   const docHTML = `
     ${buildCover(docCtx)}
@@ -8073,9 +8196,9 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
     </div>
 
     <div class="doc-body">
-      ${buildApresentacao(docCtx)}
+      ${blocks.opening ? buildApresentacao(docCtx) : ''}
 
-      ${buildEntendimento(nextSecNo())}
+      ${blocks.entendimento ? buildEntendimento(nextSecNo()) : ''}
 
       <!-- SEÇÃO: the one-off work, titled after the service -->
       ${(hasOneOffFees || termsOneOffHTML) ? `
@@ -8121,7 +8244,7 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
           <div class="doc-block-label doc-included-label">${dl().includedLabel}</div>
           ${termsOneOffHTML}
         ` : ''}
-        ${timelineText.trim() ? `
+        ${(blocks.timeline && timelineText.trim()) ? `
           <div class="doc-block-label doc-included-label">${dl().timelineLabel}</div>
           <div class="doc-note-body${phClass('f-timeline')}">${paras(timelineText)}</div>
         ` : ''}
@@ -8144,7 +8267,7 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
         ` : ''}
         <div class="doc-block-label doc-included-label">${dl().notIncludedLabel}</div>
         <ul class="terms-list">${notIncItems.map(i => '<li>' + i + '</li>').join('')}</ul>
-        ${vencimentoText.trim() ? `
+        ${(blocks.vencimento && vencimentoText.trim()) ? `
           <div class="doc-block-label doc-included-label">${dl().vencimentoLabel}</div>
           <div class="doc-note-body${phClass('f-vencimento')}">${paras(vencimentoText)}</div>
         ` : ''}
@@ -8155,14 +8278,14 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
       ${(() => {
         return `
       <!-- SEÇÃO: Documentos necessários -->
-      ${buildRequiredDocsSection(nextSecNo())}
+      ${blocks.docs ? buildRequiredDocsSection(nextSecNo()) : ''}
 
       <!-- SEÇÃO: Termos e próximos passos -->
       <div class="doc-section">
         ${(secTCNum = Number(nextSecNo()), secHead(String(secTCNum).padStart(2, '0'), dl().termsNextTitle))}
 
-        <div class="doc-block-label doc-included-label">${dl().conditionsLabel}</div>
-        <ul class="terms-list${phClass('f-conditions')}">${bulletItems(conditionsText.replace(/\{VALIDADE\}/g, String(validityDays))).map(i => '<li>' + markTokens(escHtml(resolveTokens(i))) + '</li>').join('')}</ul>
+        ${blocks.conditions ? `<div class="doc-block-label doc-included-label">${dl().conditionsLabel}</div>
+        <ul class="terms-list${phClass('f-conditions')}">${bulletItems(conditionsText.replace(/\{VALIDADE\}/g, String(validityDays))).map(i => '<li>' + markTokens(escHtml(resolveTokens(i))) + '</li>').join('')}</ul>` : ''}
 
         ${secMaintItems.length > 0 ? '' : `
         <div class="doc-block-label doc-included-label">${dl().notIncludedLabel}</div>
@@ -8205,10 +8328,11 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
           <p style="font-size:12px;line-height:1.65;color:var(--text);margin:0;">${proposalNotes.trim().replace(/\n/g, '<br>')}</p>
         </div>` : ''}
 
+        ${blocks.nextSteps ? `
         <div class="doc-block">
           <div class="doc-block-label doc-included-label">${dl().nextStepsLabel}</div>
           <ul class="terms-list${phClass('f-nextsteps')}">${bulletItems(nextSteps).map(i => '<li>' + markTokens(escHtml(resolveTokens(i))) + '</li>').join('')}</ul>
-        </div>
+        </div>` : ''}
 
         ${buildAceiteSection()}
       </div>`;

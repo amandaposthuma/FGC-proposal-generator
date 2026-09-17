@@ -114,6 +114,24 @@ renders last, under Seção 03.
 cadence and vocabulary. When editing a default, compare against the docx rather
 than writing fresh generic copy; her wording is the house voice.
 
+**Generated fields.** Just before the document is assembled, the generator writes
+the Título, Objetivo, Escopo, Vencimento and Timeline from the selected services
+and jurisdiction, and writes them *back into the sidebar* so what the advisor sees
+is what prints. A field the advisor has edited is never overwritten — the check is
+against `_appliedDefaults`. Escopo is one line per selected group; Vencimento uses
+`L.payJanuary`; Timeline reuses the `Prazos` clause rather than asking again.
+
+**Per-block toggles.** `blocks` (see `BLOCK_KEYS`) switches each block on or off,
+all on by default, saved with the draft. Drafts without a `blocks` key default
+everything on.
+
+**`applyCoverState` clears `_appliedDefaults` first.** Without it, a value restored
+from a draft matched the previous session's generated default, counted as untouched
+boilerplate, and got overwritten with a blank placeholder.
+
+**Each section starts a new page in print** (Fabiana's request) — `break-before: page`
+on `.doc-body > .doc-sec` and `> .doc-section`, with the first child exempt.
+
 **Token auto-fill.** `_autoTokens` is rebuilt on every generate, just before the
 document is assembled, and `resolveTokens()` substitutes any `⟦token⟧` the tool can
 already answer: client name, first name, A/C contact, jurisdiction, its registry,
@@ -280,6 +298,7 @@ fs.writeFileSync('/tmp/fgc_check.js',s.join('\n'));
 - **Version Sept 16 (v)** — applied "black means every proposal contains this" strictly to Seção 01: situational clauses ("não pode operar, assinar contratos…", the registered-agent paragraph, conditional scope lines) are now marked, leaving only connectives and auto-filled facts in black. Fixed participle agreement by restructuring "Concluído ⟦o trabalho⟧" → "Após ⟦o trabalho⟧".
 - **Version Sept 16 (x)** — "Sugestão · recomendação" is now just "Recomendação"; every `·` separator removed from the document and the app in favour of plain spacing, the way the source sets its own contact line. Don't reintroduce middle dots as separators.
 - **Version Sept 16 (z)** — first real PDF check. Removed the `position: fixed` running header/footer, which printed over the body text on every page after the cover; enlarged the document mark; added `break-after: avoid` on all block labels so headings stay with their text; kept the whole Aceite block on one page.
+- **Version Sept 17** — Claudia's feedback: Título, Objetivo, Escopo, Vencimento and Timeline generate themselves from the selected services (17 blanks → 5, or 0 with the bespoke blocks off). Added per-block on/off toggles, all on by default. Fabiana's feedback: each section opens its own page in print, and the cover text sits higher.
 - **Version June 17** — fixed fsAnterior/trAnterior crash; full draft save/load (custom items + overrides); Observações field (section 4.6); hasScope toggle on custom items; print margin CSS; loadDraft stale-data reset; custom transfer group fix (no more "PRIVATE INVESTMENT COMPANY" on non-PIC items); item ordering fix
 
 ## Known draft behavior
