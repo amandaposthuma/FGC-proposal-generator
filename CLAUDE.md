@@ -132,6 +132,21 @@ boilerplate, and got overwritten with a blank placeholder.
 **Each section starts a new page in print** (Fabiana's request) — `break-before: page`
 on `.doc-body > .doc-sec` and `> .doc-section`, with the first child exempt.
 
+**Token names must not collide with sidebar fields.** `⟦data⟧` sat under a "Data"
+field meaning the proposal date while the token meant when the status began —
+renamed `⟦desde quando⟧`. The KYC person token now reads
+`⟦sócio / diretor (ou preencha A/C acima)⟧` so the box reads as a fallback for the
+A/C field, not a second place to type a name. Before adding a token, check no
+sidebar field already uses that word.
+
+**Templates.** `TOKEN_PRESETS` holds ready-made answers per token, rendered as
+clickable chips above each box. Matched on the text before any " — ex.:", so the
+long prompting tokens still find their presets.
+
+**Removed fields (don't reinstate without a reason).** Client logo — not in the
+source template, unused. `Título da Seção 02` — the derived name is correct in
+every real case and the field confused every user who saw it.
+
 **One box per blank.** `renderTokenInputs()` lists every `⟦token⟧` the document
 still has and gives each its own input in the "A preencher" panel, with a count
 badge. `tokenValues` wins over `_autoTokens` in `resolveTokens()`, and is saved with
@@ -313,6 +328,7 @@ fs.writeFileSync('/tmp/fgc_check.js',s.join('\n'));
 - **Version Sept 16 (z)** — first real PDF check. Removed the `position: fixed` running header/footer, which printed over the body text on every page after the cover; enlarged the document mark; added `break-after: avoid` on all block labels so headings stay with their text; kept the whole Aceite block on one page.
 - **Version Sept 17** — Claudia's feedback: Título, Objetivo, Escopo, Vencimento and Timeline generate themselves from the selected services (17 blanks → 5, or 0 with the bespoke blocks off). Added per-block on/off toggles, all on by default. Fabiana's feedback: each section opens its own page in print, and the cover text sits higher.
 - **Version Sept 17 (e)** — fixed multi-jurisdiction: a Bahamas + Cayman + Florida proposal printed "em Cayman" everywhere; title, letter, objetivo and escopo now cover every selected jurisdiction. Added the "A preencher" panel — one input per remaining blank, with a count badge, saved with the draft.
+- **Version Sept 17 (g)** — audit for redundancy: renamed `⟦data⟧` → `⟦desde quando⟧` and the KYC person token so they stop reading as duplicates of the Data and A/C fields; removed the client logo upload and the Título da Seção 02 field; added `TOKEN_PRESETS` chips so the bespoke blanks are one click rather than written from scratch.
 - **Version June 17** — fixed fsAnterior/trAnterior crash; full draft save/load (custom items + overrides); Observações field (section 4.6); hasScope toggle on custom items; print margin CSS; loadDraft stale-data reset; custom transfer group fix (no more "PRIVATE INVESTMENT COMPANY" on non-PIC items); item ordering fix
 
 ## Known draft behavior

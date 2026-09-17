@@ -1313,6 +1313,17 @@
   }
   .token-field.is-filled .token-input { border-color: rgba(7,18,16,0.15); }
 
+  /* Ready-made answers — click to fill the box below */
+  .token-presets { display: flex; flex-wrap: wrap; gap: 3px; margin-bottom: 4px; }
+  .token-preset {
+    border: 1px solid rgba(176,84,47,0.3); background: rgba(176,84,47,0.06);
+    color: #8d4426; border-radius: 10px; padding: 2px 7px; cursor: pointer;
+    font-family: var(--font); font-size: 9px; font-weight: 500;
+    line-height: 1.4; text-align: left; max-width: 100%;
+  }
+  .token-preset:hover { background: rgba(176,84,47,0.14); border-color: rgba(176,84,47,0.55); }
+  .token-field.is-filled .token-presets { opacity: 0.45; }
+
 </style>
 </head>
 <body>
@@ -1476,18 +1487,9 @@
       <input type="number" id="f-validity" class="field-input" min="1" max="365" value="10" oninput="validityDays=Math.max(1,parseInt(this.value)||10); debouncedUpdate()">
     </div>
     <div class="field-group">
-      <label class="field-label">Logo do cliente <span class="field-hint">(opcional)</span></label>
-      <input type="file" id="f-clientlogo" class="field-file" accept="image/*" onchange="onClientLogoPick(this)">
-      <div id="clientlogo-preview" class="asset-preview"></div>
-    </div>
-    <div class="field-group">
       <label class="field-label">Assinatura digitalizada <span class="field-hint">(por assessor)</span></label>
       <input type="file" id="f-signature" class="field-file" accept="image/*" onchange="onSignaturePick(this)">
       <div id="signature-preview" class="asset-preview"></div>
-    </div>
-    <div class="field-group">
-      <label class="field-label">Título da Seção 02 <span class="field-hint">(vazio = derivado dos serviços)</span></label>
-      <input type="text" id="f-sec2title" class="field-input" placeholder="ex: Restabelecimento" oninput="oneOffTitle=this.value; debouncedUpdate()">
     </div>
     <div class="field-group">
       <label class="field-label">Nota de abertura <span class="field-hint">(deixe vazio para gerar automaticamente)</span></label>
@@ -5280,7 +5282,6 @@ let coverSubject       = '';
 let refCode            = '';
 let refCodeAuto        = true;
 let validityDays       = 10;
-let clientLogo         = '';   // dataURL
 let openingNote        = '';   // overrides the auto-generated opening when non-empty
 let understanding      = { what: '', objective: '', scope: '', recommendation: '' };
 let requiredDocsIntro  = '';
@@ -5292,7 +5293,7 @@ const DOC_FORMAT = 3;
 // Shown in the sidebar so the running build is always identifiable, and
 // compared against the deployed file so a stale cached copy announces
 // itself instead of silently showing an old proposal format.
-const BUILD = '2026-09-17-e';
+const BUILD = '2026-09-17-g';
 
 function showUpdateBanner() {
   if (document.getElementById('update-banner')) return;
@@ -5467,7 +5468,7 @@ const FGC_DEFAULTS = {
       'Fica um convite para conduzirmos esse processo com a agilidade e o cuidado que a continuidade da sua estrutura em ⟦jurisdição⟧ exige.\n' +
       'Agradecemos desde já essa oportunidade.',
     undWhat:
-      'A ⟦Nome do cliente⟧ encontra-se ⟦situação atual⟧ junto ao ⟦órgão competente⟧ de ⟦jurisdição⟧ desde ⟦data⟧. Isso significa que ⟦o que esse status implica na prática — ex.: a sociedade perdeu sua existência legal e não pode operar, assinar contratos ou movimentar contas até ser regularizada⟧.\n' +
+      'A ⟦Nome do cliente⟧ encontra-se ⟦situação atual⟧ junto ao ⟦órgão competente⟧ de ⟦jurisdição⟧ desde ⟦desde quando⟧. Isso significa que ⟦o que esse status implica na prática — ex.: a sociedade perdeu sua existência legal e não pode operar, assinar contratos ou movimentar contas até ser regularizada⟧.\n' +
       '⟦Segundo fato, se houver — ex.: o agente registrado renunciou à sua função por falta de pagamento das taxas anuais, e toda sociedade na jurisdição é obrigada por lei a manter um; sem ele, a irregularidade se soma à anterior⟧.',
     undObjective: '⟦Restaurar / Constituir / Transferir⟧ a sociedade junto ao ⟦órgão competente⟧, ⟦segunda ação, se houver⟧ e regularizar ⟦compliance, KYC e as taxas governamentais em aberto⟧.',
     undScope:
@@ -5482,9 +5483,9 @@ const FGC_DEFAULTS = {
     conditions: 'Validade desta proposta: {VALIDADE} dias a partir da data de emissão.\nPremissas: legislação vigente, jurisdição de constituição e dados fornecidos pelo cliente nesta data.\nA contratação formaliza-se por contrato de prestação de serviços específico.',
     nextSteps: 'Alinhamento final de escopo e condições.\nAssinatura do aceite.\nInício dos trabalhos.',
     requiredDocs: [
-      { doc: 'Passaporte', desc: 'Cópia digitalizada do passaporte válido.', who: '⟦Nome do sócio / diretor⟧' },
-      { doc: 'Comprovante de residência', desc: 'Cópia digitalizada, emitido nos últimos 3 meses.', who: '⟦Nome do sócio / diretor⟧' },
-      { doc: 'Questionário de compliance (KYC individual)', desc: 'Formulário preenchido e assinado.', who: '⟦Nome do sócio / diretor⟧' },
+      { doc: 'Passaporte', desc: 'Cópia digitalizada do passaporte válido.', who: '⟦sócio / diretor (ou preencha A/C acima)⟧' },
+      { doc: 'Comprovante de residência', desc: 'Cópia digitalizada, emitido nos últimos 3 meses.', who: '⟦sócio / diretor (ou preencha A/C acima)⟧' },
+      { doc: 'Questionário de compliance (KYC individual)', desc: 'Formulário preenchido e assinado.', who: '⟦sócio / diretor (ou preencha A/C acima)⟧' },
       { doc: 'Formulários KYC', desc: 'Estrutura societária, objetivo, dados bancários e serviços selecionados.', who: 'Sociedade' },
     ],
   },
@@ -5498,7 +5499,7 @@ const FGC_DEFAULTS = {
       'Queda la invitación para conducir este proceso con la agilidad y el cuidado que la continuidad de su estructura exige.\n' +
       'Agradecemos desde ya esta oportunidad.',
     undWhat:
-      'La ⟦Nombre del cliente⟧ se encuentra ⟦situación actual⟧ ante el ⟦órgano competente⟧ de ⟦jurisdicción⟧ desde ⟦fecha⟧. Esto significa que ⟦qué implica ese estado en la práctica — p. ej.: la sociedad perdió su existencia legal y no puede operar, firmar contratos ni mover cuentas hasta regularizarse⟧.\n' +
+      'La ⟦Nombre del cliente⟧ se encuentra ⟦situación actual⟧ ante el ⟦órgano competente⟧ de ⟦jurisdicción⟧ desde ⟦desde quando⟧. Esto significa que ⟦qué implica ese estado en la práctica — p. ej.: la sociedad perdió su existencia legal y no puede operar, firmar contratos ni mover cuentas hasta regularizarse⟧.\n' +
       '⟦Segundo hecho, si lo hay — p. ej.: el agente registrado renunció a su función por falta de pago de las tasas anuales, y toda sociedad en la jurisdicción está obligada por ley a mantener uno⟧.',
     undObjective: '⟦Restaurar / Constituir / Transferir⟧ la sociedad ante el ⟦órgano competente⟧, ⟦segunda acción, si la hay⟧ y regularizar ⟦compliance, KYC y las tasas gubernamentales pendientes⟧.',
     undScope:
@@ -5513,9 +5514,9 @@ const FGC_DEFAULTS = {
     conditions: 'Validez de esta propuesta: {VALIDADE} días desde la fecha de emisión.\nPremisas: legislación vigente, jurisdicción de constitución y datos proporcionados por el cliente en esta fecha.\nLa contratación se formaliza mediante contrato de prestación de servicios específico.',
     nextSteps: 'Alineación final de alcance y condiciones.\nFirma de la aceptación.\nInicio de los trabajos.',
     requiredDocs: [
-      { doc: 'Pasaporte', desc: 'Copia digitalizada del pasaporte vigente.', who: '⟦Nombre del socio / director⟧' },
-      { doc: 'Comprobante de domicilio', desc: 'Copia digitalizada, emitido en los últimos 3 meses.', who: '⟦Nombre del socio / director⟧' },
-      { doc: 'Cuestionario de compliance (KYC individual)', desc: 'Formulario completado y firmado.', who: '⟦Nombre del socio / director⟧' },
+      { doc: 'Pasaporte', desc: 'Copia digitalizada del pasaporte vigente.', who: '⟦socio / director (o complete A/C arriba)⟧' },
+      { doc: 'Comprobante de domicilio', desc: 'Copia digitalizada, emitido en los últimos 3 meses.', who: '⟦socio / director (o complete A/C arriba)⟧' },
+      { doc: 'Cuestionario de compliance (KYC individual)', desc: 'Formulario completado y firmado.', who: '⟦socio / director (o complete A/C arriba)⟧' },
       { doc: 'Formularios KYC', desc: 'Estructura societaria, objetivo, datos bancarios y servicios seleccionados.', who: 'Sociedad' },
     ],
   },
@@ -5529,7 +5530,7 @@ const FGC_DEFAULTS = {
       'We would welcome the chance to run this process with the speed and care the continuity of your structure requires.\n' +
       'Thank you in advance for the opportunity.',
     undWhat:
-      '⟦Client name⟧ is currently ⟦current status⟧ with the ⟦competent authority⟧ of ⟦jurisdiction⟧, and has been since ⟦date⟧. This means ⟦what that status implies in practice — e.g. the company has lost its legal existence and cannot operate, sign contracts or move funds until it is restored⟧.\n' +
+      '⟦Client name⟧ is currently ⟦current status⟧ with the ⟦competent authority⟧ of ⟦jurisdiction⟧, and has been since ⟦desde quando⟧. This means ⟦what that status implies in practice — e.g. the company has lost its legal existence and cannot operate, sign contracts or move funds until it is restored⟧.\n' +
       '⟦Second fact, if there is one — e.g. the registered agent resigned over unpaid annual fees, and every company in the jurisdiction is required by law to maintain one⟧.',
     undObjective: '⟦Restore / Incorporate / Transfer⟧ the company with the ⟦competent authority⟧, ⟦second action, if any⟧, and bring ⟦compliance, KYC and outstanding government fees⟧ back into good standing.',
     undScope:
@@ -5544,9 +5545,9 @@ const FGC_DEFAULTS = {
     conditions: 'Validity of this proposal: {VALIDADE} days from the date of issuance.\nAssumptions: current legislation, jurisdiction of incorporation, and the data provided by the client as of this date.\nEngagement is formalised through a specific services agreement.',
     nextSteps: 'Final alignment of scope and conditions.\nSignature of the acceptance.\nWork begins.',
     requiredDocs: [
-      { doc: 'Passport', desc: 'Scanned copy of a valid passport.', who: '⟦Shareholder / director name⟧' },
-      { doc: 'Proof of address', desc: 'Scanned copy, issued within the last 3 months.', who: '⟦Shareholder / director name⟧' },
-      { doc: 'Compliance questionnaire (individual KYC)', desc: 'Form completed and signed.', who: '⟦Shareholder / director name⟧' },
+      { doc: 'Passport', desc: 'Scanned copy of a valid passport.', who: '⟦shareholder / director (or fill A/C above)⟧' },
+      { doc: 'Proof of address', desc: 'Scanned copy, issued within the last 3 months.', who: '⟦shareholder / director (or fill A/C above)⟧' },
+      { doc: 'Compliance questionnaire (individual KYC)', desc: 'Form completed and signed.', who: '⟦shareholder / director (or fill A/C above)⟧' },
       { doc: 'KYC forms', desc: 'Corporate structure, purpose, banking details and selected services.', who: 'Company' },
     ],
   },
@@ -5606,6 +5607,46 @@ function phClass(id) { return isUntouchedDefault(id) ? ' is-placeholder' : ''; }
 let _autoTokens = {};
 let tokenValues = {};     // { 'situação atual': 'struck-off', … }
 
+// Ready-made answers for the blanks that would otherwise be typed every time.
+// Keyed by the token's own text; matched on the part before any " — ex.:".
+const TOKEN_PRESETS = {
+  pt: {
+    'situação atual': [
+      'struck-off (baixada do registro)',
+      'com as taxas governamentais em aberto',
+      'sem agente registrado',
+      'em dia, porém com pendências de compliance',
+      'ativa e em good standing',
+    ],
+    'desde quando': ['⟦dia⟧ de ⟦mês⟧ de ⟦ano⟧'],
+    'o que esse status implica na prática': [
+      'a sociedade perdeu sua existência legal e não pode operar, assinar contratos ou movimentar contas até ser regularizada',
+      'a sociedade permanece existente, mas está impedida de obter certificados e de comprovar good standing perante terceiros',
+      'a sociedade segue regular, e o trabalho é de manutenção das obrigações já existentes',
+    ],
+    'segundo fato, se houver': [
+      'o agente registrado renunciou à sua função por falta de pagamento das taxas anuais, e toda sociedade na jurisdição é obrigada por lei a manter um; sem ele, a irregularidade se soma à anterior',
+      'as demonstrações financeiras e o Economic Substance do último exercício não foram entregues',
+    ],
+    'uma análise de planejamento sucessório': [
+      'uma análise de planejamento sucessório',
+      'uma revisão da estrutura societária',
+      'a implementação de um share trust',
+    ],
+    'órgão competente': ['os respectivos registros de cada jurisdição'],
+  },
+};
+function tokenPresets(key) {
+  const table = TOKEN_PRESETS[lang] || TOKEN_PRESETS.pt;
+  const head = String(key).split('—')[0].trim().toLowerCase();
+  return table[head] || table[String(key).trim().toLowerCase()] || [];
+}
+function applyPreset(k, v) {
+  tokenValues[k] = v;
+  renderTokenInputs();
+  debouncedUpdate();
+}
+
 // Every ⟦token⟧ still unanswered, in the order it appears in the document
 function collectOpenTokens() {
   const sources = [
@@ -5638,9 +5679,16 @@ function renderTokenInputs() {
   box.innerHTML = open.map(function (k) {
     const short = k.length > 46 ? k.slice(0, 46).replace(/[\s—,:.]+$/, '') + '…' : k;
     const filled = (tokenValues[k] || '').trim() ? ' is-filled' : '';
+    const presets = tokenPresets(k);
+    const chips = presets.length ? `<div class="token-presets">${presets.map(function (v) {
+      const label = v.length > 34 ? v.slice(0, 34).replace(/[\s,]+$/, '') + '…' : v;
+      return `<button type="button" class="token-preset" title="${escHtml(v)}"
+        onclick="applyPreset('${escHtml(k).replace(/'/g, "\\'")}', '${escHtml(v).replace(/'/g, "\\'")}')">${escHtml(label)}</button>`;
+    }).join('')}</div>` : '';
     return `
       <div class="token-field${filled}">
         <label class="token-label" title="${escHtml(k)}">${escHtml(short)}</label>
+        ${chips}
         <textarea class="field-input token-input" rows="1" placeholder="${escHtml(k)}"
           oninput="setTokenValue('${escHtml(k).replace(/'/g, "\\'")}', this.value)">${escHtml(tokenValues[k] || '')}</textarea>
       </div>`;
@@ -5733,10 +5781,6 @@ function readImageFile(input, maxW, cb) {
   input.value = '';
 }
 
-function onClientLogoPick(input) {
-  readImageFile(input, 400, dataUrl => { clientLogo = dataUrl; renderAssetPreviews(); debouncedUpdate(); });
-}
-function clearClientLogo() { clientLogo = ''; renderAssetPreviews(); debouncedUpdate(); }
 
 function onSignaturePick(input) {
   readImageFile(input, 400, dataUrl => {
@@ -5758,12 +5802,6 @@ function clearSignature() {
 }
 
 function renderAssetPreviews() {
-  const logoBox = document.getElementById('clientlogo-preview');
-  if (logoBox) {
-    logoBox.innerHTML = clientLogo
-      ? `<img src="${clientLogo}" alt=""><button onclick="clearClientLogo()">Remover</button>`
-      : '';
-  }
   const sigBox = document.getElementById('signature-preview');
   if (sigBox) {
     const advisorName = (document.getElementById('f-advisor') || {}).value || '';
@@ -5841,7 +5879,7 @@ function renderRequiredDocs() {
 // Every field defaults, so drafts saved before this release still load clean.
 function coverStatePayload() {
   return {
-    coverSubject, refCode, refCodeAuto, validityDays, clientLogo, openingNote,
+    coverSubject, refCode, refCodeAuto, validityDays, openingNote,
     oneOffTitle, nextSteps, sec2Intro, timelineText, sec3Intro, vencimentoText, conditionsText,
     blocks: Object.assign({}, blocks),
     tokenValues: Object.assign({}, tokenValues),
@@ -5857,7 +5895,6 @@ function applyCoverState(src) {
   refCode           = d.refCode || '';
   refCodeAuto       = d.refCodeAuto !== false;
   validityDays      = Number(d.validityDays) > 0 ? Number(d.validityDays) : 10;
-  clientLogo        = d.clientLogo || '';
   openingNote       = d.openingNote || '';
   oneOffTitle       = d.oneOffTitle || '';
   nextSteps         = d.nextSteps || '';
@@ -5887,7 +5924,6 @@ function syncCoverFields() {
   set('f-und-scope', understanding.scope);
   set('f-und-rec', understanding.recommendation);
   set('f-docs-intro', requiredDocsIntro);
-  set('f-sec2title', oneOffTitle);
   set('f-nextsteps', nextSteps);
   set('f-sec2intro', sec2Intro);
   set('f-timeline', timelineText);
@@ -5940,10 +5976,7 @@ function buildCover(ctx) {
   return `
     <div class="doc-cover">
       <div class="doc-cover-top">
-        <div class="doc-cover-marks">
-          ${marks}
-          ${clientLogo ? `<div class="doc-cover-divider"></div><img class="cover-client-logo" src="${clientLogo}" alt="">` : ''}
-        </div>
+        <div class="doc-cover-marks">${marks}</div>
         <div class="doc-cover-rule"></div>
       </div>
       <div class="doc-cover-mid">
@@ -8193,8 +8226,9 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
       'nome do cliente': client, 'nombre del cliente': client, 'client name': client,
       'nome da sociedade': client, 'nombre de la sociedad': client, 'company name': client,
       'nome': firstName, 'nombre': firstName, 'name': firstName,
-      'nome do sócio / diretor': careOf, 'nombre del socio / director': careOf,
-      'shareholder / director name': careOf,
+      'sócio / diretor (ou preencha a/c acima)': careOf,
+      'socio / director (o complete a/c arriba)': careOf,
+      'shareholder / director (or fill a/c above)': careOf,
       // jurisdiction
       'jurisdição': jurNames, 'jurisdicción': jurNames, 'jurisdiction': jurNames,
       'órgão competente': registries, 'órgano competente': registries,
