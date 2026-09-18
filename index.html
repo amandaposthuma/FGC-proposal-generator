@@ -1450,7 +1450,7 @@
   <div class="sidebar-section">
     <div class="sidebar-section-title" data-key="lblClient">Cliente</div>
     <div class="field-group">
-      <label class="field-label" data-key="lblName">Sociedade / cliente <span class="field-hint">(quem contrata)</span></label>
+      <label class="field-label" data-key="lblName">Sociedade / cliente</label>
       <input type="text" id="f-client" class="field-input" placeholder="Client name" oninput="debouncedUpdate()">
     </div>
     <div class="field-group">
@@ -1466,7 +1466,7 @@
       <input type="email" id="f-email" class="field-input" placeholder="client@email.com">
     </div>
     <div class="field-group">
-      <label class="field-label" data-key="lblCareOf">A/C <span class="field-hint">(pessoa a quem a carta é endereçada)</span></label>
+      <label class="field-label" data-key="lblCareOf">A/C (pessoa a quem a carta é endereçada)</label>
       <input type="text" id="f-careof" class="field-input" placeholder="" oninput="debouncedUpdate()">
     </div>
     <div class="field-group">
@@ -4298,8 +4298,8 @@ const CORRECT_PW_B64 = 'RkdDcHJvcG9zdGFzITE4MTg=';
 const T = {
   pt: {
     // UI
-    lblLang: "Idioma", lblClient: "Cliente", lblName: "Nome / Empresa",
-    lblGender: "Gênero", lblCareOf: "A/C (Aos cuidados de)", lblExtra: "Linha adicional (opcional)", lblQty: "Qtd",
+    lblLang: "Idioma", lblClient: "Cliente", lblName: "Sociedade / cliente",
+    lblGender: "Gênero", lblCareOf: "A/C (pessoa a quem a carta é endereçada)", lblExtra: "Linha adicional (opcional)", lblQty: "Qtd",
     lblRef: "Referência", lblDate: "Data", lblAdvisor: "Assessor",
     lblServices: "Serviços", btnGenerate: "Gerar Proposta", btnGenerateTriva: "Gerar Proposta", btnEmail: "Gerar Email",
     btnPrint: "Imprimir / Salvar PDF",
@@ -4753,8 +4753,8 @@ contact@fgcadvisors.com`;
 
   // ─────────────────────────────────────────────
   es: {
-    lblLang: "Idioma", lblClient: "Cliente", lblName: "Nombre / Empresa",
-    lblGender: "Género", lblCareOf: "A/C (A la atención de)", lblExtra: "Línea adicional (opcional)", lblQty: "Cant",
+    lblLang: "Idioma", lblClient: "Cliente", lblName: "Sociedad / cliente",
+    lblGender: "Género", lblCareOf: "A/C (persona a quien se dirige la carta)", lblExtra: "Línea adicional (opcional)", lblQty: "Cant",
     lblRef: "Referencia", lblDate: "Fecha", lblAdvisor: "Asesor",
     lblServices: "Servicios", btnGenerate: "Generar Propuesta", btnGenerateTriva: "Generar Propuesta", btnEmail: "Generar Email",
     btnPrint: "Imprimir / Guardar PDF",
@@ -5015,8 +5015,8 @@ contact@fgcadvisors.com`;
 
   // ─────────────────────────────────────────────
   en: {
-    lblLang: "Language", lblClient: "Client", lblName: "Name / Company",
-    lblGender: "Gender", lblCareOf: "C/O (Care of)", lblExtra: "Additional line (optional)", lblQty: "Qty",
+    lblLang: "Language", lblClient: "Client", lblName: "Company / client",
+    lblGender: "Gender", lblCareOf: "C/O (person the letter addresses)", lblExtra: "Additional line (optional)", lblQty: "Qty",
     lblRef: "Reference", lblDate: "Date", lblAdvisor: "Advisor",
     lblServices: "Services", btnGenerate: "Generate Proposal", btnGenerateTriva: "Generate Proposal", btnEmail: "Generate Email",
     btnPrint: "Print / Save PDF",
@@ -5329,7 +5329,7 @@ const DOC_FORMAT = 3;
 // Shown in the sidebar so the running build is always identifiable, and
 // compared against the deployed file so a stale cached copy announces
 // itself instead of silently showing an old proposal format.
-const BUILD = '2026-09-18-f';
+const BUILD = '2026-09-18-g';
 
 function showUpdateBanner() {
   if (document.getElementById('update-banner')) return;
