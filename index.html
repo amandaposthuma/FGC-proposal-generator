@@ -1345,6 +1345,17 @@
   }
   .sidebar-advanced .sidebar-section:first-child { padding-top: 0; }
 
+  /* One click sets the whole opening paragraph */
+  .situation-picker { display: flex; flex-wrap: wrap; gap: 3px; }
+  .situation-btn {
+    border: 1px solid rgba(7,18,16,0.18); background: transparent;
+    color: rgba(7,18,16,0.6); border-radius: 3px; padding: 4px 8px;
+    font-family: var(--font); font-size: 10px; font-weight: 600;
+    cursor: pointer; transition: all 0.12s;
+  }
+  .situation-btn:hover { border-color: rgba(7,18,16,0.4); color: var(--dark); }
+  .situation-btn.active { background: #041725; border-color: #041725; color: #fff; }
+
 </style>
 </head>
 <body>
@@ -1477,6 +1488,10 @@
   <div class="sidebar-section" id="token-section" style="display:none;">
     <div class="sidebar-section-title">A preencher <span class="token-badge" id="token-count"></span></div>
     <div class="field-hint" style="margin-bottom:8px;">Um campo por espaço em branco da proposta.</div>
+    <div class="field-group">
+      <label class="field-label">Situação da sociedade</label>
+      <div id="situation-picker" class="situation-picker"></div>
+    </div>
     <div id="token-inputs"></div>
   </div>
 
@@ -5314,7 +5329,7 @@ const DOC_FORMAT = 3;
 // Shown in the sidebar so the running build is always identifiable, and
 // compared against the deployed file so a stale cached copy announces
 // itself instead of silently showing an old proposal format.
-const BUILD = '2026-09-18-a';
+const BUILD = '2026-09-18-d';
 
 function showUpdateBanner() {
   if (document.getElementById('update-banner')) return;
@@ -5647,21 +5662,60 @@ const FIELD_BACKED_TOKENS = [
 
 // Ready-made answers for the blanks that would otherwise be typed every time.
 // Keyed by the token's own text; matched on the part before any " — ex.:".
+const SITUATIONS = {
+  pt: [
+    { id: 'nova',      label: 'A constituir',            newco: true },
+    { id: 'regular',   label: 'Ativa e regular',         dated: false,
+      status: 'ativa e em good standing',
+      implies: 'a sociedade segue regular, e o trabalho consiste na manutenção das obrigações já existentes' },
+    { id: 'compliance',label: 'Pendências de compliance', dated: true,
+      status: 'em dia, porém com pendências de compliance',
+      implies: 'a sociedade permanece existente, mas está impedida de obter certificados e de comprovar good standing perante terceiros' },
+    { id: 'taxas',     label: 'Taxas em aberto',          dated: true,
+      status: 'com as taxas governamentais em aberto',
+      implies: 'a sociedade permanece existente, mas perde o good standing enquanto os valores não forem quitados' },
+    { id: 'semagente', label: 'Sem agente registrado',    dated: true,
+      status: 'sem agente registrado',
+      implies: 'a sociedade está em situação irregular, já que a lei local obriga toda sociedade a manter um agente registrado' },
+    { id: 'struck',    label: 'Struck-off (baixada)',     dated: true,
+      status: 'struck-off (baixada do registro)',
+      implies: 'a sociedade perdeu sua existência legal e não pode operar, assinar contratos ou movimentar contas até ser regularizada' },
+  ],
+};
+function situations() { return SITUATIONS[lang] || SITUATIONS.pt; }
+function currentSituation() { return situations().find(x => x.id === situationId) || null; }
+
+let situationId = '';
+function setSituation(id) {
+  situationId = id;
+  const sit = currentSituation();
+  if (sit && !sit.newco) {
+    // One click answers both halves of the sentence
+    tokenValues['situação atual'] = sit.status;
+    tokenValues['o que esse status implica na prática'] = sit.implies;
+    if (!sit.dated) delete tokenValues['desde quando'];
+  } else {
+    delete tokenValues['situação atual'];
+    delete tokenValues['o que esse status implica na prática'];
+    delete tokenValues['desde quando'];
+  }
+  // Mark the paragraph as untouched so the generator rewrites it in the shape
+  // this situation needs. Setting it to '' would read as "advisor wrote this".
+  const el = document.getElementById('f-und-what');
+  if (el) _appliedDefaults['f-und-what'] = el.value;
+  renderTokenInputs();
+  debouncedUpdate();
+}
+function renderSituationPicker() {
+  const box = document.getElementById('situation-picker');
+  if (!box) return;
+  box.innerHTML = situations().map(x => `
+    <button type="button" class="situation-btn${situationId === x.id ? ' active' : ''}"
+      onclick="setSituation('${x.id}')">${escHtml(x.label)}</button>`).join('');
+}
+
 const TOKEN_PRESETS = {
   pt: {
-    'situação atual': [
-      'struck-off (baixada do registro)',
-      'com as taxas governamentais em aberto',
-      'sem agente registrado',
-      'em dia, porém com pendências de compliance',
-      'ativa e em good standing',
-    ],
-    'desde quando': ['⟦dia⟧ de ⟦mês⟧ de ⟦ano⟧'],
-    'o que esse status implica na prática': [
-      'a sociedade perdeu sua existência legal e não pode operar, assinar contratos ou movimentar contas até ser regularizada',
-      'a sociedade permanece existente, mas está impedida de obter certificados e de comprovar good standing perante terceiros',
-      'a sociedade segue regular, e o trabalho é de manutenção das obrigações já existentes',
-    ],
     'segundo fato, se houver': [
       'o agente registrado renunciou à sua função por falta de pagamento das taxas anuais, e toda sociedade na jurisdição é obrigada por lei a manter um; sem ele, a irregularidade se soma à anterior',
       'as demonstrações financeiras e o Economic Substance do último exercício não foram entregues',
@@ -5922,6 +5976,7 @@ function coverStatePayload() {
     oneOffTitle, nextSteps, sec2Intro, timelineText, sec3Intro, vencimentoText, conditionsText,
     blocks: Object.assign({}, blocks),
     tokenValues: Object.assign({}, tokenValues),
+    situationId,
     understanding: Object.assign({}, understanding),
     requiredDocsIntro,
     requiredDocs: JSON.parse(JSON.stringify(requiredDocs)),
@@ -5946,6 +6001,7 @@ function applyCoverState(src) {
   blocks = {};
   BLOCK_KEYS.forEach(k => { blocks[k] = (d.blocks && k in d.blocks) ? !!d.blocks[k] : true; });
   tokenValues = Object.assign({}, d.tokenValues || {});
+  situationId = d.situationId || '';
   understanding     = Object.assign({ what: '', objective: '', scope: '', recommendation: '' }, d.understanding || {});
   requiredDocsIntro = d.requiredDocsIntro || '';
   requiredDocs      = Array.isArray(d.requiredDocs) && d.requiredDocs.length
@@ -8321,7 +8377,22 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
     const renewal = String(L.payJanuary || '').replace(/\s*\(.*\)\s*$/, '').trim();
     const firstYear = (new Date(dateStr.length ? Date.now() : Date.now())).getFullYear() + 1;
 
+    const sit = currentSituation();
+    const whatText = (function () {
+      if (sit && sit.newco) {
+        // Nothing exists yet, so the paragraph is about intent, not standing
+        return { pt: 'A ⟦Nome do cliente⟧ pretende constituir a estrutura descrita nesta proposta' + (jurIn ? ' ' + jurIn : '') + '. ⟦Contexto do cliente e objetivo da estrutura⟧.',
+                 es: 'La ⟦Nombre del cliente⟧ pretende constituir la estructura descrita en esta propuesta' + (jurIn ? ' ' + jurIn : '') + '. ⟦Contexto del cliente y objetivo de la estructura⟧.',
+                 en: '⟦Client name⟧ intends to incorporate the structure described in this proposal' + (jurIn ? ' ' + jurIn : '') + '. ⟦Client context and purpose of the structure⟧.' }[lang];
+      }
+      const dated = !sit || sit.dated;
+      return { pt: 'A ⟦Nome do cliente⟧ encontra-se ⟦situação atual⟧ junto ao ⟦órgão competente⟧ de ⟦jurisdição⟧' + (dated ? ' desde ⟦desde quando⟧' : '') + '. Isso significa que ⟦o que esse status implica na prática⟧.',
+               es: 'La ⟦Nombre del cliente⟧ se encuentra ⟦situación actual⟧ ante el ⟦órgano competente⟧ de ⟦jurisdicción⟧' + (dated ? ' desde ⟦desde quando⟧' : '') + '. Esto significa que ⟦qué implica ese estado en la práctica⟧.',
+               en: '⟦Client name⟧ is currently ⟦current status⟧ with the ⟦competent authority⟧ of ⟦jurisdiction⟧' + (dated ? ', and has been since ⟦desde quando⟧' : '') + '. This means ⟦what that status implies in practice⟧.' }[lang];
+    })();
+
     const auto = {
+      'f-und-what': whatText,
       'f-subject': (headline && client)
         ? cap(headline) + { pt: ' da ', es: ' de ', en: ' for ' }[lang] + client + (jurIn ? ' ' + jurIn : '')
         : '',
@@ -8356,6 +8427,7 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
     // Re-read so the document renders what the sidebar now shows
     const val = id => (document.getElementById(id) || {}).value || '';
     coverSubject            = val('f-subject');
+    understanding.what      = val('f-und-what');
     understanding.objective = val('f-und-obj');
     understanding.scope     = val('f-und-scope');
     vencimentoText          = val('f-vencimento');
@@ -8541,6 +8613,7 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
   document.getElementById('btn-new-proposal').style.display = '';
   updateTopbar();
   updateEmailPanel();
+  renderSituationPicker();
   renderTokenInputs();
   logProposalToNotion(triva);
 }

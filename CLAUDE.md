@@ -167,6 +167,22 @@ Blocos do documento, Serviços. Everything the generator writes for itself lives
 behind the collapsed `.sidebar-advanced` disclosure ("Textos do documento"). Adding
 a new text field means putting it in there, not at the top level.
 
+**Situação da sociedade drives Seção 01.** `SITUATIONS` holds six choices
+(A constituir, Ativa e regular, Pendências de compliance, Taxas em aberto, Sem
+agente registrado, Struck-off). Picking one writes the whole "O que entendemos"
+paragraph: `newco` swaps to an intent sentence with no status and no date,
+`dated: false` drops the "desde" clause, and `status`/`implies` fill both halves of
+the sentence in one click. This replaced two boxes that were really one question —
+the implication always follows from the status.
+
+`setSituation()` must set `_appliedDefaults['f-und-what']` to the field's *current*
+value (not `''`) so the generator counts it as untouched and rewrites it. And the
+auto block must re-read `understanding.what` from the field, like the other
+generated values — missing that read was why the paragraph appeared not to change.
+
+The optional second paragraph ("segundo fato") is no longer in the generated
+default. Add it in "Textos do documento" when a case needs it.
+
 **One box per blank.** `renderTokenInputs()` lists every `⟦token⟧` the document
 still has and gives each its own input in the "A preencher" panel, with a count
 badge. `tokenValues` wins over `_autoTokens` in `resolveTokens()`, and is saved with
@@ -351,6 +367,7 @@ fs.writeFileSync('/tmp/fgc_check.js',s.join('\n'));
 - **Version Sept 17 (e)** — fixed multi-jurisdiction: a Bahamas + Cayman + Florida proposal printed "em Cayman" everywhere; title, letter, objetivo and escopo now cover every selected jurisdiction. Added the "A preencher" panel — one input per remaining blank, with a count badge, saved with the draft.
 - **Version Sept 17 (g)** — audit for redundancy: renamed `⟦data⟧` → `⟦desde quando⟧` and the KYC person token so they stop reading as duplicates of the Data and A/C fields; removed the client logo upload and the Título da Seção 02 field; added `TOKEN_PRESETS` chips so the bespoke blanks are one click rather than written from scratch.
 - **Version Sept 18** — removed every em dash and separator en dash from client-facing text (service titles, alerts, table fallbacks, standard text); `FIELD_BACKED_TOKENS` stops the blanks panel asking for anything a sidebar field already supplies (9 boxes → 5); removed "Linha adicional"; collapsed the seven auto-written text sections behind one "Textos do documento" disclosure.
+- **Version Sept 18 (d)** — Seção 01 restructured around a "Situação da sociedade" picker. The old shape assumed a company with a problem, which is wrong for a Constituição, and asked for the status and its implication separately when the second always follows the first. One click now writes the paragraph; blanks drop from 5 to 1-2 depending on the situation.
 - **Version June 17** — fixed fsAnterior/trAnterior crash; full draft save/load (custom items + overrides); Observações field (section 4.6); hasScope toggle on custom items; print margin CSS; loadDraft stale-data reset; custom transfer group fix (no more "PRIVATE INVESTMENT COMPANY" on non-PIC items); item ordering fix
 
 ## Known draft behavior
