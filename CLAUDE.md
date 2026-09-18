@@ -134,6 +134,12 @@ boilerplate, and got overwritten with a blank placeholder.
 **Each section starts a new page in print** (Fabiana's request) — `break-before: page`
 on `.doc-body > .doc-sec` and `> .doc-section`, with the first child exempt.
 
+**`FIELD_BACKED_TOKENS` never get a box.** A token answered by a field the advisor
+already fills (Cliente, A/C, the service picker) is excluded from the blanks panel
+even when that field is still empty — otherwise the panel asks for the client's name
+directly under the field that supplies it. Amanda hit exactly this: an empty Cliente
+field produced boxes for Título, Nome and Nome do cliente.
+
 **Token names must not collide with sidebar fields.** `⟦data⟧` sat under a "Data"
 field meaning the proposal date while the token meant when the status began —
 renamed `⟦desde quando⟧`. The KYC person token now reads
@@ -148,6 +154,18 @@ long prompting tokens still find their presets.
 **Removed fields (don't reinstate without a reason).** Client logo — not in the
 source template, unused. `Título da Seção 02` — the derived name is correct in
 every real case and the field confused every user who saw it.
+
+**No dashes as separators — ever.** No em dashes (—) and no en dashes (–) in
+anything a client sees. They read as machine-written. Use a comma, a colon, a
+full stop or parentheses instead: "Financial Statements (Ano Anterior)", not
+"Financial Statements — Ano Anterior". The same rule already killed the `·`
+separators. Hyphens inside words ("struck-off", "one-off", "FGC-PROP-BVI-2026")
+are correct orthography and stay.
+
+**Sidebar shape.** Default state is four sections: Idioma, Cliente, A preencher,
+Blocos do documento, Serviços. Everything the generator writes for itself lives
+behind the collapsed `.sidebar-advanced` disclosure ("Textos do documento"). Adding
+a new text field means putting it in there, not at the top level.
 
 **One box per blank.** `renderTokenInputs()` lists every `⟦token⟧` the document
 still has and gives each its own input in the "A preencher" panel, with a count
@@ -332,6 +350,7 @@ fs.writeFileSync('/tmp/fgc_check.js',s.join('\n'));
 - **Version Sept 17** — Claudia's feedback: Título, Objetivo, Escopo, Vencimento and Timeline generate themselves from the selected services (17 blanks → 5, or 0 with the bespoke blocks off). Added per-block on/off toggles, all on by default. Fabiana's feedback: each section opens its own page in print, and the cover text sits higher.
 - **Version Sept 17 (e)** — fixed multi-jurisdiction: a Bahamas + Cayman + Florida proposal printed "em Cayman" everywhere; title, letter, objetivo and escopo now cover every selected jurisdiction. Added the "A preencher" panel — one input per remaining blank, with a count badge, saved with the draft.
 - **Version Sept 17 (g)** — audit for redundancy: renamed `⟦data⟧` → `⟦desde quando⟧` and the KYC person token so they stop reading as duplicates of the Data and A/C fields; removed the client logo upload and the Título da Seção 02 field; added `TOKEN_PRESETS` chips so the bespoke blanks are one click rather than written from scratch.
+- **Version Sept 18** — removed every em dash and separator en dash from client-facing text (service titles, alerts, table fallbacks, standard text); `FIELD_BACKED_TOKENS` stops the blanks panel asking for anything a sidebar field already supplies (9 boxes → 5); removed "Linha adicional"; collapsed the seven auto-written text sections behind one "Textos do documento" disclosure.
 - **Version June 17** — fixed fsAnterior/trAnterior crash; full draft save/load (custom items + overrides); Observações field (section 4.6); hasScope toggle on custom items; print margin CSS; loadDraft stale-data reset; custom transfer group fix (no more "PRIVATE INVESTMENT COMPANY" on non-PIC items); item ordering fix
 
 ## Known draft behavior

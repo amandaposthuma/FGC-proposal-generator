@@ -1324,12 +1324,33 @@
   .token-preset:hover { background: rgba(176,84,47,0.14); border-color: rgba(176,84,47,0.55); }
   .token-field.is-filled .token-presets { opacity: 0.45; }
 
+  /* Everything the generator writes for itself, tucked away until needed */
+  .sidebar-advanced { border-top: 1px solid rgba(7,18,16,0.08); }
+  .sidebar-advanced > summary {
+    list-style: none; cursor: pointer; user-select: none;
+    padding: 14px 20px; font-family: var(--font);
+    font-size: 10px; font-weight: 700; letter-spacing: 0.8px;
+    text-transform: uppercase; color: rgba(7,18,16,0.45);
+    display: flex; align-items: center; gap: 6px;
+  }
+  .sidebar-advanced > summary::-webkit-details-marker { display: none; }
+  .sidebar-advanced > summary::before {
+    content: '▸'; font-size: 9px; transition: transform 0.15s;
+  }
+  .sidebar-advanced[open] > summary::before { transform: rotate(90deg); }
+  .sidebar-advanced > summary:hover { color: var(--dark); }
+  .adv-hint {
+    font-weight: 400; letter-spacing: 0.2px; text-transform: none;
+    color: rgba(7,18,16,0.35);
+  }
+  .sidebar-advanced .sidebar-section:first-child { padding-top: 0; }
+
 </style>
 </head>
 <body>
 <!-- ── Auto-save restore banner ── -->
 <div id="autosave-banner" style="display:none;position:fixed;top:0;left:0;right:0;z-index:10000;background:#1a3a2a;color:#e2ff00;font-family:var(--font,sans-serif);font-size:12px;font-weight:600;padding:10px 16px;align-items:center;gap:12px;box-shadow:0 2px 8px rgba(0,0,0,0.25);">
-  <span style="flex:1;">Trabalho não salvo encontrado — <span id="autosave-banner-client" style="color:#fff;"></span> <span id="autosave-banner-time" style="font-weight:400;opacity:0.75;"></span></span>
+  <span style="flex:1;">Trabalho não salvo encontrado: <span id="autosave-banner-client" style="color:#fff;"></span> <span id="autosave-banner-time" style="font-weight:400;opacity:0.75;"></span></span>
   <button onclick="restoreAutoSave()" style="background:#e2ff00;color:#071210;border:none;border-radius:3px;padding:5px 12px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;">Restaurar</button>
   <button onclick="dismissAutoSave()" style="background:transparent;color:#e2ff00;border:1px solid rgba(226,255,0,0.4);border-radius:3px;padding:5px 10px;font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;">Descartar</button>
 </div>
@@ -1424,7 +1445,7 @@
     <div class="field-group">
       <label class="field-label" data-key="lblGender">Gênero</label>
       <div class="gender-toggle">
-        <button class="gender-btn active" onclick="setGender('neutral')">—</button>
+        <button class="gender-btn active" onclick="setGender('neutral')">N</button>
         <button class="gender-btn" onclick="setGender('M')">M</button>
         <button class="gender-btn" onclick="setGender('F')">F</button>
       </div>
@@ -1436,10 +1457,6 @@
     <div class="field-group">
       <label class="field-label" data-key="lblCareOf">A/C (Aos cuidados de)</label>
       <input type="text" id="f-careof" class="field-input" placeholder="" oninput="debouncedUpdate()">
-    </div>
-    <div class="field-group">
-      <label class="field-label" data-key="lblExtra">Linha adicional (opcional)</label>
-      <input type="text" id="f-extra" class="field-input" placeholder="ex: nome da empresa" oninput="debouncedUpdate()">
     </div>
     <div class="field-group">
       <label class="field-label" data-key="lblDate">Data</label>
@@ -1468,11 +1485,13 @@
     <div id="block-toggles" class="block-toggles"></div>
   </div>
 
+  <details class="sidebar-advanced">
+    <summary>Textos do documento <span class="adv-hint">(escritos automaticamente)</span></summary>
   <div class="sidebar-section">
     <div class="sidebar-section-title">Capa &amp; apresentação</div>
     <div class="field-group">
       <label class="field-label">Título da proposta <span class="field-hint">(capa)</span></label>
-      <input type="text" id="f-subject" class="field-input" placeholder="ex: Reinstatement — S&amp;W Investment Company" oninput="coverSubject=this.value; debouncedUpdate()">
+      <input type="text" id="f-subject" class="field-input" placeholder="ex: Reinstatement da S&amp;W Investment Company" oninput="coverSubject=this.value; debouncedUpdate()">
     </div>
     <div class="field-group">
       <label class="field-label">Referência</label>
@@ -1588,12 +1607,14 @@
 
   <div class="sidebar-section">
     <div class="field-group">
-      <label class="field-label">Observações <span style="font-weight:400;opacity:0.55">(item 4.6 — opcional)</span></label>
+      <label class="field-label">Observações <span style="font-weight:400;opacity:0.55">(item 4.6, opcional)</span></label>
       <textarea id="f-notes" class="field-input" rows="3" style="resize:vertical;min-height:52px;"
         placeholder="Notas adicionais para a proposta..."
         oninput="proposalNotes=this.value; debouncedUpdate()"></textarea>
     </div>
   </div>
+
+  </details>
 
   <div class="sidebar-section">
     <div class="sidebar-section-title" data-key="lblServices">Serviços</div>
@@ -2110,7 +2131,7 @@ var FGC_CONFIG = {
         note: "Caso o cliente opte por não contratar os serviços de elaboração contábil conforme previsto neste item, e as demonstrações financeiras forem preparadas por terceiros, o cliente deverá encaminhar à FGC, até o dia 1º de junho de cada ano:\n- Cópia das Demonstrações Financeiras;\n- Relatório preenchido no formato exigido para submissão às autoridades nas BVI.\nNessa hipótese, a FGC atuará exclusivamente na função de submissão do AFR, sem qualquer responsabilidade sobre a veracidade, consistência ou validade das informações contábeis fornecidas.\nO não envio da documentação no prazo informado poderá resultar em penalidades por parte das autoridades locais, sendo o cliente integralmente responsável por tais consequências. A FGC estará isenta de qualquer obrigação ou responsabilidade decorrente da não entrega ou entrega incompleta."
       },
       fs3rd: {
-        title: "Demonstrações Financeiras — Elaboradas por Terceiros",
+        title: "Demonstrações Financeiras (Elaboradas por Terceiros)",
         items: [
           "Para as demonstrações financeiras preparadas por terceiros, o cliente deverá encaminhar à FGC, até o dia 1º de junho de cada ano, a documentação necessária para a submissão do AFR.",
           "Nessa hipótese, a FGC atuará exclusivamente na função de submissão do AFR, sem qualquer responsabilidade sobre a veracidade, consistência ou validade das informações contábeis fornecidas.",
@@ -2119,7 +2140,7 @@ var FGC_CONFIG = {
         note: null
       },
       tr3rd: {
-        title: "Tax Return — Elaborado por Terceiros",
+        title: "Tax Return (Elaborado por Terceiros)",
         items: [
           "Para o Tax Return preparado por terceiros, o cliente deverá encaminhar à FGC, até o dia 15 de março de cada ano, a documentação necessária para a submissão.",
           "Nessa hipótese, a FGC atuará exclusivamente na função de submissão do Tax Return, sem qualquer responsabilidade sobre a veracidade, consistência ou validade das informações fornecidas.",
@@ -2137,16 +2158,16 @@ var FGC_CONFIG = {
         note: null
       },
       priorFS: {
-        title: "Financial Statements — Ano Anterior",
+        title: "Financial Statements (Ano Anterior)",
         items: [
           "Demonstrações Financeiras referentes ao exercício fiscal anterior",
-          "Annual Financial Return (AFR) — exercício anterior"
+          "Annual Financial Return (AFR) (exercício anterior)"
         ],
         bankNote: "A preparação acima pressupõe a existência de até duas (2) contas bancárias e até trezentas (300) transações no exercício em questão. Caso a complexidade seja maior, será apresentado orçamento complementar.",
         note: null
       },
       priorTR: {
-        title: "Tax Return — Ano Anterior",
+        title: "Tax Return (Ano Anterior)",
         items: [
           "Lançamentos contábeis referentes ao exercício fiscal anterior, com base nos documentos fornecidos",
           "Entrega e submissão do Tax Return relativo ao exercício anterior aos órgãos competentes"
@@ -2155,16 +2176,16 @@ var FGC_CONFIG = {
         note: null
       },
       fsAnterior: {
-        title: "Financial Statements — Prior Years (Anos Anteriores)",
+        title: "Financial Statements (Anos Anteriores)",
         items: [
           "Demonstrações Financeiras referentes a exercícios fiscais anteriores",
-          "Annual Financial Return (AFR) — exercícios anteriores"
+          "Annual Financial Return (AFR) (exercícios anteriores)"
         ],
         bankNote: "A preparação acima pressupõe a existência de até duas (2) contas bancárias e até trezentas (300) transações por exercício. Caso a complexidade seja maior, será apresentado orçamento complementar.",
         note: null
       },
       trAnterior: {
-        title: "Tax Return — Prior Years (Anos Anteriores)",
+        title: "Tax Return (Anos Anteriores)",
         items: [
           "Lançamentos contábeis referentes a exercícios fiscais anteriores, com base nos documentos fornecidos",
           "Entrega e submissão dos Tax Returns relativos aos exercícios anteriores aos órgãos competentes"
@@ -2175,7 +2196,7 @@ var FGC_CONFIG = {
       afr: {
         title: "Preparação do Annual Financial Return (AFR)",
         items: [
-          "Annual Financial Return — submissão"
+          "Annual Financial Return (submissão)"
         ],
         note: "Caso o cliente contrate terceiros para a preparação do AFR, a FGC deverá receber até 1º de junho de cada ano: Relatório no formato exigido pelas autoridades de BVI.\nNessa hipótese, a responsabilidade da FGC será limitada exclusivamente à submissão do AFR. A FGC não assumirá responsabilidade sobre a veracidade, consistência ou validade das informações contábeis fornecidas. O não envio da documentação no prazo poderá resultar em penalidades, sendo o cliente integralmente responsável."
       },
@@ -2727,7 +2748,7 @@ var FGC_CONFIG = {
         note: "Si el cliente opta por no contratar los servicios de elaboración contable conforme lo previsto en este punto, y los estados financieros sean preparados por terceros, el cliente deberá enviar a FGC, hasta el 1º de junio de cada año:\n- Copia de los Estados Financieros;\n- Informe completado en el formato requerido para su presentación ante las autoridades en BVI.\nEn esa hipótesis, FGC actuará exclusivamente en la función de presentación del AFR, sin responsabilidad alguna sobre la veracidad, consistencia o validez de la información contable proporcionada.\nLa no entrega de la documentación en el plazo informado podrá resultar en penalidades por parte de las autoridades locales, siendo el cliente integralmente responsable por dichas consecuencias. FGC estará exenta de cualquier obligación o responsabilidad derivada de la no entrega o entrega incompleta."
       },
       fs3rd: {
-        title: "Estados Financieros — Elaborados por Terceros",
+        title: "Estados Financieros (Elaborados por Terceros)",
         items: [
           "Para los estados financieros preparados por terceros, el cliente deberá enviar a FGC, hasta el 1° de junio de cada año, la documentación necesaria para la presentación del AFR.",
           "En esa hipótesis, FGC actuará exclusivamente en la función de presentación del AFR, sin responsabilidad alguna sobre la veracidad, consistencia o validez de la información contable proporcionada.",
@@ -2736,7 +2757,7 @@ var FGC_CONFIG = {
         note: null
       },
       tr3rd: {
-        title: "Tax Return — Elaborado por Terceros",
+        title: "Tax Return (Elaborado por Terceros)",
         items: [
           "Para el Tax Return preparado por terceros, el cliente deberá enviar a FGC, hasta el 15 de marzo de cada año, la documentación necesaria para la presentación.",
           "En esa hipótesis, FGC actuará exclusivamente en la función de presentación del Tax Return, sin responsabilidad alguna sobre la veracidad, consistencia o validez de la información proporcionada.",
@@ -2754,16 +2775,16 @@ var FGC_CONFIG = {
         note: null
       },
       priorFS: {
-        title: "Financial Statements — Año Anterior",
+        title: "Financial Statements (Año Anterior)",
         items: [
           "Estados Financieros correspondientes al ejercicio fiscal anterior",
-          "Annual Financial Return (AFR) — ejercicio anterior"
+          "Annual Financial Return (AFR) (ejercicio anterior)"
         ],
         bankNote: "La preparación anterior presupone la existencia de hasta dos (2) cuentas bancarias y hasta trescientas (300) transacciones en el ejercicio en cuestión. En caso de mayor complejidad, se presentará un presupuesto complementario.",
         note: null
       },
       priorTR: {
-        title: "Tax Return — Año Anterior",
+        title: "Tax Return (Año Anterior)",
         items: [
           "Asientos contables correspondientes al ejercicio fiscal anterior, con base en los documentos proporcionados",
           "Entrega y presentación del Tax Return relativo al ejercicio anterior ante los órganos competentes"
@@ -2772,16 +2793,16 @@ var FGC_CONFIG = {
         note: null
       },
       fsAnterior: {
-        title: "Financial Statements — Prior Years (Años Anteriores)",
+        title: "Financial Statements (Años Anteriores)",
         items: [
           "Estados Financieros correspondientes a ejercicios fiscales anteriores",
-          "Annual Financial Return (AFR) — ejercicios anteriores"
+          "Annual Financial Return (AFR) (ejercicios anteriores)"
         ],
         bankNote: "La preparación anterior presupone la existencia de hasta dos (2) cuentas bancarias y hasta trescientas (300) transacciones por ejercicio. En caso de mayor complejidad, se presentará un presupuesto complementario.",
         note: null
       },
       trAnterior: {
-        title: "Tax Return — Prior Years (Años Anteriores)",
+        title: "Tax Return (Años Anteriores)",
         items: [
           "Asientos contables correspondientes a ejercicios fiscales anteriores, con base en los documentos proporcionados",
           "Entrega y presentación de los Tax Returns relativos a los ejercicios anteriores ante los órganos competentes"
@@ -2792,7 +2813,7 @@ var FGC_CONFIG = {
       afr: {
         title: "Preparación del Annual Financial Return (AFR)",
         items: [
-          "Annual Financial Return — presentación"
+          "Annual Financial Return (presentación)"
         ],
         note: "Si el cliente contrata terceros para la preparación del AFR, FGC deberá recibir hasta el 1 de junio de cada año: Informe en el formato exigido por las autoridades de BVI.\nEn ese caso, la responsabilidad de FGC se limitará exclusivamente a la presentación del AFR. FGC no asumirá responsabilidad sobre la veracidad, consistencia o validez de la información contable proporcionada. La falta de envío de la documentación dentro del plazo podrá resultar en penalidades, siendo el cliente integralmente responsable."
       },
@@ -3344,7 +3365,7 @@ var FGC_CONFIG = {
         note: "Should the client choose not to engage FGC for the preparation of financial statements and choose a third party, the client must provide FGC with the following, by June 1 of each year:\n- A copy of the Financial Statements.\n- A report in the format required for submission to the BVI authorities.\nIn this scenario, FGC's responsibility will be limited solely to submitting the AFR. FGC shall not assume responsibility for the accuracy, consistency, or validity of the accounting information provided. Failure to provide documentation on time may result in government penalties, for which the client shall be fully responsible. FGC will be exempt from any liability arising from late or incomplete delivery."
       },
       fs3rd: {
-        title: "Financial Statements — Prepared by Third Party",
+        title: "Financial Statements (Prepared by Third Party)",
         items: [
           "For financial statements prepared by third parties, the client must provide FGC with the required documentation by June 1 of each year for AFR submission.",
           "In this scenario, FGC's responsibility will be limited solely to submitting the AFR, without any responsibility for the accuracy, consistency, or validity of the accounting information provided.",
@@ -3353,7 +3374,7 @@ var FGC_CONFIG = {
         note: null
       },
       tr3rd: {
-        title: "Tax Return — Prepared by Third Party",
+        title: "Tax Return (Prepared by Third Party)",
         items: [
           "For Tax Returns prepared by third parties, the client must provide FGC with the required documentation by March 15 of each year.",
           "In this scenario, FGC's responsibility will be limited solely to filing the Tax Return, without any responsibility for the accuracy, consistency, or validity of the information provided.",
@@ -3371,16 +3392,16 @@ var FGC_CONFIG = {
         note: null
       },
       priorFS: {
-        title: "Financial Statements — Prior Year",
+        title: "Financial Statements (Prior Year)",
         items: [
           "Financial Statements covering the prior fiscal year",
-          "Annual Financial Return (AFR) — prior year"
+          "Annual Financial Return (AFR) (prior year)"
         ],
         bankNote: "The above preparation assumes up to two (2) bank accounts and up to three hundred (300) transactions for the year in question. Should the complexity be greater, a supplemental fee proposal will be presented.",
         note: null
       },
       priorTR: {
-        title: "Tax Return — Prior Year",
+        title: "Tax Return (Prior Year)",
         items: [
           "Accounting entries for the prior fiscal year based on documents provided",
           "Preparation and filing of the Tax Return for the prior year with the competent authorities"
@@ -3389,16 +3410,16 @@ var FGC_CONFIG = {
         note: null
       },
       fsAnterior: {
-        title: "Financial Statements — Prior Years",
+        title: "Financial Statements (Prior Years)",
         items: [
           "Financial Statements covering prior fiscal years",
-          "Annual Financial Return (AFR) — prior years"
+          "Annual Financial Return (AFR) (prior years)"
         ],
         bankNote: "The above preparation assumes up to two (2) bank accounts and up to three hundred (300) transactions per year. Should the complexity be greater, a supplemental fee proposal will be presented.",
         note: null
       },
       trAnterior: {
-        title: "Tax Return — Prior Years",
+        title: "Tax Return (Prior Years)",
         items: [
           "Accounting entries for prior fiscal years based on documents provided",
           "Preparation and filing of Tax Returns for prior years with the competent authorities"
@@ -3409,7 +3430,7 @@ var FGC_CONFIG = {
       afr: {
         title: "Preparation of Annual Financial Return (AFR)",
         items: [
-          "Annual Financial Return — filing"
+          "Annual Financial Return (filing)"
         ],
         note: "Should the client choose not to engage FGC for the preparation of financial statements and choose a third party, the client must provide FGC with the following, by June 1 of each year:\n- A copy of the Financial Statements.\n- A report in the format required for submission to the BVI authorities.\nIn this scenario, FGC's responsibility will be limited solely to submitting the AFR. FGC shall not assume responsibility for the accuracy, consistency, or validity of the accounting information provided. Failure to provide documentation on time may result in government penalties, for which the client shall be fully responsible. FGC will be exempt from any liability arising from late or incomplete delivery."
       },
@@ -4358,7 +4379,7 @@ const T = {
     optTransTR: "Tax Return (TR)",
 
     // Standalone alert
-    alertStandalone: "⚠ Serviço avulso — não pode ser combinado com outros serviços nesta proposta.",
+    alertStandalone: "⚠ Serviço avulso. Não pode ser combinado com outros serviços nesta proposta.",
     alertNoTemplate: "Sem template padrão disponível.",
 
     // Proposal types
@@ -4562,7 +4583,7 @@ const T = {
     ],
     termsFSNote: null,
 
-    termsTRTitle: "Tax Return (TR) — Declaração Fiscal EUA",
+    termsTRTitle: "Tax Return (TR) (Declaração Fiscal EUA)",
     termsTRItems: [
       "Preparação e protocolo da declaração de imposto de renda junto ao IRS",
       "Análise das movimentações e categorização fiscal",
@@ -4806,7 +4827,7 @@ contact@fgcadvisors.com`;
     optTransFS: "Estados Financieros (FS)",
     optTransTR: "Tax Return (TR)",
 
-    alertStandalone: "⚠ Servicio independiente — no puede combinarse con otros servicios en esta propuesta.",
+    alertStandalone: "⚠ Servicio independiente. No puede combinarse con otros servicios en esta propuesta.",
     alertNoTemplate: "Sin plantilla estándar disponible.",
 
     typeFormation: "Propuesta de Constitución",
@@ -4902,7 +4923,7 @@ contact@fgcadvisors.com`;
     termsFSTitle: "Estados Financieros (FS) + AFR",
     termsFSItems: ["Elaboración de los Estados Financieros (Financial Statements)","Preparación del Annual Financial Return (AFR) ante el Registro de BVI","Análisis y categorización de movimientos del período"],
     termsFSNote: null,
-    termsTRTitle: "Tax Return (TR) — Declaración Fiscal EE.UU.",
+    termsTRTitle: "Tax Return (TR) (Declaración Fiscal EE.UU.)",
     termsTRItems: ["Preparación y presentación de la declaración de impuestos ante el IRS","Análisis de movimientos y categorización fiscal","Entrega del comprobante de presentación"],
     termsTRNote: "Servicio realizado en asociación con Confirp Contabilidade.",
     termsDissolFLTitle: "Disolución Florida LLC",
@@ -5068,7 +5089,7 @@ contact@fgcadvisors.com`;
     optTransFS: "Financial Statements (FS)",
     optTransTR: "Tax Return (TR)",
 
-    alertStandalone: "⚠ Standalone service — cannot be combined with other services in this proposal.",
+    alertStandalone: "⚠ Standalone service. Cannot be combined with other services in this proposal.",
     alertNoTemplate: "No standard template available.",
 
     typeFormation: "Formation Proposal",
@@ -5163,7 +5184,7 @@ contact@fgcadvisors.com`;
     termsFSTitle: "Financial Statements (FS) + AFR",
     termsFSItems: ["Preparation of Financial Statements","Preparation of the Annual Financial Return (AFR) with the BVI Registry","Analysis and categorization of period transactions"],
     termsFSNote: null,
-    termsTRTitle: "Tax Return (TR) — US Tax Declaration",
+    termsTRTitle: "Tax Return (TR) (US Tax Declaration)",
     termsTRItems: ["Preparation and filing of income tax return with the IRS","Analysis of transactions and tax categorization","Delivery of filing confirmation"],
     termsTRNote: "Service provided in partnership with Confirp Contabilidade.",
     termsDissolFLTitle: "Florida LLC Dissolution",
@@ -5293,7 +5314,7 @@ const DOC_FORMAT = 3;
 // Shown in the sidebar so the running build is always identifiable, and
 // compared against the deployed file so a stale cached copy announces
 // itself instead of silently showing an old proposal format.
-const BUILD = '2026-09-17-g';
+const BUILD = '2026-09-18-a';
 
 function showUpdateBanner() {
   if (document.getElementById('update-banner')) return;
@@ -5372,7 +5393,7 @@ const DOC_L = {
     clientParty: 'Cliente', nameLine: 'Nome:', dateLine: 'Data:',
     contactLabel: 'Contato',
     confidential: 'Esta proposta é confidencial e destina-se exclusivamente ao destinatário indicado na capa. Os valores e o escopo aqui apresentados baseiam-se nas informações disponíveis nesta data e permanecem válidos pelo prazo indicado.',
-    fillPrompt: 'A preencher —',
+    fillPrompt: 'A preencher:',
     promptWhat: 'descreva a situação atual do cliente em "O que entendemos", na barra lateral.',
     promptObjective: 'descreva o objetivo do trabalho na barra lateral.',
     promptScope: 'liste os itens de escopo na barra lateral, um por linha.',
@@ -5407,7 +5428,7 @@ const DOC_L = {
     clientParty: 'Cliente', nameLine: 'Nombre:', dateLine: 'Fecha:',
     contactLabel: 'Contacto',
     confidential: 'Esta propuesta es confidencial y está dirigida exclusivamente al destinatario indicado en la portada. Los valores y el alcance aquí presentados se basan en la información disponible en esta fecha y permanecen válidos por el plazo indicado.',
-    fillPrompt: 'Por completar —',
+    fillPrompt: 'Por completar:',
     promptWhat: 'describa la situación actual del cliente en "Lo que entendemos", en la barra lateral.',
     promptObjective: 'describa el objetivo del trabajo en la barra lateral.',
     promptScope: 'liste los ítems de alcance en la barra lateral, uno por línea.',
@@ -5442,7 +5463,7 @@ const DOC_L = {
     clientParty: 'Client', nameLine: 'Name:', dateLine: 'Date:',
     contactLabel: 'Contact',
     confidential: 'This proposal is confidential and intended solely for the recipient named on the cover. The amounts and scope presented here are based on the information available as of this date and remain valid for the period indicated.',
-    fillPrompt: 'To be completed —',
+    fillPrompt: 'To be completed:',
     promptWhat: 'describe the client’s current situation under "What we understand" in the sidebar.',
     promptObjective: 'describe the objective of the engagement in the sidebar.',
     promptScope: 'list the scope items in the sidebar, one per line.',
@@ -5468,15 +5489,15 @@ const FGC_DEFAULTS = {
       'Fica um convite para conduzirmos esse processo com a agilidade e o cuidado que a continuidade da sua estrutura em ⟦jurisdição⟧ exige.\n' +
       'Agradecemos desde já essa oportunidade.',
     undWhat:
-      'A ⟦Nome do cliente⟧ encontra-se ⟦situação atual⟧ junto ao ⟦órgão competente⟧ de ⟦jurisdição⟧ desde ⟦desde quando⟧. Isso significa que ⟦o que esse status implica na prática — ex.: a sociedade perdeu sua existência legal e não pode operar, assinar contratos ou movimentar contas até ser regularizada⟧.\n' +
-      '⟦Segundo fato, se houver — ex.: o agente registrado renunciou à sua função por falta de pagamento das taxas anuais, e toda sociedade na jurisdição é obrigada por lei a manter um; sem ele, a irregularidade se soma à anterior⟧.',
+      'A ⟦Nome do cliente⟧ encontra-se ⟦situação atual⟧ junto ao ⟦órgão competente⟧ de ⟦jurisdição⟧ desde ⟦desde quando⟧. Isso significa que ⟦o que esse status implica na prática⟧.\n' +
+      '⟦segundo fato, se houver⟧.',
     undObjective: '⟦Restaurar / Constituir / Transferir⟧ a sociedade junto ao ⟦órgão competente⟧, ⟦segunda ação, se houver⟧ e regularizar ⟦compliance, KYC e as taxas governamentais em aberto⟧.',
     undScope:
       '⟦Frente principal do trabalho⟧ da sociedade junto ao ⟦órgão competente⟧, incluindo ⟦etapas relevantes e atualização de KYC/compliance⟧.\n' +
       '⟦Manutenção anual (compliance, Economic Substance e demonstrações financeiras), se aplicável⟧.\n' +
       '⟦Contabilidade anual, se aplicável⟧.',
     undRec: 'Após ⟦o trabalho⟧, sugerimos ⟦uma análise de planejamento sucessório⟧ da estrutura em ⟦jurisdição⟧.',
-    sec2Intro: 'Os valores abaixo referem-se aos honorários da FGC para ⟦o trabalho descrito acima⟧. Custos de terceiros — taxas governamentais, agente registrado e cartório — são repassados ao cliente e permanecem estimados até a confirmação final.',
+    sec2Intro: 'Os valores abaixo referem-se aos honorários da FGC para ⟦o trabalho descrito acima⟧. Custos de terceiros (taxas governamentais, agente registrado e cartório) são repassados ao cliente e permanecem estimados até a confirmação final.',
     timeline: '⟦Contexto que afeta o prazo⟧. Por experiência, esse processo pode levar ⟦prazo⟧. Obtida a aprovação, ⟦etapa final⟧ costuma ser concluída no prazo de ⟦prazo⟧.',
     sec3Intro: 'A manutenção da sociedade é apresentada como um valor anual único, que reúne todas as obrigações recorrentes em ⟦jurisdição⟧ sob uma só relação.',
     vencimento: 'O vencimento da anuidade se dará sempre no dia ⟦dia e mês⟧ de todo ano, sendo a primeira em ⟦ano⟧. Emitimos as invoices em ⟦mês⟧, para que haja tempo hábil de pagamento e de cumprimento dos prazos junto ao ⟦órgão competente⟧.',
@@ -5499,15 +5520,15 @@ const FGC_DEFAULTS = {
       'Queda la invitación para conducir este proceso con la agilidad y el cuidado que la continuidad de su estructura exige.\n' +
       'Agradecemos desde ya esta oportunidad.',
     undWhat:
-      'La ⟦Nombre del cliente⟧ se encuentra ⟦situación actual⟧ ante el ⟦órgano competente⟧ de ⟦jurisdicción⟧ desde ⟦desde quando⟧. Esto significa que ⟦qué implica ese estado en la práctica — p. ej.: la sociedad perdió su existencia legal y no puede operar, firmar contratos ni mover cuentas hasta regularizarse⟧.\n' +
-      '⟦Segundo hecho, si lo hay — p. ej.: el agente registrado renunció a su función por falta de pago de las tasas anuales, y toda sociedad en la jurisdicción está obligada por ley a mantener uno⟧.',
+      'La ⟦Nombre del cliente⟧ se encuentra ⟦situación actual⟧ ante el ⟦órgano competente⟧ de ⟦jurisdicción⟧ desde ⟦desde quando⟧. Esto significa que ⟦qué implica ese estado en la práctica⟧.\n' +
+      '⟦segundo hecho, si lo hay⟧.',
     undObjective: '⟦Restaurar / Constituir / Transferir⟧ la sociedad ante el ⟦órgano competente⟧, ⟦segunda acción, si la hay⟧ y regularizar ⟦compliance, KYC y las tasas gubernamentales pendientes⟧.',
     undScope:
       '⟦Frente principal del trabajo⟧ de la sociedad ante el ⟦órgano competente⟧, incluyendo ⟦etapas relevantes y actualización de KYC/compliance⟧.\n' +
       '⟦Mantenimiento anual (compliance, Economic Substance y estados financieros), si aplica⟧.\n' +
       '⟦Contabilidad anual, si aplica⟧.',
     undRec: 'Tras ⟦el trabajo⟧, sugerimos ⟦un análisis de planificación sucesoria⟧ de la estructura en ⟦jurisdicción⟧.',
-    sec2Intro: 'Los valores a continuación corresponden a los honorarios de FGC para ⟦el trabajo descrito arriba⟧. Los costos de terceros — tasas gubernamentales, agente registrado y notaría — se trasladan al cliente y permanecen estimados hasta la confirmación final.',
+    sec2Intro: 'Los valores a continuación corresponden a los honorarios de FGC para ⟦el trabajo descrito arriba⟧. Los costos de terceros (tasas gubernamentales, agente registrado y notaría) se trasladan al cliente y permanecen estimados hasta la confirmación final.',
     timeline: 'El plazo estimado es de ⟦plazo⟧, contado desde ⟦hito inicial⟧. Si se requiere aprobación previa, ese proceso suele tomar ⟦plazo adicional⟧. Obtenida la aprobación, ⟦etapa final⟧ se concluye en ⟦plazo⟧.',
     sec3Intro: 'El mantenimiento de la sociedad se presenta como un valor anual único, que reúne todas las obligaciones recurrentes en una sola relación.',
     vencimento: 'El vencimiento de la anualidad será siempre el día ⟦día y mes⟧ de cada año, siendo la primera en ⟦año⟧. Emitimos las facturas con antelación, para que haya tiempo de pago y de cumplimiento de los plazos.',
@@ -5530,15 +5551,15 @@ const FGC_DEFAULTS = {
       'We would welcome the chance to run this process with the speed and care the continuity of your structure requires.\n' +
       'Thank you in advance for the opportunity.',
     undWhat:
-      '⟦Client name⟧ is currently ⟦current status⟧ with the ⟦competent authority⟧ of ⟦jurisdiction⟧, and has been since ⟦desde quando⟧. This means ⟦what that status implies in practice — e.g. the company has lost its legal existence and cannot operate, sign contracts or move funds until it is restored⟧.\n' +
-      '⟦Second fact, if there is one — e.g. the registered agent resigned over unpaid annual fees, and every company in the jurisdiction is required by law to maintain one⟧.',
+      '⟦Client name⟧ is currently ⟦current status⟧ with the ⟦competent authority⟧ of ⟦jurisdiction⟧, and has been since ⟦desde quando⟧. This means ⟦what that status implies in practice⟧.\n' +
+      '⟦second fact, if there is one⟧.',
     undObjective: '⟦Restore / Incorporate / Transfer⟧ the company with the ⟦competent authority⟧, ⟦second action, if any⟧, and bring ⟦compliance, KYC and outstanding government fees⟧ back into good standing.',
     undScope:
       '⟦Primary workstream⟧ for the company with the ⟦competent authority⟧, including ⟦relevant stages and the KYC/compliance update⟧.\n' +
       '⟦Annual maintenance (compliance, Economic Substance and financial statements), if applicable⟧.\n' +
       '⟦Annual accounting, if applicable⟧.',
     undRec: 'Once ⟦the work⟧ is complete, we suggest ⟦a succession planning review⟧ of the structure.',
-    sec2Intro: 'The amounts below are FGC\'s fees for ⟦the work described above⟧. Third-party costs — government fees, registered agent and notary — are passed through to the client and remain estimates until finally confirmed.',
+    sec2Intro: 'The amounts below are FGC\'s fees for ⟦the work described above⟧. Third-party costs (government fees, registered agent and notary) are passed through to the client and remain estimates until finally confirmed.',
     timeline: 'The estimated timeline is ⟦duration⟧ from ⟦starting point⟧. Where prior approval is required, that process typically takes ⟦additional duration⟧. Once approval is obtained, ⟦final stage⟧ completes within ⟦duration⟧.',
     sec3Intro: 'Maintenance of the company is presented as a single annual amount, bringing every recurring obligation under one relationship.',
     vencimento: 'The annual fee falls due on ⟦day and month⟧ each year, the first in ⟦year⟧. We issue invoices in advance so there is time to pay and to meet the filing deadlines.',
@@ -5607,6 +5628,23 @@ function phClass(id) { return isUntouchedDefault(id) ? ' is-placeholder' : ''; }
 let _autoTokens = {};
 let tokenValues = {};     // { 'situação atual': 'struck-off', … }
 
+// Answered by a field the advisor already fills in (Cliente, A/C, the service
+// picker). Asking for them again in the blanks panel is the same question twice,
+// so they never get a box — filling the field above is the fix.
+const FIELD_BACKED_TOKENS = [
+  'nome do cliente','nombre del cliente','client name',
+  'nome','nombre','name',
+  'título da proposta','título de la propuesta','proposal title',
+  'sócio / diretor (ou preencha a/c acima)','socio / director (o complete a/c arriba)',
+  'shareholder / director (or fill a/c above)',
+  'jurisdição','jurisdicción','jurisdiction',
+  'o trabalho contratado','el trabajo contratado','the engagement',
+  'o trabalho descrito acima','el trabajo descrito arriba','the work described above',
+  'o trabalho','el trabajo','the work',
+  'frente principal do trabalho','frente principal del trabajo','primary workstream',
+  'as frentes envolvidas','los frentes involucrados','the workstreams involved',
+];
+
 // Ready-made answers for the blanks that would otherwise be typed every time.
 // Keyed by the token's own text; matched on the part before any " — ex.:".
 const TOKEN_PRESETS = {
@@ -5638,7 +5676,7 @@ const TOKEN_PRESETS = {
 };
 function tokenPresets(key) {
   const table = TOKEN_PRESETS[lang] || TOKEN_PRESETS.pt;
-  const head = String(key).split('—')[0].trim().toLowerCase();
+  const head = String(key).trim().toLowerCase();
   return table[head] || table[String(key).trim().toLowerCase()] || [];
 }
 function applyPreset(k, v) {
@@ -5657,8 +5695,9 @@ function collectOpenTokens() {
   const seen = [];
   String(sources.join('\n')).replace(/⟦([^⟧]*)⟧/g, function (m, inner) {
     const k = inner.trim();
-    const auto = _autoTokens[k.toLowerCase()];
-    if (auto) return m;                       // the tool answers this one
+    const low = k.toLowerCase();
+    if (_autoTokens[low]) return m;                        // the tool answers it
+    if (FIELD_BACKED_TOKENS.indexOf(low) !== -1) return m; // a field above answers it
     if (seen.indexOf(k) === -1) seen.push(k);
     return m;
   });
@@ -5846,7 +5885,7 @@ function refreshRefCodeField() {
     el.value = computeRefCode();
     if (hint) hint.textContent = 'Gerado automaticamente a partir dos serviços.';
   } else if (hint) {
-    hint.textContent = 'Código manual — clique em ↻ para voltar ao automático.';
+    hint.textContent = 'Código manual. Clique em ↻ para voltar ao automático.';
   }
 }
 function onRefCodeInput(v) { refCode = v; refCodeAuto = false; refreshRefCodeField(); debouncedUpdate(); }
@@ -6388,11 +6427,11 @@ function renderServicePicker() {
 
     // Right after the Formation category (index 0), inject Anuidade controls
     if (ci === 0) {
-      // Anuidade — Pagamento (payment timing)
+      // Anuidade / Pagamento (payment timing)
       const maintDiv = document.createElement('div');
       maintDiv.style.cssText = 'padding:10px 12px 6px;border-top:1px solid rgba(7,18,16,0.08);margin-top:4px;';
       maintDiv.innerHTML = `
-        <div style="font-size:9px;font-weight:700;letter-spacing:0.6px;color:rgba(7,18,16,0.4);text-transform:uppercase;margin-bottom:6px;">Anuidade — Pagamento</div>
+        <div style="font-size:9px;font-weight:700;letter-spacing:0.6px;color:rgba(7,18,16,0.4);text-transform:uppercase;margin-bottom:6px;">Anuidade / Pagamento</div>
         <label class="sub-option" style="padding-left:4px;">
           <input type="radio" name="maintTiming" value="acceptance" ${state.maintPayTiming==='acceptance'?'checked':''}
             onchange="state.maintPayTiming=this.value;debouncedUpdate()">
@@ -6406,7 +6445,7 @@ function renderServicePicker() {
       `;
       container.appendChild(maintDiv);
 
-      // Anuidade — Valor (maintenance price overrides), only if entities are selected
+      // Anuidade / Valor (maintenance price overrides), only if entities are selected
       const MAINT_KEYS_MAP = [
         { stateKey: 'bvi',           maintKey: 'bviMaint',      label: 'BVI' },
         { stateKey: 'transBVI',      maintKey: 'bviMaint',      label: 'BVI' },
@@ -6475,7 +6514,7 @@ function renderServicePicker() {
               onclick="event.stopPropagation()">
           </div>`).join('') : '';
         maintPriceDiv.innerHTML = `
-          <div style="font-size:9px;font-weight:700;letter-spacing:0.6px;color:rgba(7,18,16,0.4);text-transform:uppercase;margin-bottom:6px;">Anuidade — Valor</div>
+          <div style="font-size:9px;font-weight:700;letter-spacing:0.6px;color:rgba(7,18,16,0.4);text-transform:uppercase;margin-bottom:6px;">Anuidade / Valor</div>
           ${rowsHTML}${customStateMaintRows}
         `;
         container.appendChild(maintPriceDiv);
@@ -7134,9 +7173,9 @@ function toggleEditMode() {
     edit:  { pt: '✏ Editar', es: '✏ Editar', en: '✏ Edit' },
     saved: { pt: '✓ Salvo',  es: '✓ Guardado', en: '✓ Saved' },
     banner: {
-      pt: 'Modo de edição ativo — alterações manuais serão perdidas ao gerar nova proposta',
-      es: 'Modo de edición activo — los cambios manuales se perderán al generar una nueva propuesta',
-      en: 'Edit mode active — manual changes will be lost when a new proposal is generated',
+      pt: 'Modo de edição ativo. Alterações manuais serão perdidas ao gerar nova proposta',
+      es: 'Modo de edición activo. Los cambios manuales se perderán al generar una nueva propuesta',
+      en: 'Edit mode active. Manual changes will be lost when a new proposal is generated',
     },
   };
   if (_editMode) {
@@ -7344,7 +7383,7 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
       if (!cs.name.trim()) return;
       const q = Math.max(cs.qty || 1, 1);
       const unit = (cs.maintPrice !== '' && cs.maintPrice != null) ? Number(cs.maintPrice) : null;
-      const _label = (q>1?q+'x ':'')+cs.name.trim()+' LLC – '+(lang==='en'?'Annual Maintenance':lang==='es'?'Mantenimiento Anual':'Manutenção Anual');
+      const _label = (q>1?q+'x ':'')+cs.name.trim()+' LLC, '+(lang==='en'?'Annual Maintenance':lang==='es'?'Mantenimiento Anual':'Manutenção Anual');
       secMaintItems.push({ key:'customUSMaint', label: _label, amount: unit !== null ? unit*q : null, pay: maintPayTerm(), group:'us', recurring:true, qty:q, stateName: cs.name.trim() });
     });
   }
@@ -7355,7 +7394,7 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
       const q = Math.max(o.qty || 1, 1);
       const unit = (o.maintPrice !== '' && o.maintPrice != null) ? Number(o.maintPrice) : null;
       if (unit === null && o.maintPrice === '') return; // skip if no maint price entered
-      const _label = (q>1?q+'x ':'')+o.label.trim()+' – '+(lang==='en'?'Annual Maintenance':lang==='es'?'Mantenimiento Anual':'Manutenção Anual');
+      const _label = (q>1?q+'x ':'')+o.label.trim()+', '+(lang==='en'?'Annual Maintenance':lang==='es'?'Mantenimiento Anual':'Manutenção Anual');
       secMaintItems.push({ key:'customOffshoreMaint', label: _label, amount: unit !== null ? unit*q : null, pay: maintPayTerm(), group:'pic', recurring:true, qty:q });
     });
   }
@@ -7371,7 +7410,7 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
 
   // When "Na Aceitação" is selected: add a current-year row after each recurring maintenance item
   if (state.maintPayTiming !== 'year2') {
-    const cyLabel = { pt: ' – Ano corrente', es: ' – Año corriente', en: ' – Current Year' }[lang];
+    const cyLabel = { pt: ' (Ano corrente)', es: ' (Año corriente)', en: ' (Current Year)' }[lang];
     const augmented = [];
     secMaintItems.forEach(it => {
       augmented.push(it);
@@ -7434,16 +7473,16 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
   // Prior-year FS (PIC entities; allow for US-only too when user selects it)
   if (state.fsAnterior) {
     const q = getQty('fsAnterior');
-    secAcctItems.push({ key:'fsAnterior', label: (q>1?q+'x ':'')+{ pt: 'Financial Statements (Demonstrações Financeiras) – Anos Anteriores', es: 'Financial Statements (Estados Financieros) – Años Anteriores', en: 'Financial Statements – Prior Years' }[lang], amount: getPrice('fsAnterior', FGC_CONFIG.services.fsAnterior.price)*q, pay: L.payOnAcceptance, group: hasPICEntity ? 'pic' : 'us', qty:q });
+    secAcctItems.push({ key:'fsAnterior', label: (q>1?q+'x ':'')+{ pt: 'Financial Statements (Demonstrações Financeiras), Anos Anteriores', es: 'Financial Statements (Estados Financieros), Años Anteriores', en: 'Financial Statements – Prior Years' }[lang], amount: getPrice('fsAnterior', FGC_CONFIG.services.fsAnterior.price)*q, pay: L.payOnAcceptance, group: hasPICEntity ? 'pic' : 'us', qty:q });
     // For BVI entities: also show AFR row for prior-year FS
     if (hasBVIEntity) {
-      secAcctItems.push({ key:'fsAnteriorAfr', label: (q>1?q+'x ':'')+{ pt: 'Annual Financial Return (AFR) — Anos Anteriores', es: 'Annual Financial Return (AFR) — Años Anteriores', en: 'Annual Financial Return (AFR) — Prior Years' }[lang], amount: null, pay: L.payOnAcceptance, shareRef: true, group:'pic' });
+      secAcctItems.push({ key:'fsAnteriorAfr', label: (q>1?q+'x ':'')+{ pt: 'Annual Financial Return (AFR) (Anos Anteriores)', es: 'Annual Financial Return (AFR) (Años Anteriores)', en: 'Annual Financial Return (AFR) (Prior Years)' }[lang], amount: null, pay: L.payOnAcceptance, shareRef: true, group:'pic' });
     }
   }
   // Prior-year TR (US entities only)
   if (state.trAnterior) {
     const q = getQty('trAnterior');
-    secAcctItems.push({ key:'trAnterior', label: (q>1?q+'x ':'')+{ pt: 'Tax Return (Declaração de Imposto de Renda) – Anos Anteriores', es: 'Tax Return (Declaración de Impuesto a la Renta) – Años Anteriores', en: 'Tax Return – Prior Years' }[lang], amount: getPrice('trAnterior', FGC_CONFIG.services.trAnterior.price)*q, pay: L.payOnAcceptance, group:'us', qty:q });
+    secAcctItems.push({ key:'trAnterior', label: (q>1?q+'x ':'')+{ pt: 'Tax Return (Declaração de Imposto de Renda), Anos Anteriores', es: 'Tax Return (Declaración de Impuesto a la Renta), Años Anteriores', en: 'Tax Return – Prior Years' }[lang], amount: getPrice('trAnterior', FGC_CONFIG.services.trAnterior.price)*q, pay: L.payOnAcceptance, group:'us', qty:q });
   }
   // Custom accounting/fiscal services
   if (state.customAccounting) {
@@ -7459,13 +7498,13 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
   }
   // Transfer prior-year services (declared here, after secAcctItems exists)
   if (state.transFS) {
-    secAcctItems.push({ key:'priorFS', label: { pt: 'Financial Statements (Demonstrações Financeiras) – Anos Anteriores', es: 'Financial Statements (Estados Financieros) – Años Anteriores', en: 'Financial Statements – Prior Years' }[lang], amount: getPrice('transFS', FGC_CONFIG.services.transFS.price), pay: L.payOnAcceptance, group:'pic' });
+    secAcctItems.push({ key:'priorFS', label: { pt: 'Financial Statements (Demonstrações Financeiras), Anos Anteriores', es: 'Financial Statements (Estados Financieros), Años Anteriores', en: 'Financial Statements – Prior Years' }[lang], amount: getPrice('transFS', FGC_CONFIG.services.transFS.price), pay: L.payOnAcceptance, group:'pic' });
     if (hasBVIEntity) {
-      secAcctItems.push({ key:'priorFSAfr', label: { pt: 'Annual Financial Return (AFR) — Anos Anteriores', es: 'Annual Financial Return (AFR) — Años Anteriores', en: 'Annual Financial Return (AFR) — Prior Years' }[lang], amount: null, pay: L.payOnAcceptance, shareRef: true, group:'pic' });
+      secAcctItems.push({ key:'priorFSAfr', label: { pt: 'Annual Financial Return (AFR) (Anos Anteriores)', es: 'Annual Financial Return (AFR) (Años Anteriores)', en: 'Annual Financial Return (AFR) (Prior Years)' }[lang], amount: null, pay: L.payOnAcceptance, shareRef: true, group:'pic' });
     }
   }
   if (state.transTR)
-    secAcctItems.push({ key:'priorTR', label: { pt: 'Tax Return (Declaração de Imposto de Renda) – Anos Anteriores', es: 'Tax Return (Declaración de Impuesto a la Renta) – Años Anteriores', en: 'Tax Return – Prior Years' }[lang], amount: getPrice('transTR', FGC_CONFIG.services.transTR.price), pay: L.payOnAcceptance, group:'us' });
+    secAcctItems.push({ key:'priorTR', label: { pt: 'Tax Return (Declaração de Imposto de Renda), Anos Anteriores', es: 'Tax Return (Declaración de Impuesto a la Renta), Años Anteriores', en: 'Tax Return – Prior Years' }[lang], amount: getPrice('transTR', FGC_CONFIG.services.transTR.price), pay: L.payOnAcceptance, group:'us' });
 
   // Section III (dissolution / standalone)
   let sec3Items = [];
@@ -7966,7 +8005,7 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
       } else if (it.amount !== null && it.amount !== undefined) {
         amountStr = fmt(it.amount);
       } else {
-        amountStr = '—';
+        amountStr = { pt: 'A confirmar', es: 'A confirmar', en: 'To be confirmed' }[lang];
       }
       return `
       <tr>
@@ -8542,8 +8581,8 @@ function updateEmailPanel() {
   if (state.will) services.push(emailTermTitle('will'));
   if (state.apostila) services.push(emailTermTitle('apostila'));
   if (state.mailing) services.push(emailTermTitle('mailing'));
-  if (state.transFS) services.push({ pt: 'Financial Statements (Demonstrações Financeiras) – Anos Anteriores', es: 'Financial Statements (Estados Financieros) – Años Anteriores', en: 'Financial Statements – Prior Years' }[emailLang]);
-  if (state.transTR) services.push({ pt: 'Tax Return (Declaração de Imposto de Renda) – Anos Anteriores', es: 'Tax Return (Declaración de Impuesto a la Renta) – Años Anteriores', en: 'Tax Return – Prior Years' }[emailLang]);
+  if (state.transFS) services.push({ pt: 'Financial Statements (Demonstrações Financeiras), Anos Anteriores', es: 'Financial Statements (Estados Financieros), Años Anteriores', en: 'Financial Statements – Prior Years' }[emailLang]);
+  if (state.transTR) services.push({ pt: 'Tax Return (Declaração de Imposto de Renda), Anos Anteriores', es: 'Tax Return (Declaración de Impuesto a la Renta), Años Anteriores', en: 'Tax Return – Prior Years' }[emailLang]);
   if (state.fs) services.push(emailTermTitle('fs'));
   if (state.tr) services.push(emailTermTitle('tr'));
   if (state.fs3rd) services.push({ pt: 'Demonstrações Financeiras por Terceiros', es: 'Estados Financieros por Terceros', en: 'Financial Statements (Third Party)' }[emailLang]);
@@ -8799,7 +8838,7 @@ function logProposalToNotion(triva) {
       client,
       user,
       device,
-      services: services.join(', ') || '—',
+      services: services.join(', ') || 'Nenhum',
       language: lang.toUpperCase(),
       brand: triva ? 'Triva' : 'FGC',
       generatedAt: new Date().toISOString(),
@@ -8849,7 +8888,7 @@ function submitBackfill() {
     client,
     user: document.getElementById('bf-user').value,
     device: 'Manual backfill',
-    services: document.getElementById('bf-services').value.trim() || '—',
+    services: document.getElementById('bf-services').value.trim() || 'Nenhum',
     language: document.getElementById('bf-lang').value,
     brand: document.getElementById('bf-brand').value,
     generatedAt: new Date(document.getElementById('bf-date').value + 'T12:00:00').toISOString(),
