@@ -1450,7 +1450,7 @@
   <div class="sidebar-section">
     <div class="sidebar-section-title" data-key="lblClient">Cliente</div>
     <div class="field-group">
-      <label class="field-label" data-key="lblName">Nome</label>
+      <label class="field-label" data-key="lblName">Sociedade / cliente <span class="field-hint">(quem contrata)</span></label>
       <input type="text" id="f-client" class="field-input" placeholder="Client name" oninput="debouncedUpdate()">
     </div>
     <div class="field-group">
@@ -1466,7 +1466,7 @@
       <input type="email" id="f-email" class="field-input" placeholder="client@email.com">
     </div>
     <div class="field-group">
-      <label class="field-label" data-key="lblCareOf">A/C (Aos cuidados de)</label>
+      <label class="field-label" data-key="lblCareOf">A/C <span class="field-hint">(pessoa a quem a carta é endereçada)</span></label>
       <input type="text" id="f-careof" class="field-input" placeholder="" oninput="debouncedUpdate()">
     </div>
     <div class="field-group">
@@ -5329,7 +5329,7 @@ const DOC_FORMAT = 3;
 // Shown in the sidebar so the running build is always identifiable, and
 // compared against the deployed file so a stale cached copy announces
 // itself instead of silently showing an old proposal format.
-const BUILD = '2026-09-18-d';
+const BUILD = '2026-09-18-f';
 
 function showUpdateBanner() {
   if (document.getElementById('update-banner')) return;
@@ -5497,7 +5497,7 @@ const FGC_DEFAULTS = {
   pt: {
     subject: '⟦Título da proposta⟧',
     opening:
-      'Prezado ⟦Nome⟧,\n' +
+      '⟦saudação⟧\n' +
       'Esta proposta apresenta o escopo, os documentos necessários e os honorários estimados para ⟦o trabalho contratado⟧, incluindo ⟦as frentes envolvidas⟧.\n' +
       'Nas próximas seções: o escopo do trabalho, o investimento (one-off e anual) e a documentação necessária para dar início ao processo.\n' +
       'Mais do que ⟦o trabalho⟧ pontual, a FGC permanece à frente da manutenção anual da sociedade como único ponto de contato e de forma a assegurar que todas as obrigações sejam cumpridas.\n' +
@@ -5528,7 +5528,7 @@ const FGC_DEFAULTS = {
   es: {
     subject: '⟦Título de la propuesta⟧',
     opening:
-      'Estimado ⟦Nombre⟧,\n' +
+      '⟦saudação⟧\n' +
       'Esta propuesta presenta el alcance, los documentos necesarios y los honorarios estimados para ⟦el trabajo contratado⟧, incluyendo ⟦los frentes involucrados⟧.\n' +
       'En las próximas secciones: el alcance del trabajo, la inversión y la documentación necesaria para iniciar el proceso.\n' +
       'Más allá del trabajo puntual, FGC permanece al frente del mantenimiento anual de la estructura como único punto de contacto, de modo que todas las obligaciones se cumplan.\n' +
@@ -5559,7 +5559,7 @@ const FGC_DEFAULTS = {
   en: {
     subject: '⟦Proposal title⟧',
     opening:
-      'Dear ⟦Name⟧,\n' +
+      '⟦saudação⟧\n' +
       'This proposal sets out the scope, the required documents and the estimated fees for ⟦the engagement⟧, including ⟦the workstreams involved⟧.\n' +
       'In the sections that follow: the scope of work, the investment, and the documentation needed to begin.\n' +
       'Beyond the one-off work, FGC stays ahead of the annual maintenance of the structure as your single point of contact, so that every obligation is met on time.\n' +
@@ -5649,6 +5649,7 @@ let tokenValues = {};     // { 'situação atual': 'struck-off', … }
 const FIELD_BACKED_TOKENS = [
   'nome do cliente','nombre del cliente','client name',
   'nome','nombre','name',
+  'saudação','saludo','greeting',
   'título da proposta','título de la propuesta','proposal title',
   'sócio / diretor (ou preencha a/c acima)','socio / director (o complete a/c arriba)',
   'shareholder / director (or fill a/c above)',
@@ -7115,6 +7116,7 @@ function writeAutoSave() {
     const snapshot = {
       client,
       clientEmail: (document.getElementById('f-email') || {}).value || '',
+      careOf: (document.getElementById('f-careof') || {}).value || '',
       advisor: (document.getElementById('f-advisor') || {}).value || '',
       date: (document.getElementById('f-date') || {}).value || '',
       lang,
@@ -7179,6 +7181,7 @@ function restoreAutoSave() {
     applyCoverState(snap.cover);
     document.getElementById('f-client').value  = snap.client || '';
     if (document.getElementById('f-email'))   document.getElementById('f-email').value   = snap.clientEmail || '';
+    if (document.getElementById('f-careof'))  document.getElementById('f-careof').value  = snap.careOf || '';
     document.getElementById('f-advisor').value = snap.advisor || '';
     document.getElementById('f-date').value    = snap.date || '';
     const notesEl = document.getElementById('f-notes');
@@ -8270,7 +8273,13 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
     // its own box instead of generating something clumsy.
     const uniqRegistries = [...new Set(jurs.map(j => j.registry))];
     const registries = uniqRegistries.length === 1 ? uniqRegistries[0] : '';
-    const firstName = (careOf || client || '').trim().split(' ')[0] || '';
+    // Only a named person gets a first-name salutation. Falling back to the
+    // company's first word produced "Prezado Fabiana," from the Sociedade field.
+    const person = (careOf || '').trim();
+    const firstName = person ? person.split(' ')[0] : '';
+    const greeting = firstName
+      ? getSalutation() + ' ' + firstName + ','
+      : { pt: 'Prezados,', es: 'Estimados,', en: 'Dear Sirs,' }[lang];
     // A few group labels are adjectival ("Contábil e Fiscal") and don't take an
     // article cleanly — they get a proper noun phrase instead.
     const PHRASE_OVERRIDES = {
@@ -8321,6 +8330,7 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
       'nome do cliente': client, 'nombre del cliente': client, 'client name': client,
       'nome da sociedade': client, 'nombre de la sociedad': client, 'company name': client,
       'nome': firstName, 'nombre': firstName, 'name': firstName,
+      'saudação': greeting, 'saludo': greeting, 'greeting': greeting,
       'sócio / diretor (ou preencha a/c acima)': careOf,
       'socio / director (o complete a/c arriba)': careOf,
       'shareholder / director (or fill a/c above)': careOf,
@@ -9047,6 +9057,7 @@ function saveDraft() {
     id,
     client,
     clientEmail: document.getElementById('f-email')?.value?.trim() || '',
+    careOf: document.getElementById('f-careof')?.value?.trim() || '',
     advisor: document.getElementById('f-advisor').value.trim(),
     date: document.getElementById('f-date').value,
     lang,
@@ -9159,6 +9170,8 @@ function loadDraft(id) {
   if (notesEl) notesEl.value = proposalNotes;
   document.getElementById('f-client').value = draft.client || '';
   if (document.getElementById('f-email')) document.getElementById('f-email').value = draft.clientEmail || '';
+  // Blank when the draft has none, so a previous client's contact can't carry over
+  if (document.getElementById('f-careof')) document.getElementById('f-careof').value = draft.careOf || '';
   document.getElementById('f-advisor').value = draft.advisor || '';
   document.getElementById('f-date').value = draft.date || '';
   renderServicePicker();

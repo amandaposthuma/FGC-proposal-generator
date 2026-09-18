@@ -167,6 +167,18 @@ Blocos do documento, Serviços. Everything the generator writes for itself lives
 behind the collapsed `.sidebar-advanced` disclosure ("Textos do documento"). Adding
 a new text field means putting it in there, not at the top level.
 
+**Sociedade vs A/C are different things.** `f-client` is the entity the work
+concerns — it fills `⟦Nome do cliente⟧` in "A [X] encontra-se struck-off". `f-careof`
+is the person the letter is addressed to. The salutation is its own token,
+`⟦saudação⟧`: with a contact it reads "Prezado Roberto,", without one "Prezados,".
+It must never fall back to the entity's first word — that produced "Prezado Fabiana,"
+from the Sociedade field.
+
+**`careOf` is saved with the draft.** It previously wasn't saved *or* cleared on
+load, so a previous client's contact stayed in the field and printed on the next
+proposal. Any new field in the Cliente block needs the same treatment in
+`saveDraft`, `loadDraft`, `writeAutoSave` and `restoreAutoSave` — check all four.
+
 **Situação da sociedade drives Seção 01.** `SITUATIONS` holds six choices
 (A constituir, Ativa e regular, Pendências de compliance, Taxas em aberto, Sem
 agente registrado, Struck-off). Picking one writes the whole "O que entendemos"
@@ -368,6 +380,7 @@ fs.writeFileSync('/tmp/fgc_check.js',s.join('\n'));
 - **Version Sept 17 (g)** — audit for redundancy: renamed `⟦data⟧` → `⟦desde quando⟧` and the KYC person token so they stop reading as duplicates of the Data and A/C fields; removed the client logo upload and the Título da Seção 02 field; added `TOKEN_PRESETS` chips so the bespoke blanks are one click rather than written from scratch.
 - **Version Sept 18** — removed every em dash and separator en dash from client-facing text (service titles, alerts, table fallbacks, standard text); `FIELD_BACKED_TOKENS` stops the blanks panel asking for anything a sidebar field already supplies (9 boxes → 5); removed "Linha adicional"; collapsed the seven auto-written text sections behind one "Textos do documento" disclosure.
 - **Version Sept 18 (d)** — Seção 01 restructured around a "Situação da sociedade" picker. The old shape assumed a company with a problem, which is wrong for a Constituição, and asked for the status and its implication separately when the second always follows the first. One click now writes the paragraph; blanks drop from 5 to 1-2 depending on the situation.
+- **Version Sept 18 (f)** — separated the entity from the addressee: the Cliente field is now "Sociedade / cliente", A/C is labelled as the person the letter addresses, and the salutation is its own token that reads "Prezados," when no person is named. Fixed a data-leak bug where `careOf` was never saved to or cleared from a draft, so one client's contact printed on the next client's proposal.
 - **Version June 17** — fixed fsAnterior/trAnterior crash; full draft save/load (custom items + overrides); Observações field (section 4.6); hasScope toggle on custom items; print margin CSS; loadDraft stale-data reset; custom transfer group fix (no more "PRIVATE INVESTMENT COMPANY" on non-PIC items); item ordering fix
 
 ## Known draft behavior
