@@ -85,8 +85,9 @@ Section titles are the template's, not invented. Document order:
 
 The template titles its Seção 02 after the work itself ("Reinstatement"), so the
 generator derives that title from the dominant selected service (Constituição,
-Transferência, …). `f-sec2title` overrides it for bespoke cases — e.g.
-"Restabelecimento". **Aceite is a block inside Seção 05, not a section.**
+Transferência, …). There is no override field — the old `f-sec2title` was removed
+because the derived name is right in every real case and the field confused users.
+**Aceite is a block inside Seção 05, not a section.**
 
 Section numbers are assigned by `nextSecNo()` as the document renders, so an
 empty optional section never leaves a gap. `secTCNum` is captured at render time
@@ -118,8 +119,9 @@ than writing fresh generic copy; her wording is the house voice.
 the Título, Objetivo, Escopo, Vencimento and Timeline from the selected services
 and jurisdiction, and writes them *back into the sidebar* so what the advisor sees
 is what prints. A field the advisor has edited is never overwritten — the check is
-against `_appliedDefaults`. Escopo is one line per selected group; Vencimento uses
-`L.payJanuary`; Timeline reuses the `Prazos` clause rather than asking again.
+against `_appliedDefaults`. Escopo is one line per `sec1Items` entry, so every
+entity in a multi-jurisdiction proposal appears; Vencimento uses `L.payJanuary`;
+Timeline reuses the `Prazos` clause rather than asking again.
 
 **Per-block toggles.** `blocks` (see `BLOCK_KEYS`) switches each block on or off,
 all on by default, saved with the draft. Drafts without a `blocks` key default
@@ -205,10 +207,11 @@ services by `computeRefCode()` — jurisdiction first (`CAY`/`BVI`/`BAH`/`NEV`/`
 then service type (`SUC`/`RES`/`CTB`/`NOT`/`BOI`), falling back to `GEN`. Typing in
 the field switches to manual; ↻ returns to auto.
 
-**Assets.** Client logo uploads per proposal and is stored in the draft. Scanned
-signatures upload per advisor into `fgc_signatures` (keyed by advisor slug) and
-are NOT stored in drafts — they belong to the advisor, not the proposal. With no
-signature on file the Dancing Script cursive rendering is used as a fallback.
+**Assets.** Scanned signatures upload per advisor into `fgc_signatures` (keyed by
+advisor slug) and are NOT stored in drafts — they belong to the advisor, not the
+proposal. With no signature on file the Dancing Script cursive rendering is used as
+a fallback, which is what every proposal has used so far. The client logo upload was
+removed (see "Removed fields").
 
 **Print.** `@page :first { margin: 0 }` gives the cover a true full-bleed A4
 (210×297mm); content pages use `@page { margin: 16mm 12mm }`.
