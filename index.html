@@ -5329,7 +5329,7 @@ const DOC_FORMAT = 3;
 // Shown in the sidebar so the running build is always identifiable, and
 // compared against the deployed file so a stale cached copy announces
 // itself instead of silently showing an old proposal format.
-const BUILD = '2026-09-18-g';
+const BUILD = '2026-09-21-a';
 
 function showUpdateBanner() {
   if (document.getElementById('update-banner')) return;
@@ -6076,7 +6076,11 @@ function buildCover(ctx) {
         <div class="doc-cover-rule"></div>
       </div>
       <div class="doc-cover-mid">
-        <div class="doc-cover-kicker">${D.kicker}</div>
+        ${(function () {
+          const t = (coverSubject || '').trim().toLowerCase();
+          const k = D.kicker.toLowerCase();
+          return t.indexOf(k) === 0 ? '' : `<div class="doc-cover-kicker">${D.kicker}</div>`;
+        })()}
         <div class="doc-cover-subject">${markTokens(escHtml(resolveTokens(coverSubject.trim() || dl().subjectPrompt)))}</div>
       </div>
       <div class="doc-cover-meta">
@@ -8403,8 +8407,8 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
 
     const auto = {
       'f-und-what': whatText,
-      'f-subject': (headline && client)
-        ? cap(headline) + { pt: ' da ', es: ' de ', en: ' for ' }[lang] + client + (jurIn ? ' ' + jurIn : '')
+      'f-subject': client
+        ? { pt: 'Proposta, ', es: 'Propuesta, ', en: 'Proposal, ' }[lang] + client
         : '',
       'f-und-obj': (verb && jurs.length)
         ? verb + (jurs.length > 1

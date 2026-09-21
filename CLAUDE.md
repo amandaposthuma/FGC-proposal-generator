@@ -167,6 +167,11 @@ Blocos do documento, Serviços. Everything the generator writes for itself lives
 behind the collapsed `.sidebar-advanced` disclosure ("Textos do documento"). Adding
 a new text field means putting it in there, not at the top level.
 
+**Cover title is "Proposta, <cliente>"** (`Propuesta,` / `Proposal,` in the other
+languages), generated from the Sociedade field. The mono `PROPOSTA` eyebrow above
+it is suppressed when the title already starts with that word, so the cover doesn't
+say it twice. A title typed by hand keeps the eyebrow.
+
 **Sociedade vs A/C are different things.** `f-client` is the entity the work
 concerns — it fills `⟦Nome do cliente⟧` in "A [X] encontra-se struck-off". `f-careof`
 is the person the letter is addressed to. The salutation is its own token,
@@ -381,6 +386,7 @@ fs.writeFileSync('/tmp/fgc_check.js',s.join('\n'));
 - **Version Sept 18** — removed every em dash and separator en dash from client-facing text (service titles, alerts, table fallbacks, standard text); `FIELD_BACKED_TOKENS` stops the blanks panel asking for anything a sidebar field already supplies (9 boxes → 5); removed "Linha adicional"; collapsed the seven auto-written text sections behind one "Textos do documento" disclosure.
 - **Version Sept 18 (d)** — Seção 01 restructured around a "Situação da sociedade" picker. The old shape assumed a company with a problem, which is wrong for a Constituição, and asked for the status and its implication separately when the second always follows the first. One click now writes the paragraph; blanks drop from 5 to 1-2 depending on the situation.
 - **Version Sept 18 (f)** — separated the entity from the addressee: the Cliente field is now "Sociedade / cliente", A/C is labelled as the person the letter addresses, and the salutation is its own token that reads "Prezados," when no person is named. Fixed a data-leak bug where `careOf` was never saved to or cleared from a draft, so one client's contact printed on the next client's proposal.
+- **Version Sept 21** — cover title is now "Proposta, <cliente>" rather than the service-and-jurisdiction sentence; the duplicate PROPOSTA eyebrow is suppressed when the title starts with that word.
 - **Version June 17** — fixed fsAnterior/trAnterior crash; full draft save/load (custom items + overrides); Observações field (section 4.6); hasScope toggle on custom items; print margin CSS; loadDraft stale-data reset; custom transfer group fix (no more "PRIVATE INVESTMENT COMPANY" on non-PIC items); item ordering fix
 
 ## Known draft behavior
