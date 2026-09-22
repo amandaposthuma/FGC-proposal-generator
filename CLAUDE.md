@@ -18,6 +18,22 @@ The user has been given false "it's fixed" reports multiple times. **Visual proo
 
 ---
 
+## !! BRANCHES — READ FIRST (Sept 22 2026) !!
+
+- **`main` = LIVE.** GitHub Pages deploys `main`. It currently runs the **pre-v2
+  generator** (the build from Sept 10, commit `17ccf06`), restored on Sept 22 at
+  Amanda's request. Only two additions on top of it: a `BUILD` stamp + no-cache
+  meta tags (so open v2 tabs get the reload banner), and `loadDraft` ignoring the
+  stored HTML of drafts that carry `docFormat` (saved by v2), so they regenerate in
+  the old layout instead of replaying the v2 document.
+- **`v2` = the new generator, NOT live.** Everything documented below from
+  "Proposal document format (v2)" onward lives on the `v2` branch. Work on it there.
+  Do not merge `v2` into `main` until Amanda says it goes live.
+- To preview v2 without deploying: `git checkout v2` and use the local preview
+  server (`.claude/launch.json`).
+
+---
+
 ## Overview
 Static single-page HTML tool hosted on GitHub Pages. No backend. All persistence via localStorage.
 
