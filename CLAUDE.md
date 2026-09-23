@@ -2,6 +2,13 @@
 
 ---
 
+## !! BRANCHES (Sept 22 2026) !!
+
+`main` = LIVE, running the Sept 10 (pre-v2) build. `v2` = this document's generator,
+**not live**. Work on `v2`; do not merge into `main` until Amanda says so. Bugs: `BUGS.md`.
+
+---
+
 ## !! VERIFICATION REQUIREMENT — MANDATORY !!
 
 **NEVER report a task as complete without first providing screenshot evidence.**
@@ -167,10 +174,22 @@ Blocos do documento, Serviços. Everything the generator writes for itself lives
 behind the collapsed `.sidebar-advanced` disclosure ("Textos do documento"). Adding
 a new text field means putting it in there, not at the top level.
 
-**Cover title is "Proposta, <cliente>"** (`Propuesta,` / `Proposal,` in the other
-languages), generated from the Sociedade field. The mono `PROPOSTA` eyebrow above
-it is suppressed when the title already starts with that word, so the cover doesn't
-say it twice. A title typed by hand keeps the eyebrow.
+**Cover title names the work, not the client** ("Constituição de sociedade nas
+Ilhas Virgens Britânicas", "Notarização e apostilamento"). Meire read
+"Proposta, Joao Maria" as wrong: the client already sits under "Preparado para".
+Drafts still holding the old "Proposta, <cliente>" title are treated as untouched
+and regenerate.
+
+**Contábil e Fiscal renders in Seção 03** (after Manutenção anual) whenever there is
+maintenance, as the previous version had it. `acctInMaint` controls it; accounting
+terms are then built *after* maintenance so item numbers follow render order.
+
+**Generated fields also cover** the opening letter (`f-opening`), Recomendação
+(`f-und-rec`) and the Seção 03 intro. Standard text from any language (`isStock`) counts
+as untouched. When a generated value no longer applies (services changed), the old
+generated text is replaced; Recomendação and Timeline are cleared instead.
+
+**Bug tracker:** `BUGS.md`. Log everything there, with its status.
 
 **Sociedade vs A/C are different things.** `f-client` is the entity the work
 concerns — it fills `⟦Nome do cliente⟧` in "A [X] encontra-se struck-off". `f-careof`
@@ -313,7 +332,7 @@ Payload fields: `client`, `user`, `device`, `services`, `language`, `brand`, `ge
 | `fgc_failed_logs` | Array of proposals that failed to log to Notion |
 | `fgc_signatures` | `{ advisorSlug: dataURL }` — scanned signatures, per browser |
 
-**`DOC_FORMAT`** (currently `3`) stamps every saved draft. `saveDraft` stores the
+**`DOC_FORMAT`** (currently `4`) stamps every saved draft. `saveDraft` stores the
 rendered `proposalHTML` so manual edits survive, but replaying that HTML after the
 document structure changes shows the *old* layout. `loadDraft` therefore replays
 stored HTML only when `draft.docFormat === DOC_FORMAT`, and regenerates otherwise.
@@ -387,6 +406,7 @@ fs.writeFileSync('/tmp/fgc_check.js',s.join('\n'));
 - **Version Sept 18 (d)** — Seção 01 restructured around a "Situação da sociedade" picker. The old shape assumed a company with a problem, which is wrong for a Constituição, and asked for the status and its implication separately when the second always follows the first. One click now writes the paragraph; blanks drop from 5 to 1-2 depending on the situation.
 - **Version Sept 18 (f)** — separated the entity from the addressee: the Cliente field is now "Sociedade / cliente", A/C is labelled as the person the letter addresses, and the salutation is its own token that reads "Prezados," when no person is named. Fixed a data-leak bug where `careOf` was never saved to or cleared from a draft, so one client's contact printed on the next client's proposal.
 - **Version Sept 21** — cover title is now "Proposta, <cliente>" rather than the service-and-jurisdiction sentence; the duplicate PROPOSTA eyebrow is suppressed when the title starts with that word.
+- **Version Sept 23 (v2 branch)** — Meire's first test round (BUGS.md B01 to B20): cover title names the work, "Prezado Dr. Leone,", formation wording for a person's name, Contábil e Fiscal back in Seção 03, first renewal year from the proposal date, generic "Aplicável a", 30-day validity, notarization-only proposals written for themselves, service-specific Timeline, ES/EN jurisdiction wording. `DOC_FORMAT` 4.
 - **Version June 17** — fixed fsAnterior/trAnterior crash; full draft save/load (custom items + overrides); Observações field (section 4.6); hasScope toggle on custom items; print margin CSS; loadDraft stale-data reset; custom transfer group fix (no more "PRIVATE INVESTMENT COMPANY" on non-PIC items); item ordering fix
 
 ## Known draft behavior

@@ -1518,7 +1518,7 @@
     </div>
     <div class="field-group">
       <label class="field-label">Validade <span class="field-hint">(dias)</span></label>
-      <input type="number" id="f-validity" class="field-input" min="1" max="365" value="10" oninput="validityDays=Math.max(1,parseInt(this.value)||10); debouncedUpdate()">
+      <input type="number" id="f-validity" class="field-input" min="1" max="365" value="30" oninput="validityDays=Math.max(1,parseInt(this.value)||30); debouncedUpdate()">
     </div>
     <div class="field-group">
       <label class="field-label">Assinatura digitalizada <span class="field-hint">(por assessor)</span></label>
@@ -2117,7 +2117,7 @@ var FGC_CONFIG = {
           "Entrega da versão final em formato digital e físico, acompanhada de orientações formais sobre assinatura e guarda do documento",
           "Quaisquer despesas incorridas no âmbito deste trabalho serão reembolsadas imediatamente."
         ],
-        note: "A assinatura do Testamento deverá ocorrer no país de residência fiscal do testador, seguindo as formalidades locais.\nNão há registro público obrigatório nas BVI, mas recomenda-se informar os executores sobre o local de guarda do documento original.\nAdd-on opcional: Affidavit of Witness — USD 1.000,00 adicional. Recomendamos que as testemunhas assinem o Affidavit of Witness com antecedência, documento obrigatório para fins de probate.\nOs honorários profissionais são estimados inicialmente em USD 5.500,00. Caso as premissas iniciais sejam alteradas ou haja necessidade de incluir disposições específicas e/ou mecanismos de sucessão adicionais, os honorários serão revisados e discutidos oportunamente."
+        note: "A assinatura do Testamento deverá ocorrer no país de residência fiscal do testador, seguindo as formalidades locais.\nNão há registro público obrigatório nas BVI, mas recomenda-se informar os executores sobre o local de guarda do documento original.\nAdd-on opcional: Affidavit of Witness: USD 1.000,00 adicional. Recomendamos que as testemunhas assinem o Affidavit of Witness com antecedência, documento obrigatório para fins de probate.\nOs honorários profissionais são estimados inicialmente em USD 5.500,00. Caso as premissas iniciais sejam alteradas ou haja necessidade de incluir disposições específicas e/ou mecanismos de sucessão adicionais, os honorários serão revisados e discutidos oportunamente."
       },
       apostila: {
         title: "Notarização e Apostilamento",
@@ -2733,7 +2733,7 @@ var FGC_CONFIG = {
           "Entrega de la versión final en formato digital y físico, acompañada de orientaciones formales sobre firma y custodia del documento",
           "Cualquier gasto incurrido en relación con este asunto será reembolsado de inmediato."
         ],
-        note: "La firma del Testamento deberá realizarse en el país de residencia fiscal del testador, siguiendo las formalidades locales.\nNo existe registro público obligatorio en BVI, pero se recomienda informar a los ejecutores sobre el lugar de custodia del documento original.\nAdd-on opcional: Affidavit of Witness — USD 1.000,00 adicional. Recomendamos que los testigos ejecuten el Affidavit of Witness con anticipación, documento obligatorio para el proceso de probate.\nLos honorarios profesionales se estiman inicialmente en USD 5.500,00. En caso de que las premisas iniciales se modifiquen o se requiera incluir disposiciones específicas y/o mecanismos de sucesión adicionales, los honorarios serán revisados y discutidos oportunamente."
+        note: "La firma del Testamento deberá realizarse en el país de residencia fiscal del testador, siguiendo las formalidades locales.\nNo existe registro público obligatorio en BVI, pero se recomienda informar a los ejecutores sobre el lugar de custodia del documento original.\nAdd-on opcional: Affidavit of Witness: USD 1.000,00 adicional. Recomendamos que los testigos ejecuten el Affidavit of Witness con anticipación, documento obligatorio para el proceso de probate.\nLos honorarios profesionales se estiman inicialmente en USD 5.500,00. En caso de que las premisas iniciales se modifiquen o se requiera incluir disposiciones específicas y/o mecanismos de sucesión adicionales, los honorarios serán revisados y discutidos oportunamente."
       },
       apostila: {
         title: "Notarización y Apostillado",
@@ -3350,7 +3350,7 @@ var FGC_CONFIG = {
           "Delivery of the final version in digital and physical format, accompanied by formal guidance on signing and document custody",
           "Any expenses incurred in connection with this matter shall be reimbursed immediately."
         ],
-        note: "The Will must be signed in the testator's country of tax residence, following local formalities.\nThere is no mandatory public registration in BVI, but it is recommended to inform executors of the original document's custody location.\nOptional add-on: Affidavit of Witness — additional USD 1,000.00. We recommend that witnesses execute an Affidavit of Witness in advance, which is a mandatory document required for probate purposes.\nProfessional fees are initially estimated at USD 5,500.00. Should the initial assumptions change or should there be an intention to include specific provisions and/or additional succession mechanisms, fees will be revised and discussed in due course."
+        note: "The Will must be signed in the testator's country of tax residence, following local formalities.\nThere is no mandatory public registration in BVI, but it is recommended to inform executors of the original document's custody location.\nOptional add-on: Affidavit of Witness: additional USD 1,000.00. We recommend that witnesses execute an Affidavit of Witness in advance, which is a mandatory document required for probate purposes.\nProfessional fees are initially estimated at USD 5,500.00. Should the initial assumptions change or should there be an intention to include specific provisions and/or additional succession mechanisms, fees will be revised and discussed in due course."
       },
       apostila: {
         title: "Notarization & Apostille",
@@ -5317,19 +5317,19 @@ let customDissolutions = [{ label: '', price: '', qty: 1, scope: '', hasScope: f
 let coverSubject       = '';
 let refCode            = '';
 let refCodeAuto        = true;
-let validityDays       = 10;
+let validityDays       = 30;
 let openingNote        = '';   // overrides the auto-generated opening when non-empty
 let understanding      = { what: '', objective: '', scope: '', recommendation: '' };
 let requiredDocsIntro  = '';
 // Bump whenever the generated document structure changes. loadDraft replays a
 // draft's stored HTML only when it was produced by this same format.
-const DOC_FORMAT = 3;
+const DOC_FORMAT = 4;
 
 // ── Build stamp ──────────────────────────────────────────────────────
 // Shown in the sidebar so the running build is always identifiable, and
 // compared against the deployed file so a stale cached copy announces
 // itself instead of silently showing an old proposal format.
-const BUILD = '2026-09-21-a';
+const BUILD = 'v2-2026-09-23-a';
 
 function showUpdateBanner() {
   if (document.getElementById('update-banner')) return;
@@ -5519,9 +5519,9 @@ const FGC_DEFAULTS = {
     conditions: 'Validade desta proposta: {VALIDADE} dias a partir da data de emissão.\nPremissas: legislação vigente, jurisdição de constituição e dados fornecidos pelo cliente nesta data.\nA contratação formaliza-se por contrato de prestação de serviços específico.',
     nextSteps: 'Alinhamento final de escopo e condições.\nAssinatura do aceite.\nInício dos trabalhos.',
     requiredDocs: [
-      { doc: 'Passaporte', desc: 'Cópia digitalizada do passaporte válido.', who: '⟦sócio / diretor (ou preencha A/C acima)⟧' },
-      { doc: 'Comprovante de residência', desc: 'Cópia digitalizada, emitido nos últimos 3 meses.', who: '⟦sócio / diretor (ou preencha A/C acima)⟧' },
-      { doc: 'Questionário de compliance (KYC individual)', desc: 'Formulário preenchido e assinado.', who: '⟦sócio / diretor (ou preencha A/C acima)⟧' },
+      { doc: 'Passaporte', desc: 'Cópia digitalizada do passaporte válido.', who: 'Cada acionista e diretor' },
+      { doc: 'Comprovante de residência', desc: 'Cópia digitalizada, emitido nos últimos 3 meses.', who: 'Cada acionista e diretor' },
+      { doc: 'Questionário de compliance (KYC individual)', desc: 'Formulário preenchido e assinado.', who: 'Cada acionista e diretor' },
       { doc: 'Formulários KYC', desc: 'Estrutura societária, objetivo, dados bancários e serviços selecionados.', who: 'Sociedade' },
     ],
   },
@@ -5535,7 +5535,7 @@ const FGC_DEFAULTS = {
       'Queda la invitación para conducir este proceso con la agilidad y el cuidado que la continuidad de su estructura exige.\n' +
       'Agradecemos desde ya esta oportunidad.',
     undWhat:
-      'La ⟦Nombre del cliente⟧ se encuentra ⟦situación actual⟧ ante el ⟦órgano competente⟧ de ⟦jurisdicción⟧ desde ⟦desde quando⟧. Esto significa que ⟦qué implica ese estado en la práctica⟧.\n' +
+      'La ⟦Nombre del cliente⟧ se encuentra ⟦situación actual⟧ ante el ⟦órgano competente⟧ de ⟦jurisdicción⟧ desde ⟦desde cuándo⟧. Esto significa que ⟦qué implica ese estado en la práctica⟧.\n' +
       '⟦segundo hecho, si lo hay⟧.',
     undObjective: '⟦Restaurar / Constituir / Transferir⟧ la sociedad ante el ⟦órgano competente⟧, ⟦segunda acción, si la hay⟧ y regularizar ⟦compliance, KYC y las tasas gubernamentales pendientes⟧.',
     undScope:
@@ -5550,9 +5550,9 @@ const FGC_DEFAULTS = {
     conditions: 'Validez de esta propuesta: {VALIDADE} días desde la fecha de emisión.\nPremisas: legislación vigente, jurisdicción de constitución y datos proporcionados por el cliente en esta fecha.\nLa contratación se formaliza mediante contrato de prestación de servicios específico.',
     nextSteps: 'Alineación final de alcance y condiciones.\nFirma de la aceptación.\nInicio de los trabajos.',
     requiredDocs: [
-      { doc: 'Pasaporte', desc: 'Copia digitalizada del pasaporte vigente.', who: '⟦socio / director (o complete A/C arriba)⟧' },
-      { doc: 'Comprobante de domicilio', desc: 'Copia digitalizada, emitido en los últimos 3 meses.', who: '⟦socio / director (o complete A/C arriba)⟧' },
-      { doc: 'Cuestionario de compliance (KYC individual)', desc: 'Formulario completado y firmado.', who: '⟦socio / director (o complete A/C arriba)⟧' },
+      { doc: 'Pasaporte', desc: 'Copia digitalizada del pasaporte vigente.', who: 'Cada accionista y director' },
+      { doc: 'Comprobante de domicilio', desc: 'Copia digitalizada, emitido en los últimos 3 meses.', who: 'Cada accionista y director' },
+      { doc: 'Cuestionario de compliance (KYC individual)', desc: 'Formulario completado y firmado.', who: 'Cada accionista y director' },
       { doc: 'Formularios KYC', desc: 'Estructura societaria, objetivo, datos bancarios y servicios seleccionados.', who: 'Sociedad' },
     ],
   },
@@ -5566,7 +5566,7 @@ const FGC_DEFAULTS = {
       'We would welcome the chance to run this process with the speed and care the continuity of your structure requires.\n' +
       'Thank you in advance for the opportunity.',
     undWhat:
-      '⟦Client name⟧ is currently ⟦current status⟧ with the ⟦competent authority⟧ of ⟦jurisdiction⟧, and has been since ⟦desde quando⟧. This means ⟦what that status implies in practice⟧.\n' +
+      '⟦Client name⟧ is currently ⟦current status⟧ with the ⟦competent authority⟧ of ⟦jurisdiction⟧, and has been since ⟦since when⟧. This means ⟦what that status implies in practice⟧.\n' +
       '⟦second fact, if there is one⟧.',
     undObjective: '⟦Restore / Incorporate / Transfer⟧ the company with the ⟦competent authority⟧, ⟦second action, if any⟧, and bring ⟦compliance, KYC and outstanding government fees⟧ back into good standing.',
     undScope:
@@ -5581,9 +5581,9 @@ const FGC_DEFAULTS = {
     conditions: 'Validity of this proposal: {VALIDADE} days from the date of issuance.\nAssumptions: current legislation, jurisdiction of incorporation, and the data provided by the client as of this date.\nEngagement is formalised through a specific services agreement.',
     nextSteps: 'Final alignment of scope and conditions.\nSignature of the acceptance.\nWork begins.',
     requiredDocs: [
-      { doc: 'Passport', desc: 'Scanned copy of a valid passport.', who: '⟦shareholder / director (or fill A/C above)⟧' },
-      { doc: 'Proof of address', desc: 'Scanned copy, issued within the last 3 months.', who: '⟦shareholder / director (or fill A/C above)⟧' },
-      { doc: 'Compliance questionnaire (individual KYC)', desc: 'Form completed and signed.', who: '⟦shareholder / director (or fill A/C above)⟧' },
+      { doc: 'Passport', desc: 'Scanned copy of a valid passport.', who: 'Each shareholder and director' },
+      { doc: 'Proof of address', desc: 'Scanned copy, issued within the last 3 months.', who: 'Each shareholder and director' },
+      { doc: 'Compliance questionnaire (individual KYC)', desc: 'Form completed and signed.', who: 'Each shareholder and director' },
       { doc: 'KYC forms', desc: 'Corporate structure, purpose, banking details and selected services.', who: 'Company' },
     ],
   },
@@ -5694,11 +5694,11 @@ function setSituation(id) {
     // One click answers both halves of the sentence
     tokenValues['situação atual'] = sit.status;
     tokenValues['o que esse status implica na prática'] = sit.implies;
-    if (!sit.dated) delete tokenValues['desde quando'];
+    if (!sit.dated) { delete tokenValues['desde quando']; delete tokenValues['desde cuándo']; delete tokenValues['since when']; }
   } else {
     delete tokenValues['situação atual'];
     delete tokenValues['o que esse status implica na prática'];
-    delete tokenValues['desde quando'];
+    delete tokenValues['desde quando']; delete tokenValues['desde cuándo']; delete tokenValues['since when'];
   }
   // Mark the paragraph as untouched so the generator rewrites it in the shape
   // this situation needs. Setting it to '' would read as "advisor wrote this".
@@ -5821,10 +5821,23 @@ function currentJurisdiction() {
   const all = currentJurisdictions();
   return all.length === 1 ? all[0] : null;
 }
+// The pt prepositions live on the jurisdiction itself; es/en need their own,
+// otherwise the Spanish and English letters printed "de BVI" / "of BVI".
+const JUR_LONG = {
+  es: { 'BVI': 'las Islas Vírgenes Británicas', 'Bahamas': 'las Bahamas', 'Flórida': 'Florida', 'Nova York': 'Nueva York' },
+  en: { 'BVI': 'the British Virgin Islands', 'Bahamas': 'the Bahamas', 'Flórida': 'Florida', 'Nova York': 'New York' },
+};
+function jurPhrase(j, key) {
+  if (lang === 'pt') return key === 'in' ? j.inName : (key === 'of' ? j.ofName : j.name);
+  const long = (JUR_LONG[lang] || {})[j.name] || j.name;
+  if (key === 'in') return { es: 'en ', en: 'in ' }[lang] + long;
+  if (key === 'of') return { es: 'de ', en: 'of ' }[lang] + long;
+  return j.name;
+}
 // "nas Bahamas, em Cayman e na Flórida"
 function joinJurisdictions(list, key) {
   const and = { pt: ' e ', es: ' y ', en: ' and ' }[lang];
-  const parts = list.map(j => key === 'in' ? j.inName : (key === 'of' ? j.ofName : j.name));
+  const parts = list.map(j => jurPhrase(j, key));
   if (parts.length <= 1) return parts[0] || '';
   return parts.slice(0, -1).join(', ') + and + parts[parts.length - 1];
 }
@@ -5989,7 +6002,7 @@ function applyCoverState(src) {
   coverSubject      = d.coverSubject || '';
   refCode           = d.refCode || '';
   refCodeAuto       = d.refCodeAuto !== false;
-  validityDays      = Number(d.validityDays) > 0 ? Number(d.validityDays) : 10;
+  validityDays      = Number(d.validityDays) > 0 ? Number(d.validityDays) : 30;
   openingNote       = d.openingNote || '';
   oneOffTitle       = d.oneOffTitle || '';
   nextSteps         = d.nextSteps || '';
@@ -7536,7 +7549,7 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
   // Prior-year FS (PIC entities; allow for US-only too when user selects it)
   if (state.fsAnterior) {
     const q = getQty('fsAnterior');
-    secAcctItems.push({ key:'fsAnterior', label: (q>1?q+'x ':'')+{ pt: 'Financial Statements (Demonstrações Financeiras), Anos Anteriores', es: 'Financial Statements (Estados Financieros), Años Anteriores', en: 'Financial Statements – Prior Years' }[lang], amount: getPrice('fsAnterior', FGC_CONFIG.services.fsAnterior.price)*q, pay: L.payOnAcceptance, group: hasPICEntity ? 'pic' : 'us', qty:q });
+    secAcctItems.push({ key:'fsAnterior', label: (q>1?q+'x ':'')+{ pt: 'Financial Statements (Demonstrações Financeiras), Anos Anteriores', es: 'Financial Statements (Estados Financieros), Años Anteriores', en: 'Financial Statements (Prior Years)' }[lang], amount: getPrice('fsAnterior', FGC_CONFIG.services.fsAnterior.price)*q, pay: L.payOnAcceptance, group: hasPICEntity ? 'pic' : 'us', qty:q });
     // For BVI entities: also show AFR row for prior-year FS
     if (hasBVIEntity) {
       secAcctItems.push({ key:'fsAnteriorAfr', label: (q>1?q+'x ':'')+{ pt: 'Annual Financial Return (AFR) (Anos Anteriores)', es: 'Annual Financial Return (AFR) (Años Anteriores)', en: 'Annual Financial Return (AFR) (Prior Years)' }[lang], amount: null, pay: L.payOnAcceptance, shareRef: true, group:'pic' });
@@ -7545,7 +7558,7 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
   // Prior-year TR (US entities only)
   if (state.trAnterior) {
     const q = getQty('trAnterior');
-    secAcctItems.push({ key:'trAnterior', label: (q>1?q+'x ':'')+{ pt: 'Tax Return (Declaração de Imposto de Renda), Anos Anteriores', es: 'Tax Return (Declaración de Impuesto a la Renta), Años Anteriores', en: 'Tax Return – Prior Years' }[lang], amount: getPrice('trAnterior', FGC_CONFIG.services.trAnterior.price)*q, pay: L.payOnAcceptance, group:'us', qty:q });
+    secAcctItems.push({ key:'trAnterior', label: (q>1?q+'x ':'')+{ pt: 'Tax Return (Declaração de Imposto de Renda), Anos Anteriores', es: 'Tax Return (Declaración de Impuesto a la Renta), Años Anteriores', en: 'Tax Return (Prior Years)' }[lang], amount: getPrice('trAnterior', FGC_CONFIG.services.trAnterior.price)*q, pay: L.payOnAcceptance, group:'us', qty:q });
   }
   // Custom accounting/fiscal services
   if (state.customAccounting) {
@@ -7561,13 +7574,13 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
   }
   // Transfer prior-year services (declared here, after secAcctItems exists)
   if (state.transFS) {
-    secAcctItems.push({ key:'priorFS', label: { pt: 'Financial Statements (Demonstrações Financeiras), Anos Anteriores', es: 'Financial Statements (Estados Financieros), Años Anteriores', en: 'Financial Statements – Prior Years' }[lang], amount: getPrice('transFS', FGC_CONFIG.services.transFS.price), pay: L.payOnAcceptance, group:'pic' });
+    secAcctItems.push({ key:'priorFS', label: { pt: 'Financial Statements (Demonstrações Financeiras), Anos Anteriores', es: 'Financial Statements (Estados Financieros), Años Anteriores', en: 'Financial Statements (Prior Years)' }[lang], amount: getPrice('transFS', FGC_CONFIG.services.transFS.price), pay: L.payOnAcceptance, group:'pic' });
     if (hasBVIEntity) {
       secAcctItems.push({ key:'priorFSAfr', label: { pt: 'Annual Financial Return (AFR) (Anos Anteriores)', es: 'Annual Financial Return (AFR) (Años Anteriores)', en: 'Annual Financial Return (AFR) (Prior Years)' }[lang], amount: null, pay: L.payOnAcceptance, shareRef: true, group:'pic' });
     }
   }
   if (state.transTR)
-    secAcctItems.push({ key:'priorTR', label: { pt: 'Tax Return (Declaração de Imposto de Renda), Anos Anteriores', es: 'Tax Return (Declaración de Impuesto a la Renta), Años Anteriores', en: 'Tax Return – Prior Years' }[lang], amount: getPrice('transTR', FGC_CONFIG.services.transTR.price), pay: L.payOnAcceptance, group:'us' });
+    secAcctItems.push({ key:'priorTR', label: { pt: 'Tax Return (Declaração de Imposto de Renda), Anos Anteriores', es: 'Tax Return (Declaración de Impuesto a la Renta), Años Anteriores', en: 'Tax Return (Prior Years)' }[lang], amount: getPrice('transTR', FGC_CONFIG.services.transTR.price), pay: L.payOnAcceptance, group:'us' });
 
   // Section III (dissolution / standalone)
   let sec3Items = [];
@@ -7628,7 +7641,10 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
       ? { pt: 'Constituição e Transferência', es: 'Constitución y Transferencia', en: 'Formation & Transfer' }[lang]
       : hasFormation
         ? { pt: 'Constituição', es: 'Constitución', en: 'Formation' }[lang]
-        : { pt: 'Transferência', es: 'Transferencia', en: 'Transfer' }[lang];
+        : hasTransfer
+          ? { pt: 'Transferência', es: 'Transferencia', en: 'Transfer' }[lang]
+          // Only notarization left in this group: it was being titled "Transferência"
+          : { pt: 'Notarização e Apostilamento', es: 'Notarización y Apostillado', en: 'Notarization & Apostille' }[lang];
     sec1Items.forEach((it) => { it.num = `${++feeItemSub}`; });
   }
 
@@ -7670,12 +7686,16 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
   // Scope = II, Not Included = III, T&C = IV
   const secTermsNum = 2;
   const secTermsTitle = L.secTermsLabel;
+  // Contábil e Fiscal is recurring, so it sits with Manutenção anual in Seção 03
+  // (as it did in the previous version, Meire's feedback). Only a proposal with
+  // no maintenance keeps it in the one-off section.
+  const acctInMaint = secMaintItems.length > 0 && secAcctItems.length > 0;
   const hasOneOffFees = sec1Items.length > 0 || secSuccItems.length > 0
-                     || secAcctItems.length > 0 || sec3Items.length > 0;
+                     || (secAcctItems.length > 0 && !acctInMaint) || sec3Items.length > 0;
   const _oneOffCandidates = [
     hasSec1Content         ? sec1SubLabel     : '',
     secSuccItems.length    ? secSuccSubLabel  : '',
-    secAcctItems.length    ? secAcctSubLabel  : '',
+    (secAcctItems.length && !acctInMaint) ? secAcctSubLabel : '',
     sec3Items.length       ? sec3SubLabel     : '',
   ].filter(Boolean);
   const oneOffSecTitle = (oneOffTitle || '').trim() || _oneOffCandidates[0] || feeSecTitle;
@@ -7902,14 +7922,15 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
     es: 'Gestión de plazos críticos, con alertas proactivas para prevenir multas o penalidades',
     en: 'Management of critical deadlines, with proactive alerts to prevent fines or penalties',
   };
-  // Accounting terms
-  buildTermsForItems(secAcctItems, { partnerKey: 'tr' });
+  // Accounting terms (here only when they render in the one-off section)
+  if (!acctInMaint) buildTermsForItems(secAcctItems, { partnerKey: 'tr' });
   // Sec III terms
   buildTermsForItems(sec3Items);
   // Maintenance is built last because it renders last, under Seção 03 — item
   // numbers are assigned here, so build order has to match document order.
   const _termsMarkA = termsHTML.length;
   buildTermsForItems(secMaintItems, state.will ? { extraBullet: { key: 'bviMaint', text: willMaintExtra[lang] } } : null);
+  if (acctInMaint) buildTermsForItems(secAcctItems, { partnerKey: 'tr' });
   function collapseSingleScopeHeading(html) {
     const count = (html.match(/class="terms-section-heading/g) || []).length;
     if (count !== 1) return html;   // keep headings when they tell services apart
@@ -8280,9 +8301,18 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
     // Only a named person gets a first-name salutation. Falling back to the
     // company's first word produced "Prezado Fabiana," from the Sociedade field.
     const person = (careOf || '').trim();
-    const firstName = person ? person.split(' ')[0] : '';
+    const words = person.split(/\s+/).filter(Boolean);
+    // "Dr. Leone" is a title plus a surname: greet with both ("Prezado Dr. Leone,"),
+    // and let the title set the gender. Taking only the first word printed "Prezado(a) Dr.,".
+    const TITLES = { 'dr': 'M', 'dr.': 'M', 'dra': 'F', 'dra.': 'F', 'sr': 'M', 'sr.': 'M', 'sra': 'F', 'sra.': 'F',
+                     'mr': 'M', 'mr.': 'M', 'mrs': 'F', 'mrs.': 'F', 'ms': 'F', 'ms.': 'F' };
+    const titleGender = words.length > 1 ? TITLES[words[0].toLowerCase()] : undefined;
+    const firstName = titleGender ? words[0] + ' ' + words[1] : (words[0] || '');
+    const salWord = (titleGender && gender !== 'M' && gender !== 'F')
+      ? (titleGender === 'M' ? T[lang].salutationM : T[lang].salutationF)
+      : getSalutation();
     const greeting = firstName
-      ? getSalutation() + ' ' + firstName + ','
+      ? salWord + ' ' + firstName + ','
       : { pt: 'Prezados,', es: 'Estimados,', en: 'Dear Sirs,' }[lang];
     // A few group labels are adjectival ("Contábil e Fiscal") and don't take an
     // article cleanly — they get a proper noun phrase instead.
@@ -8305,17 +8335,26 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
       return /(ção|ncia|a)$/.test(head) ? 'a ' : 'o ';
     };
     const headline = (_oneOffCandidates[0] || '').toLowerCase();
-    const ofWord = { pt: ' da ', es: ' de ', en: ' for ' }[lang];
+    const ofWord = { pt: ' da ', es: ' de ', en: ' of ' }[lang];
     const atWord = { pt: ' junto ao ', es: ' ante el ', en: ' with the ' }[lang];
     // Short form for "Mais do que ⟦o trabalho⟧ pontual"
     const workSummary = headline ? phrase(headline) : '';
     // Long form, mirroring Fabiana: "a transferência da S&W junto ao Registrar of Companies de Cayman"
     const jurTail = jur
-      ? atWord + jur.registry + ' ' + (lang === 'pt' ? jur.ofName : { es: 'de ', en: 'of ' }[lang] + jur.name)
+      ? atWord + jur.registry + ' ' + jurPhrase(jur, 'of')
       : (jurs.length > 1 ? ' ' + jurIn : '');
-    const workFull = headline
-      ? phrase(headline) + (client ? ofWord + client : '') + jurTail
-      : '';
+    // Formation: the company doesn't exist yet, so the client is who it's for
+    // ("a constituição de uma sociedade para Joao Maria"), not whose it is
+    // ("a constituição da Joao Maria" read as if the person were being formed).
+    // Notarization has no entity or registry at all.
+    const forWord = { pt: ' para ', es: ' para ', en: ' for ' }[lang];
+    const entityCount = sec1Items.filter(it => it.key !== 'apostila').reduce((n, it) => n + (it.qty || 1), 0);
+    const workFull = !headline ? ''
+      : isNotarizationOnly
+        ? { pt: 'a notarização e o apostilamento de documentos', es: 'la notarización y el apostillado de documentos', en: 'the notarization and apostille of documents' }[lang] + (client ? forWord + client : '')
+      : /constitu|formation/.test(headline) && !/transfer/.test(headline)
+        ? phrase(headline) + { pt: ' de ' + (entityCount > 1 ? 'sociedades' : 'uma sociedade'), es: ' de ' + (entityCount > 1 ? 'sociedades' : 'una sociedad'), en: ' of ' + (entityCount > 1 ? 'companies' : 'a company') }[lang] + (client ? forWord + client : '') + jurTail
+        : phrase(headline) + (client ? ofWord + client : '') + jurTail;
     const andWord = { pt: ' e ', es: ' y ', en: ' and ' }[lang];
     const others = [].concat(
       hasSec1Content      ? [sec1SubLabel]    : [],
@@ -8335,9 +8374,11 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
       'nome da sociedade': client, 'nombre de la sociedad': client, 'company name': client,
       'nome': firstName, 'nombre': firstName, 'name': firstName,
       'saudação': greeting, 'saludo': greeting, 'greeting': greeting,
-      'sócio / diretor (ou preencha a/c acima)': careOf,
-      'socio / director (o complete a/c arriba)': careOf,
-      'shareholder / director (or fill a/c above)': careOf,
+      // Drafts saved with the old token: the A/C contact is who the letter is
+      // addressed to, not necessarily every shareholder and director.
+      'sócio / diretor (ou preencha a/c acima)': 'Cada acionista e diretor',
+      'socio / director (o complete a/c arriba)': 'Cada accionista y director',
+      'shareholder / director (or fill a/c above)': 'Each shareholder and director',
       // jurisdiction
       'jurisdição': jurNames, 'jurisdicción': jurNames, 'jurisdiction': jurNames,
       'órgão competente': registries, 'órgano competente': registries,
@@ -8367,10 +8408,12 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
     const jurIn = joinJurisdictions(jurs, 'in');
     const headline = (_oneOffCandidates[0] || '').toLowerCase();
     const cap = t => t ? t.charAt(0).toUpperCase() + t.slice(1) : '';
+    // A formation or transfer in the proposal: the entity-level objective applies
+    const hasFeeEntity = hasFormation || hasTransfer;
     const verb = (function () {
       if (/constitu/.test(headline)) return { pt: 'Constituir', es: 'Constituir', en: 'Incorporate' }[lang];
       if (/transfer/.test(headline)) return { pt: 'Transferir', es: 'Transferir', en: 'Transfer' }[lang];
-      if (/dissol/.test(headline))   return { pt: 'Dissolver',  es: 'Disolver',   en: 'Dissolve' }[lang];
+      // Dissolution has its own objective below: "regularizar compliance" made no sense for it
       return '';
     })();
 
@@ -8389,51 +8432,142 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
 
     // Renewal date is already a config constant used by the fee table
     const renewal = String(L.payJanuary || '').replace(/\s*\(.*\)\s*$/, '').trim();
-    const firstYear = (new Date(dateStr.length ? Date.now() : Date.now())).getFullYear() + 1;
+    // Month names are lower-case mid-sentence in pt/es ("10 de janeiro")
+    const renewalInText = lang === 'en' ? renewal : renewal.toLowerCase();
+    // First renewal is the January after the proposal date, so a proposal dated
+    // 2027 says 2028 on its own (Meire asked whether it would).
+    const firstYear = (rawDate ? new Date(rawDate + 'T12:00:00') : new Date()).getFullYear() + 1;
 
-    const sit = currentSituation();
+    // A formation with no situation picked is a company that doesn't exist yet
+    const sit = currentSituation() || (hasFormation && !hasTransfer ? situations().find(x => x.newco) : null);
+    const jurOf = jur ? jur.ofName : '';
+    const workFull = _autoTokens['o trabalho contratado'] || '';
+    const workShort = _autoTokens['o trabalho'] || '';
+    const others = _autoTokens['as frentes envolvidas'] || '';
     const whatText = (function () {
+      if (isNotarizationOnly) {
+        return { pt: '⟦Nome do cliente⟧ precisa notarizar e apostilar ⟦quais documentos⟧ para uso em ⟦país de destino e finalidade⟧.',
+                 es: '⟦Nombre del cliente⟧ necesita notarizar y apostillar ⟦qué documentos⟧ para su uso en ⟦país de destino y finalidad⟧.',
+                 en: '⟦Client name⟧ needs ⟦which documents⟧ notarized and apostilled for use in ⟦destination country and purpose⟧.' }[lang];
+      }
       if (sit && sit.newco) {
-        // Nothing exists yet, so the paragraph is about intent, not standing
-        return { pt: 'A ⟦Nome do cliente⟧ pretende constituir a estrutura descrita nesta proposta' + (jurIn ? ' ' + jurIn : '') + '. ⟦Contexto do cliente e objetivo da estrutura⟧.',
-                 es: 'La ⟦Nombre del cliente⟧ pretende constituir la estructura descrita en esta propuesta' + (jurIn ? ' ' + jurIn : '') + '. ⟦Contexto del cliente y objetivo de la estructura⟧.',
+        // Nothing exists yet, so the paragraph is about intent, not standing.
+        // No article: the client here is usually a person ("Joao Maria pretende").
+        return { pt: '⟦Nome do cliente⟧ pretende constituir a estrutura descrita nesta proposta' + (jurIn ? ' ' + jurIn : '') + '. ⟦Contexto do cliente e objetivo da estrutura⟧.',
+                 es: '⟦Nombre del cliente⟧ pretende constituir la estructura descrita en esta propuesta' + (jurIn ? ' ' + jurIn : '') + '. ⟦Contexto del cliente y objetivo de la estructura⟧.',
                  en: '⟦Client name⟧ intends to incorporate the structure described in this proposal' + (jurIn ? ' ' + jurIn : '') + '. ⟦Client context and purpose of the structure⟧.' }[lang];
       }
       const dated = !sit || sit.dated;
-      return { pt: 'A ⟦Nome do cliente⟧ encontra-se ⟦situação atual⟧ junto ao ⟦órgão competente⟧ de ⟦jurisdição⟧' + (dated ? ' desde ⟦desde quando⟧' : '') + '. Isso significa que ⟦o que esse status implica na prática⟧.',
-               es: 'La ⟦Nombre del cliente⟧ se encuentra ⟦situación actual⟧ ante el ⟦órgano competente⟧ de ⟦jurisdicción⟧' + (dated ? ' desde ⟦desde quando⟧' : '') + '. Esto significa que ⟦qué implica ese estado en la práctica⟧.',
-               en: '⟦Client name⟧ is currently ⟦current status⟧ with the ⟦competent authority⟧ of ⟦jurisdiction⟧' + (dated ? ', and has been since ⟦desde quando⟧' : '') + '. This means ⟦what that status implies in practice⟧.' }[lang];
+      return { pt: 'A ⟦Nome do cliente⟧ encontra-se ⟦situação atual⟧ junto ao ⟦órgão competente⟧ ' + (jurOf || 'de ⟦jurisdição⟧') + (dated ? ' desde ⟦desde quando⟧' : '') + '. Isso significa que ⟦o que esse status implica na prática⟧.',
+               es: 'La ⟦Nombre del cliente⟧ se encuentra ⟦situación actual⟧ ante el ⟦órgano competente⟧ de ⟦jurisdicción⟧' + (dated ? ' desde ⟦desde cuándo⟧' : '') + '. Esto significa que ⟦qué implica ese estado en la práctica⟧.',
+               en: '⟦Client name⟧ is currently ⟦current status⟧ with the ⟦competent authority⟧ of ⟦jurisdiction⟧' + (dated ? ', and has been since ⟦since when⟧' : '') + '. This means ⟦what that status implies in practice⟧.' }[lang];
     })();
 
     const auto = {
       'f-und-what': whatText,
-      'f-subject': client
-        ? { pt: 'Proposta, ', es: 'Propuesta, ', en: 'Proposal, ' }[lang] + client
+      // The client's name already sits under "Preparado para"; the title says
+      // what the proposal is for (Meire: "Proposta, Joao Maria" read as wrong).
+      'f-subject': headline
+        ? ({ 'contábil e fiscal': 'Serviços contábeis e fiscais', 'contable y fiscal': 'Servicios contables y fiscales', 'accounting & tax': 'Accounting and tax services' }[headline] || cap(headline))
+          // "Transferência em Cayman" read oddly; "Transferência de sociedade em Cayman" doesn't
+          + (lang === 'pt' && jurIn && /^(constitui|transfer)/.test(headline) && !/ e /.test(headline) ? (sec1Items.filter(it => it.key !== 'apostila').reduce((n, it) => n + (it.qty || 1), 0) > 1 ? ' de sociedades' : ' de sociedade') : '')
+          + (jurIn ? ' ' + jurIn : '')
+        : '',
+      'f-opening': workFull ? ({
+        pt: '⟦saudação⟧\n' +
+            'Esta proposta apresenta o escopo, os documentos necessários e os honorários estimados para ' + workFull + (others ? ', incluindo ' + others : '') + '.\n' +
+            'Nas próximas seções: o escopo do trabalho, o investimento' + (secMaintItems.length ? ' (one-off e anual)' : '') + ' e a documentação necessária para dar início ao processo.\n' +
+            (secMaintItems.length ? 'Mais do que ' + workShort + ' pontual, a FGC permanece à frente da manutenção anual da sociedade como único ponto de contato e de forma a assegurar que todas as obrigações sejam cumpridas.\n' : '') +
+            'Fica um convite para conduzirmos esse processo com a agilidade e o cuidado que ' + (jurIn && !isNotarizationOnly ? 'a continuidade da sua estrutura ' + jurIn + ' exige' : 'ele exige') + '.\n' +
+            'Agradecemos desde já essa oportunidade.',
+        es: '⟦saudação⟧\n' +
+            'Esta propuesta presenta el alcance, los documentos necesarios y los honorarios estimados para ' + workFull + (others ? ', incluyendo ' + others : '') + '.\n' +
+            'En las próximas secciones: el alcance del trabajo, la inversión y la documentación necesaria para iniciar el proceso.\n' +
+            (secMaintItems.length ? 'Más allá del trabajo puntual, FGC permanece al frente del mantenimiento anual de la estructura como único punto de contacto, de modo que todas las obligaciones se cumplan.\n' : '') +
+            'Queda la invitación para conducir este proceso con la agilidad y el cuidado que ' + (secMaintItems.length ? 'la continuidad de su estructura exige' : 'requiere') + '.\n' +
+            'Agradecemos desde ya esta oportunidad.',
+        en: '⟦saudação⟧\n' +
+            'This proposal sets out the scope, the required documents and the estimated fees for ' + workFull + (others ? ', including ' + others : '') + '.\n' +
+            'In the sections that follow: the scope of work, the investment, and the documentation needed to begin.\n' +
+            (secMaintItems.length ? 'Beyond the one-off work, FGC stays ahead of the annual maintenance of the structure as your single point of contact, so that every obligation is met on time.\n' : '') +
+            'We would welcome the chance to run this process with the speed and care ' + (secMaintItems.length ? 'the continuity of your structure requires' : 'it requires') + '.\n' +
+            'Thank you in advance for the opportunity.',
+      }[lang]) : '',
+      // "em BVI" read as a label; use the jurisdiction's own preposition
+      'f-sec3intro': (lang === 'pt' && jurIn)
+        ? 'A manutenção da sociedade é apresentada como um valor anual único, que reúne todas as obrigações recorrentes ' + jurIn + ' sob uma só relação.'
+        : '',
+      // Succession planning only follows a formation or transfer, and not when a Will is already in the proposal
+      'f-und-rec': workShort && hasFeeEntity && !state.will
+        ? { pt: 'Após ' + workShort + ', sugerimos ⟦uma análise de planejamento sucessório⟧ da estrutura' + (jurIn ? ' ' + jurIn : '') + '.',
+            es: 'Tras ' + workShort + ', sugerimos ⟦un análisis de planificación sucesoria⟧ de la estructura.',
+            en: 'Once ' + workShort + ' is complete, we suggest ⟦a succession planning review⟧ of the structure.' }[lang]
         : '',
       'f-und-obj': (verb && jurs.length)
         ? verb + (jurs.length > 1
             ? { pt: ' as sociedades ', es: ' las sociedades ', en: ' the companies ' }[lang] + jurIn
-            : { pt: ' a sociedade junto ao ', es: ' la sociedad ante el ', en: ' the company with the ' }[lang] + jur.registry) +
-          { pt: ' e regularizar as obrigações de compliance e KYC.', es: ' y regularizar las obligaciones de compliance y KYC.', en: ', and bring compliance and KYC obligations into good standing.' }[lang]
-        : '',
+            : { pt: ' a sociedade junto ao ', es: ' la sociedad ante el ', en: ' the company with the ' }[lang] + jur.registry + (lang === 'pt' ? ' ' + jur.ofName : '')) +
+          (/constitu|formation/.test(headline) && !/transfer/.test(headline)
+            // A new company has nothing to "regularizar"
+            ? { pt: ', já em conformidade com as obrigações de compliance e KYC.', es: ', ya en conformidad con las obligaciones de compliance y KYC.', en: ', compliant with its compliance and KYC obligations from day one.' }[lang]
+            : { pt: ' e regularizar as obrigações de compliance e KYC.', es: ' y regularizar las obligaciones de compliance y KYC.', en: ', and bring compliance and KYC obligations into good standing.' }[lang])
+        : (isDissolutionOnly && jurs.length)
+          ? { pt: 'Encerrar formalmente a sociedade junto ao ' + (jur ? jur.registry + ' ' + jur.ofName : 'órgão competente de cada jurisdição') + ', sem pendências de taxas ou obrigações em aberto.',
+              es: 'Cerrar formalmente la sociedad ante el ' + (jur ? jur.registry + ' ' + jurPhrase(jur, 'of') : 'órgano competente de cada jurisdicción') + ', sin tasas ni obligaciones pendientes.',
+              en: 'Formally close the company with the ' + (jur ? jur.registry + ' ' + jurPhrase(jur, 'of') : 'competent authority in each jurisdiction') + ', with no outstanding fees or obligations.' }[lang]
+        : (hasAccounting && !hasFeeEntity)
+          ? { pt: 'Manter a contabilidade da sociedade em dia e cumprir as obrigações contábeis e fiscais anuais dentro dos prazos.',
+              es: 'Mantener la contabilidad de la sociedad al día y cumplir las obligaciones contables y fiscales anuales en plazo.',
+              en: 'Keep the company\'s accounts up to date and meet its annual accounting and tax obligations on time.' }[lang]
+        : (hasReestru && !hasFeeEntity)
+          ? { pt: 'Reestruturar a sociedade conforme ⟦alteração proposta⟧, com a documentação societária necessária para a implementação.',
+              es: 'Reestructurar la sociedad conforme a ⟦cambio propuesto⟧, con la documentación societaria necesaria para su implementación.',
+              en: 'Restructure the company as ⟦proposed change⟧, with the corporate documentation needed to implement it.' }[lang]
+        : isNotarizationOnly
+          ? { pt: 'Notarizar e apostilar os documentos indicados, prontos para uso em ⟦país de destino⟧.', es: 'Notarizar y apostillar los documentos indicados, listos para su uso en ⟦país de destino⟧.', en: 'Notarize and apostille the documents listed, ready for use in ⟦destination country⟧.' }[lang]
+          : '',
       'f-und-scope': scopeLines.length ? scopeLines.join('\n') : '',
       'f-vencimento': (secMaintItems.length && renewal)
-        ? { pt: `O vencimento da anuidade se dará sempre no dia ${renewal} de todo ano, sendo a primeira em ${firstYear}. Emitimos as invoices com antecedência, para que haja tempo hábil de pagamento e de cumprimento dos prazos${jur ? ' junto ao ' + jur.registry : ''}.`,
-            es: `El vencimiento de la anualidad será siempre el ${renewal} de cada año, siendo la primera en ${firstYear}. Emitimos las facturas con antelación para que haya tiempo de pago y de cumplimiento de los plazos.`,
+        ? { pt: `O vencimento da anuidade se dará sempre no dia ${renewalInText} de todo ano, sendo a primeira em ${firstYear}. Emitimos as invoices com antecedência, para que haja tempo hábil de pagamento e de cumprimento dos prazos${jur ? ' junto ao ' + jur.registry : ''}.`,
+            es: `El vencimiento de la anualidad será siempre el ${renewalInText} de cada año, siendo la primera en ${firstYear}. Emitimos las facturas con antelación para que haya tiempo de pago y de cumplimiento de los plazos.`,
             en: `The annual fee falls due on ${renewal} each year, the first in ${firstYear}. We issue invoices in advance so there is time to pay and to meet the filing deadlines.` }[lang]
         : '',
-      'f-timeline': (clauseSet.timelines && clauseSet.timelines.items && clauseSet.timelines.items.length)
-        ? clauseSet.timelines.items.join(' ')
-        : '',
+      // Same service-specific sentences as the Prazos clause. The static config
+      // text said "constituição ou transferência" on every proposal, including
+      // notarization-only ones.
+      'f-timeline': timelinesItems.length > 1 ? timelinesItems.join(' ') : '',
     };
 
+    // Standard text from any language counts as untouched too, so drafts saved
+    // before a field became generated still pick up the generated version.
+    const DEFAULT_KEY = { 'f-subject': 'subject', 'f-opening': 'opening', 'f-und-what': 'undWhat',
+      'f-und-obj': 'undObjective', 'f-und-scope': 'undScope', 'f-und-rec': 'undRec', 'f-sec3intro': 'sec3Intro', 'f-vencimento': 'vencimento', 'f-timeline': 'timeline' };
+    const isStock = (id, cur) => {
+      const k = DEFAULT_KEY[id];
+      if (k && Object.keys(FGC_DEFAULTS).some(l => (FGC_DEFAULTS[l][k] || '').trim() === cur)) return true;
+      // The previous build's generated title, "Proposta, <cliente>"
+      return id === 'f-subject' && /^(Proposta|Propuesta|Proposal), /.test(cur) && cur.slice(cur.indexOf(', ') + 2) === client;
+    };
     Object.keys(auto).forEach(id => {
-      if (!auto[id]) return;
       const el = document.getElementById(id);
       if (!el) return;
       const cur = (el.value || '').trim();
-      const untouched = !cur || cur === (_appliedDefaults[id] || '').trim();
+      const wasGenerated = !!cur && cur === (_appliedDefaults[id] || '').trim();
+      const untouched = !cur || wasGenerated || isStock(id, cur);
       if (!untouched) return;            // advisor wrote their own — leave it
+      if (!auto[id]) {
+        // A notarization has no structure to plan succession for: drop the block
+        // Blocks with nothing to say for these services are dropped, not refilled with template blanks
+        if (id === 'f-und-rec' || id === 'f-timeline') { el.value = ''; _appliedDefaults[id] = ''; return; }
+        // Nothing to generate now (e.g. switched from formation to notarization):
+        // drop our old text rather than print "Constituir a sociedade" on the wrong proposal
+        if (wasGenerated) {
+          const k = DEFAULT_KEY[id];
+          el.value = k ? (fgcDefaults()[k] || '') : '';
+          _appliedDefaults[id] = el.value;
+        }
+        return;
+      }
       el.value = auto[id];
       _appliedDefaults[id] = auto[id];
     });
@@ -8441,6 +8575,9 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
     // Re-read so the document renders what the sidebar now shows
     const val = id => (document.getElementById(id) || {}).value || '';
     coverSubject            = val('f-subject');
+    openingNote             = val('f-opening');
+    sec3Intro               = val('f-sec3intro');
+    understanding.recommendation = val('f-und-rec');
     understanding.what      = val('f-und-what');
     understanding.objective = val('f-und-obj');
     understanding.scope     = val('f-und-scope');
@@ -8484,7 +8621,7 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
           ${buildSectionSubtotal(secSuccItems)}
         ` : ''}
 
-        ${secAcctItems.length > 0 ? `
+        ${(secAcctItems.length > 0 && !acctInMaint) ? `
           <div class="doc-section-subheader">${secAcctSubLabel}</div>
           ${secAcctPIC.length > 0 ? macroHeader(L.macroPIC) + buildFeeTable(secAcctPIC) : ''}
           ${secAcctUS.length > 0  ? macroHeader(L.macroUS)  + buildFeeTable(secAcctUS)  : ''}
@@ -8525,6 +8662,13 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
         ${secMaintOther.filter(it => it.key === 'trustMaint').length > 0 ? macroHeader({ pt: 'Share Trust', es: 'Share Trust', en: 'Share Trust' }[lang]) + buildFeeTable(secMaintOther.filter(it => it.key === 'trustMaint')) : ''}
         ${secMaintOther.filter(it => it.key !== 'trustMaint').length > 0 ? buildFeeTable(secMaintOther.filter(it => it.key !== 'trustMaint')) : ''}
         ${buildSectionSubtotal(secMaintItems, 'annual', dl().annualNote)}
+        ${acctInMaint ? `
+          <div class="doc-section-subheader">${secAcctSubLabel}</div>
+          ${secAcctPIC.length > 0 ? macroHeader(L.macroPIC) + buildFeeTable(secAcctPIC) : ''}
+          ${secAcctUS.length > 0  ? macroHeader(L.macroUS)  + buildFeeTable(secAcctUS)  : ''}
+          ${secAcctOther.length > 0 ? buildFeeTable(secAcctOther) : ''}
+          ${buildSectionSubtotal(secAcctItems)}
+        ` : ''}
         ${termsMaintHTML ? `
           <div class="doc-block-label doc-included-label">${dl().annualCoversLabel}</div>
           ${termsMaintHTML}
@@ -8668,8 +8812,8 @@ function updateEmailPanel() {
   if (state.will) services.push(emailTermTitle('will'));
   if (state.apostila) services.push(emailTermTitle('apostila'));
   if (state.mailing) services.push(emailTermTitle('mailing'));
-  if (state.transFS) services.push({ pt: 'Financial Statements (Demonstrações Financeiras), Anos Anteriores', es: 'Financial Statements (Estados Financieros), Años Anteriores', en: 'Financial Statements – Prior Years' }[emailLang]);
-  if (state.transTR) services.push({ pt: 'Tax Return (Declaração de Imposto de Renda), Anos Anteriores', es: 'Tax Return (Declaración de Impuesto a la Renta), Años Anteriores', en: 'Tax Return – Prior Years' }[emailLang]);
+  if (state.transFS) services.push({ pt: 'Financial Statements (Demonstrações Financeiras), Anos Anteriores', es: 'Financial Statements (Estados Financieros), Años Anteriores', en: 'Financial Statements (Prior Years)' }[emailLang]);
+  if (state.transTR) services.push({ pt: 'Tax Return (Declaração de Imposto de Renda), Anos Anteriores', es: 'Tax Return (Declaración de Impuesto a la Renta), Años Anteriores', en: 'Tax Return (Prior Years)' }[emailLang]);
   if (state.fs) services.push(emailTermTitle('fs'));
   if (state.tr) services.push(emailTermTitle('tr'));
   if (state.fs3rd) services.push({ pt: 'Demonstrações Financeiras por Terceiros', es: 'Estados Financieros por Terceros', en: 'Financial Statements (Third Party)' }[emailLang]);
@@ -9170,6 +9314,11 @@ function loadDraft(id) {
   // Drafts saved before the v2 cover release have no `cover` key —
   // applyCoverState resets every field to its default, so they load clean.
   applyCoverState(draft.cover);
+  // 10 days was the old default, not a choice: drafts from before format 4 move to 30
+  if ((draft.docFormat || 0) < 4 && validityDays === 10) {
+    validityDays = 30;
+    const vEl = document.getElementById('f-validity'); if (vEl) vEl.value = 30;
+  }
   const notesEl = document.getElementById('f-notes');
   if (notesEl) notesEl.value = proposalNotes;
   document.getElementById('f-client').value = draft.client || '';
