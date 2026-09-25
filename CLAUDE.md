@@ -26,6 +26,9 @@ The user has been given false "it's fixed" reports multiple times. **Visual proo
   meta tags (so open v2 tabs get the reload banner), and `loadDraft` ignoring the
   stored HTML of drafts that carry `docFormat` (saved by v2), so they regenerate in
   the old layout instead of replaying the v2 document.
+- Sept 25: live PDFs no longer carry Chrome's header/footer (date, title, URL).
+  `@page` margin is 0 and the 0.5in margin is padding on `#print-wrap` with
+  `box-decoration-break: clone`, so it repeats on every page. Build `2026-09-25-v1`.
 - **`v2` = the new generator, NOT live.** Everything documented below from
   "Proposal document format (v2)" onward lives on the `v2` branch. Work on it there.
   Do not merge `v2` into `main` until Amanda says it goes live.
