@@ -3822,7 +3822,7 @@ var FGC_CONFIG = {
         items: [
           "Payments received after the due date will be subject to late fees and administrative charges.",
           "Non-payment of annual fees will result in loss of good standing and possible dissolution by the local government. No filings or requests will be processed while amounts remain outstanding.",
-          "FGC does not guarantee the submission of regulatory documents\u2014including Financial Statements or the AFR\u2014unless full payment is received by the agreed due date.",
+          "FGC does not guarantee the submission of regulatory documents, including Financial Statements or the AFR, unless full payment is received by the agreed due date.",
           "Late payments are subject to government penalties and fines, which FGC has no discretion to waive.",
           "FGC reserves the right to suspend services until all outstanding payments are settled."
         ]
@@ -3839,7 +3839,7 @@ var FGC_CONFIG = {
         items: [
           "FGC reserves the right to decline services or adjust fees if any party presents reputational or compliance risk.",
           "The client is responsible for ensuring that all information provided is accurate and submitted within stipulated deadlines.",
-          "The client must notify FGC in writing\u2014within 15 business days\u2014of any changes in address, telephone number, email, corporate structure, ultimate beneficiaries, company activity, or other relevant circumstances that could impact on the company\u2019s status. Failure to do so may result in penalties or non-compliance.",
+          "The client must notify FGC in writing, within 15 business days, of any changes in address, telephone number, email, corporate structure, ultimate beneficiaries, company activity, or other relevant circumstances that could impact on the company\u2019s status. Failure to do so may result in penalties or non-compliance.",
           "Periodic due diligence reviews may be conducted, and clients must promptly provide requested documentation."
         ]
       },
@@ -4127,31 +4127,31 @@ var FGC_CONFIG = {
       subject: function(client) { return "FGC. | Proposta de Serviços | " + client; },
       body: function(client, services, serviceDescription) {
         var sal = (typeof getSalutation === 'function') ? getSalutation() : 'Prezado(a)';
-        return sal + " " + client + ",\n\nÉ com satisfação que encaminhamos nossa proposta conforme detalhado em anexo.\n\nPara formalizar a contratação, acesse o link abaixo e assine diretamente pelo seu dispositivo:\n\n[LINK do Clio]\n\nFicamos à disposição para esclarecimentos adicionais.\n\nAtenciosamente,\nMeire - FGC Client Relations\n+1 305 432 3009\ncontact@fgcadvisors.com";
+        return emailGreeting(sal, client) + "\n\nÉ com satisfação que encaminhamos nossa proposta conforme detalhado em anexo.\n\nPara formalizar a contratação, acesse o link abaixo e assine diretamente pelo seu dispositivo:\n\n[LINK do Clio]\n\nFicamos à disposição para esclarecimentos adicionais.\n\nAtenciosamente,\nMeire, FGC Client Relations\n+1 305 432 3009\ncontact@fgcadvisors.com";
       },
       thankYouBody: function(client) {
         var sal = (typeof getSalutation === 'function') ? getSalutation() : 'Prezado(a)';
-        return sal + " " + client + ",\n\nObrigada por assinar nossa proposta de serviços! É um prazer tê-lo(a) como cliente.\n\nCaso deseje uma via assinada para sua documentação, ela está disponível para download no link abaixo.\n[LINK do Clio]\n\nFicamos à disposição para qualquer dúvida.\n\nAtenciosamente,\nMeire - FGC Client Relations\n+1 305 432 3009\ncontact@fgcadvisors.com";
+        return emailGreeting(sal, client) + "\n\nObrigada por assinar nossa proposta de serviços! É um prazer tê-lo(a) como cliente.\n\nCaso deseje uma via assinada para sua documentação, ela está disponível para download no link abaixo.\n[LINK do Clio]\n\nFicamos à disposição para qualquer dúvida.\n\nAtenciosamente,\nMeire, FGC Client Relations\n+1 305 432 3009\ncontact@fgcadvisors.com";
       },
     },
     es: {
       subject: function(client) { return "FGC. | Propuesta de Servicios | " + client; },
       body: function(client, services, serviceDescription) {
         var sal = (typeof gender !== 'undefined' && gender === 'M') ? 'Estimado' : (gender === 'F') ? 'Estimada' : 'Estimado(a)';
-        return sal + " " + client + ",\n\nEs con satisfacción que le enviamos nuestra propuesta conforme detallado en el documento adjunto.\n\nPara formalizar la contratación, acceda al enlace a continuación y firme directamente desde su dispositivo:\n\n[LINK do Clio]\n\nQuedamos a disposición para cualquier aclaración adicional.\n\nAtentamente,\nMeire - FGC Client Relations\n+1 305 432 3009\ncontact@fgcadvisors.com";
+        return emailGreeting(sal, client) + "\n\nEs con satisfacción que le enviamos nuestra propuesta conforme detallado en el documento adjunto.\n\nPara formalizar la contratación, acceda al enlace a continuación y firme directamente desde su dispositivo:\n\n[LINK do Clio]\n\nQuedamos a disposición para cualquier aclaración adicional.\n\nAtentamente,\nMeire, FGC Client Relations\n+1 305 432 3009\ncontact@fgcadvisors.com";
       },
       thankYouBody: function(client) {
         var sal = (typeof gender !== 'undefined' && gender === 'M') ? 'Estimado' : (gender === 'F') ? 'Estimada' : 'Estimado(a)';
-        return sal + " " + client + ",\n\n¡Gracias por firmar nuestra propuesta de servicios! Es un placer tenerle como cliente.\n\nSi desea una copia firmada para sus registros, puede descargarla desde el enlace a continuación:\n\n[LINK do Clio]\n\nQuedamos a disposición para cualquier consulta.\n\nAtentamente,\nMeire - FGC Client Relations\n+1 305 432 3009\ncontact@fgcadvisors.com";
+        return emailGreeting(sal, client) + "\n\n¡Gracias por firmar nuestra propuesta de servicios! Es un placer tenerle como cliente.\n\nSi desea una copia firmada para sus registros, puede descargarla desde el enlace a continuación:\n\n[LINK do Clio]\n\nQuedamos a disposición para cualquier consulta.\n\nAtentamente,\nMeire, FGC Client Relations\n+1 305 432 3009\ncontact@fgcadvisors.com";
       },
     },
     en: {
       subject: function(client) { return "FGC. | Services Proposal | " + client; },
       body: function(client, services, serviceDescription) {
-        return "Dear " + client + ",\n\nWe are pleased to share our proposal, as detailed in the attached document.\n\nTo proceed, please sign the proposal directly from your device using the link below:\n\n[LINK do Clio]\n\nWe remain at your disposal if you have any questions.\n\nBest regards,\nMeire - FGC Client Relations\n+1 305 432 3009\ncontact@fgcadvisors.com";
+        return emailGreeting("Dear", client) + "\n\nWe are pleased to share our proposal, as detailed in the attached document.\n\nTo proceed, please sign the proposal directly from your device using the link below:\n\n[LINK do Clio]\n\nWe remain at your disposal if you have any questions.\n\nBest regards,\nMeire, FGC Client Relations\n+1 305 432 3009\ncontact@fgcadvisors.com";
       },
       thankYouBody: function(client) {
-        return "Dear " + client + ",\n\nThank you for signing our services proposal! We're delighted to welcome you as a client.\n\nIf you would like a signed copy for your records, you can download it from the link below:\n\n[LINK do Clio]\n\nWe remain at your disposal if you have any questions.\n\nBest regards,\nMeire - FGC Client Relations\n+1 305 432 3009\ncontact@fgcadvisors.com";
+        return emailGreeting("Dear", client) + "\n\nThank you for signing our services proposal! We're delighted to welcome you as a client.\n\nIf you would like a signed copy for your records, you can download it from the link below:\n\n[LINK do Clio]\n\nWe remain at your disposal if you have any questions.\n\nBest regards,\nMeire, FGC Client Relations\n+1 305 432 3009\ncontact@fgcadvisors.com";
       },
     },
   },
@@ -4753,7 +4753,7 @@ Para formalizar a contratação, acesse o link abaixo e assine diretamente pelo 
 Ficamos à disposição para esclarecimentos adicionais.
 
 Atenciosamente,
-Meire - FGC Client Relations
+Meire, FGC Client Relations
 +1 305 432 3009
 contact@fgcadvisors.com`;
     },
@@ -5015,7 +5015,7 @@ Para formalizar la contratación, acceda al enlace a continuación y firme direc
 Quedamos a disposición para cualquier aclaración adicional.
 
 Atentamente,
-Meire - FGC Client Relations
+Meire, FGC Client Relations
 +1 305 432 3009
 contact@fgcadvisors.com`;
     },
@@ -5280,7 +5280,7 @@ To proceed, please sign the proposal directly from your device using the link be
 We remain at your disposal if you have any questions.
 
 Best regards,
-Meire - FGC Client Relations
+Meire, FGC Client Relations
 +1 305 432 3009
 contact@fgcadvisors.com`;
     },
@@ -5337,7 +5337,7 @@ const DOC_FORMAT = 5;
 // Shown in the sidebar so the running build is always identifiable, and
 // compared against the deployed file so a stale cached copy announces
 // itself instead of silently showing an old proposal format.
-const BUILD = 'v2-2026-09-25-a';
+const BUILD = 'v2-2026-09-25-c';
 
 function showUpdateBanner() {
   if (document.getElementById('update-banner')) return;
@@ -6242,6 +6242,33 @@ function setGender(g) {
   document.querySelector(`.gender-btn[onclick="setGender('${g}')"]`).classList.add('active');
   debouncedUpdate();
 }
+// The A/C person's name as the greeting uses it. "Dr. Leone" is a title plus a
+// surname: keep both. Taking only the first word printed "Prezado(a) Dr.,".
+const NAME_TITLES = { 'dr': 'M', 'dr.': 'M', 'dra': 'F', 'dra.': 'F', 'sr': 'M', 'sr.': 'M', 'sra': 'F', 'sra.': 'F',
+                      'mr': 'M', 'mr.': 'M', 'mrs': 'F', 'mrs.': 'F', 'ms': 'F', 'ms.': 'F' };
+function addresseeName(person) {
+  const words = String(person || '').trim().split(/\s+/).filter(Boolean);
+  const titled = words.length > 1 && NAME_TITLES[words[0].toLowerCase()];
+  return titled ? words[0] + ' ' + words[1] : (words[0] || '');
+}
+// "Prezado Dr. Leone," / "Prezada Ana," / "Prezados," — one rule for the letter and the email
+function currentCareOf() { return ((document.getElementById('f-careof') || {}).value || '').trim(); }
+function letterGreeting() {
+  const person = currentCareOf();
+  const name = addresseeName(person);
+  if (!name) return { pt: 'Prezados,', es: 'Estimados,', en: 'Dear Sirs,' }[lang];
+  const titleGender = NAME_TITLES[(person.split(/\s+/)[0] || '').toLowerCase()];
+  const word = (titleGender && name.indexOf(' ') > 0 && gender !== 'M' && gender !== 'F')
+    ? (titleGender === 'M' ? T[lang].salutationM : T[lang].salutationF)
+    : getSalutation();
+  return (lang === 'en' ? 'Dear' : word) + ' ' + name + ',';
+}
+// Email greeting: the A/C person when there is one; otherwise the old behaviour
+// (salutation + the Sociedade / cliente field)
+function emailGreeting(sal, client) {
+  return currentCareOf() ? letterGreeting() : sal + ' ' + client + ',';
+}
+
 function getSalutation() {
   const L = T[lang];
   if (gender === 'M') return L.salutationM;
@@ -8236,7 +8263,8 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
     client, careOf, extraLine, dateStr, triva,
     careOfPrefix: L.careOfPrefix,
     advisor: advisorVal || signer.formal,
-    salutation: `${getSalutation()} ${(client || 'Client').split(' ')[0]},`,
+    // Never the company's first word (that printed "Prezado Fabiana,")
+    salutation: letterGreeting(),
     autoOpening: `<p>${openingParagraph}</p>`,
     signerCursive: signer.cursive,
     signerFormal: signer.formal,
@@ -8309,19 +8337,8 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
     // Only a named person gets a first-name salutation. Falling back to the
     // company's first word produced "Prezado Fabiana," from the Sociedade field.
     const person = (careOf || '').trim();
-    const words = person.split(/\s+/).filter(Boolean);
-    // "Dr. Leone" is a title plus a surname: greet with both ("Prezado Dr. Leone,"),
-    // and let the title set the gender. Taking only the first word printed "Prezado(a) Dr.,".
-    const TITLES = { 'dr': 'M', 'dr.': 'M', 'dra': 'F', 'dra.': 'F', 'sr': 'M', 'sr.': 'M', 'sra': 'F', 'sra.': 'F',
-                     'mr': 'M', 'mr.': 'M', 'mrs': 'F', 'mrs.': 'F', 'ms': 'F', 'ms.': 'F' };
-    const titleGender = words.length > 1 ? TITLES[words[0].toLowerCase()] : undefined;
-    const firstName = titleGender ? words[0] + ' ' + words[1] : (words[0] || '');
-    const salWord = (titleGender && gender !== 'M' && gender !== 'F')
-      ? (titleGender === 'M' ? T[lang].salutationM : T[lang].salutationF)
-      : getSalutation();
-    const greeting = firstName
-      ? salWord + ' ' + firstName + ','
-      : { pt: 'Prezados,', es: 'Estimados,', en: 'Dear Sirs,' }[lang];
+    const firstName = addresseeName(person);
+    const greeting = letterGreeting();
     // A few group labels are adjectival ("Contábil e Fiscal") and don't take an
     // article cleanly — they get a proper noun phrase instead.
     const PHRASE_OVERRIDES = {
@@ -8419,7 +8436,7 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
     // A formation or transfer in the proposal: the entity-level objective applies
     const hasFeeEntity = hasFormation || hasTransfer;
     const verb = (function () {
-      if (/constitu/.test(headline)) return { pt: 'Constituir', es: 'Constituir', en: 'Incorporate' }[lang];
+      if (/constitu|formation/.test(headline)) return { pt: 'Constituir', es: 'Constituir', en: 'Incorporate' }[lang];
       if (/transfer/.test(headline)) return { pt: 'Transferir', es: 'Transferir', en: 'Transfer' }[lang];
       // Dissolution has its own objective below: "regularizar compliance" made no sense for it
       return '';
@@ -8476,9 +8493,9 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
       // The client's name already sits under "Preparado para"; the title says
       // what the proposal is for (Meire: "Proposta, Joao Maria" read as wrong).
       'f-subject': headline
-        ? ({ 'contábil e fiscal': 'Serviços contábeis e fiscais', 'contable y fiscal': 'Servicios contables y fiscales', 'accounting & tax': 'Accounting and tax services' }[headline] || cap(headline))
+        ? (lang === 'en' && /^(formation|transfer)$/.test(headline) ? 'Company ' + headline : ({ 'contábil e fiscal': 'Serviços contábeis e fiscais', 'contable y fiscal': 'Servicios contables y fiscales', 'accounting & tax': 'Accounting and tax services' }[headline] || cap(headline)))
           // "Transferência em Cayman" read oddly; "Transferência de sociedade em Cayman" doesn't
-          + (lang === 'pt' && jurIn && /^(constitui|transfer)/.test(headline) && !/ e /.test(headline) ? (sec1Items.filter(it => it.key !== 'apostila').reduce((n, it) => n + (it.qty || 1), 0) > 1 ? ' de sociedades' : ' de sociedade') : '')
+          + (lang !== 'en' && /^(constitu|transfer)/.test(headline) && !/ [ey] /.test(headline) ? (sec1Items.filter(it => it.key !== 'apostila').reduce((n, it) => n + (it.qty || 1), 0) > 1 ? { pt: ' de sociedades', es: ' de sociedades' }[lang] : { pt: ' de sociedade', es: ' de sociedad' }[lang]) : '')
           + (jurIn ? ' ' + jurIn : '')
         : '',
       'f-opening': workFull ? ({
@@ -8511,13 +8528,16 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
             es: 'Tras ' + workShort + ', sugerimos ⟦un análisis de planificación sucesoria⟧ de la estructura.',
             en: 'Once ' + workShort + ' is complete, we suggest ⟦a succession planning review⟧ of the structure.' }[lang]
         : '',
-      'f-und-obj': (verb && jurs.length)
-        ? verb + (jurs.length > 1
+      // A custom entity (e.g. "Panama Foundation") has no known registry: say so plainly
+      'f-und-obj': verb
+        ? verb + (!jurs.length
+            ? { pt: ' a sociedade', es: ' la sociedad', en: ' the company' }[lang]
+            : jurs.length > 1
             ? { pt: ' as sociedades ', es: ' las sociedades ', en: ' the companies ' }[lang] + jurIn
-            : { pt: ' a sociedade junto ao ', es: ' la sociedad ante el ', en: ' the company with the ' }[lang] + jur.registry + (lang === 'pt' ? ' ' + jur.ofName : '')) +
+            : { pt: ' a sociedade junto ao ', es: ' la sociedad ante el ', en: ' the company with the ' }[lang] + jur.registry + ' ' + jurPhrase(jur, 'of')) +
           (/constitu|formation/.test(headline) && !/transfer/.test(headline)
             // A new company has nothing to "regularizar"
-            ? { pt: ', já em conformidade com as obrigações de compliance e KYC.', es: ', ya en conformidad con las obligaciones de compliance y KYC.', en: ', compliant with its compliance and KYC obligations from day one.' }[lang]
+            ? { pt: ', já em conformidade com as obrigações de compliance e KYC.', es: ', ya en conformidad con las obligaciones de compliance y KYC.', en: ', meeting its compliance and KYC obligations from day one.' }[lang]
             : { pt: ' e regularizar as obrigações de compliance e KYC.', es: ' y regularizar las obligaciones de compliance y KYC.', en: ', and bring compliance and KYC obligations into good standing.' }[lang])
         : (isDissolutionOnly && jurs.length)
           ? { pt: 'Encerrar formalmente a sociedade junto ao ' + (jur ? jur.registry + ' ' + jur.ofName : 'órgão competente de cada jurisdição') + ', sem pendências de taxas ou obrigações em aberto.',
@@ -8829,8 +8849,8 @@ function updateEmailPanel() {
   if (state.tr) services.push(emailTermTitle('tr'));
   if (state.fs3rd) services.push({ pt: 'Demonstrações Financeiras por Terceiros', es: 'Estados Financieros por Terceros', en: 'Financial Statements (Third Party)' }[emailLang]);
   if (state.tr3rd) services.push({ pt: 'Tax Return por Terceiros', es: 'Tax Return por Terceros', en: 'Tax Return (Third Party)' }[emailLang]);
-  if (state.fsAnterior) services.push({ pt: 'Demonstrações Financeiras - Anos Anteriores', es: 'Estados Financieros - Años Anteriores', en: 'Financial Statements - Prior Years' }[emailLang]);
-  if (state.trAnterior) services.push({ pt: 'Tax Return - Anos Anteriores', es: 'Tax Return - Años Anteriores', en: 'Tax Return - Prior Years' }[emailLang]);
+  if (state.fsAnterior) services.push({ pt: 'Demonstrações Financeiras (Anos Anteriores)', es: 'Estados Financieros (Años Anteriores)', en: 'Financial Statements (Prior Years)' }[emailLang]);
+  if (state.trAnterior) services.push({ pt: 'Tax Return (Anos Anteriores)', es: 'Tax Return (Años Anteriores)', en: 'Tax Return (Prior Years)' }[emailLang]);
   if (state.dissolucaoBVI) services.push(emailTermTitle('dissolucaoBVI'));
   if (state.dissolucaoFL) services.push(emailTermTitle('dissolucaoFL'));
   if (state.dissolucaoDE) services.push(emailTermTitle('dissolucaoDE'));

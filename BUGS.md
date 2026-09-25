@@ -29,6 +29,10 @@ Sept 10 build. Every bug found in v2 goes here, whoever finds it.
 | B19 | Sep 23 | QA | Title | Formation + notarization titled "de sociedades" (counted the notarization as a company) | fixed | Counts companies only |
 | B20 | Sep 23 | QA | Letter | Letter didn't follow the services: "(one-off e anual)" and the maintenance paragraph printed with no maintenance | fixed | Letter generated from the services, like the other auto fields; an edited letter is never overwritten |
 | B21 | Sep 24 | Meire | Print | PDF carried Chrome's header and footer (date, page title, URL, page number) on every page. Found on the live Sept 10 build; v2 had it on every page after the cover | fixed (live + v2) | `@page` margin 0, so Chrome has nowhere to print them. The margin is rebuilt as padding repeated on every page (`box-decoration-break: clone`). Live: on `#print-wrap`. v2: on a new `.doc-flow` wrapper after the cover, so the cover stays full-bleed. `DOC_FORMAT` 5 |
+| B22 | Sep 25 | QA | Email | Email greeted "Prezado(a) Joao Maria," (the Sociedade field) while the letter greeted the A/C person; signature used a hyphen as a separator ("Meire - FGC Client Relations") | fixed | Email uses the letter's greeting when there is an A/C ("Prezado Dr. Leone,"); otherwise unchanged. Signature "Meire, FGC Client Relations" |
+| B23 | Sep 25 | QA | Letter | If the letter text was ever emptied, the fallback greeting used the company's first word ("Prezado Joao,"), the bug CLAUDE.md already warns about | fixed | Fallback uses the same greeting as everywhere else |
+| B24 | Sep 25 | QA | Custom entity | A custom formation (e.g. "Panama Foundation") printed the template objective with 4 blanks, title just "Constituição" | fixed | "Constituir a sociedade, já em conformidade…", title "Constituição de sociedade" |
+| B25 | Sep 25 | QA | EN/ES | English formations kept the template objective (the check only knew "constitu…"); EN/ES titles lacked "de sociedad" / "Company"; two EN clauses still had em dashes (written as `\u2014`, so text searches missed them) | fixed | Checked 30 proposals (10 combinations × 3 languages): no dashes, no errors |
 
 ## Open questions
 
