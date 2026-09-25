@@ -292,6 +292,13 @@ so an earlier build printed the furniture *over* the body text on pages 3-7, wit
 the header and footer swapped and the reference clipped to "FGC-P". Chrome's
 `@page` margin boxes take no content, so there is no reliable alternative.
 
+**No browser header/footer in the PDF.** Chrome prints date, title and URL inside
+the `@page` margin, so every `@page` margin is 0. The page margin is padding on
+`.doc-flow` (everything after the cover) with `box-decoration-break: clone`, which
+repeats it on every printed page. Don't put the padding on `#print-wrap`: clone also
+reserves it on page 1 and pushes the full-height cover onto a second page.
+Check with headless Chrome *without* `--no-pdf-header-footer`.
+
 **Verifying print output.** Don't ask the user to test it. Generate the proposal
 in the browser pane, reproduce what `exportInteractivePDF()` does to the DOM
 (move `#proposal-doc` into `#print-wrap`, add `body.printing`), POST
@@ -332,7 +339,7 @@ Payload fields: `client`, `user`, `device`, `services`, `language`, `brand`, `ge
 | `fgc_failed_logs` | Array of proposals that failed to log to Notion |
 | `fgc_signatures` | `{ advisorSlug: dataURL }` — scanned signatures, per browser |
 
-**`DOC_FORMAT`** (currently `4`) stamps every saved draft. `saveDraft` stores the
+**`DOC_FORMAT`** (currently `5`) stamps every saved draft. `saveDraft` stores the
 rendered `proposalHTML` so manual edits survive, but replaying that HTML after the
 document structure changes shows the *old* layout. `loadDraft` therefore replays
 stored HTML only when `draft.docFormat === DOC_FORMAT`, and regenerates otherwise.

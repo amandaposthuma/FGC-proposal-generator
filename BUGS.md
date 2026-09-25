@@ -28,6 +28,7 @@ Sept 10 build. Every bug found in v2 goes here, whoever finds it.
 | B18 | Sep 23 | QA | Dashes | Em/en dashes in client text (Will add-on note, "Financial Statements – Prior Years") | fixed | Colon / parentheses |
 | B19 | Sep 23 | QA | Title | Formation + notarization titled "de sociedades" (counted the notarization as a company) | fixed | Counts companies only |
 | B20 | Sep 23 | QA | Letter | Letter didn't follow the services: "(one-off e anual)" and the maintenance paragraph printed with no maintenance | fixed | Letter generated from the services, like the other auto fields; an edited letter is never overwritten |
+| B21 | Sep 24 | Meire | Print | PDF carried Chrome's header and footer (date, page title, URL, page number) on every page. Found on the live Sept 10 build; v2 had it on every page after the cover | fixed (live + v2) | `@page` margin 0, so Chrome has nowhere to print them. The margin is rebuilt as padding repeated on every page (`box-decoration-break: clone`). Live: on `#print-wrap`. v2: on a new `.doc-flow` wrapper after the cover, so the cover stays full-bleed. `DOC_FORMAT` 5 |
 
 ## Open questions
 
