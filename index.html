@@ -576,8 +576,16 @@
     h3, h4 { break-after: avoid; page-break-after: avoid; }
     p, li { orphans: 3; widows: 3; }
 
-    /* 0.5 inch margins, no browser headers/footers */
-    @page { margin: 12.7mm 10mm; size: A4; }
+    /* No browser header/footer (date, title, URL, page number). Chrome prints
+       them inside the @page margin, so the page margin is zero and the same
+       0.5in margin is rebuilt as padding that repeats on every printed page
+       (box-decoration-break: clone). Meire saw the URL in every PDF footer. */
+    @page { margin: 0; size: A4; }
+    #print-wrap,
+    body:not(.printing) #proposal-area {
+      padding: 12.7mm 10mm !important;
+      -webkit-box-decoration-break: clone; box-decoration-break: clone;
+    }
     title { display: none; }
   }
 
@@ -970,7 +978,7 @@
 
 <script>
 // Build stamp. Open v2 tabs compare this against their own and offer a reload.
-const BUILD = '2026-09-22-v1';
+const BUILD = '2026-09-25-v1';
 // ═══════════════════════════════════════════════════════════════════
 //  FGC PROPOSAL GENERATOR — MAIN CONFIG
 //  Contains: services/prices, terms, notes, clauses, opening/closing
