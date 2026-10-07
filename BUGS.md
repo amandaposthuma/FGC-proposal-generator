@@ -6,6 +6,8 @@ Sept 10 build. Every bug found in v2 goes here, whoever finds it.
 **Status:** `open` · `fixed` (on `v2`, not live) · `live` (merged to `main`) · `wontfix`
 **Source:** who found it (Meire / Claudia / Fabiana / Amanda / QA = found while testing)
 
+**Mirrored in Notion:** "Gerador de Propostas: Feedback da versão de teste" (https://app.notion.com/p/58227b48524a4872bf684da19e929596). Every row here has a matching Notion row with the same ID in `Ref`. The team reports there.
+
 | ID | Found | Source | Area | Problem | Status | Fix |
 |----|-------|--------|------|---------|--------|-----|
 | B01 | Sep 22 | Meire | Cover | Title read "Proposta, Joao Maria". The client already appears under "Preparado para" | fixed | Title now names the work: "Constituição de sociedade nas Ilhas Virgens Britânicas", "Notarização e apostilamento" |

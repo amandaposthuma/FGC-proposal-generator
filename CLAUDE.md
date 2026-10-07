@@ -9,6 +9,24 @@
 
 ---
 
+## !! BUG TRACKING — EVERY BUG, TWO PLACES !!
+
+Amanda's rule (Oct 7 2026): every bug or request is tracked, by whoever finds it
+(team, Amanda, or Claude while testing), in BOTH:
+
+1. `BUGS.md` on the `v2` branch: one row, next free ID (B31, B32…).
+2. Notion database **"Gerador de Propostas: Feedback da versão de teste"**
+   https://app.notion.com/p/58227b48524a4872bf684da19e929596
+   (data source `collection://2ceb723a-9db5-4996-b730-8e4aafb789e1`).
+   Same ID in the `Ref` column. Written in Portuguese, no dashes. The team adds
+   their own rows there; copy those into BUGS.md with the next ID and set `Ref`.
+
+Status moves in both places together: Novo → Em correção → Corrigido no teste
+(→ live when v2 replaces the main site). Never fix something without logging it,
+and never report it fixed until it is verified on the /teste/ link.
+
+---
+
 ## !! VERIFICATION REQUIREMENT — MANDATORY !!
 
 **NEVER report a task as complete without first providing screenshot evidence.**
