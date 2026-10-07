@@ -1275,6 +1275,16 @@
   }
   @media print { #update-banner, .build-stamp { display: none !important; } }
 
+  /* Test copy at /teste/: impossible to mistake for the live tool */
+  #test-banner {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 10002;
+    background: #B0542F; color: #fff; text-align: center;
+    padding: 5px 12px; font-family: var(--font); font-size: 11px;
+    font-weight: 700; letter-spacing: 0.5px;
+  }
+  body.is-test { padding-top: 26px; }
+  @media print { #test-banner { display: none !important; } body.is-test { padding-top: 0; } }
+
   /* ── Three levels, each visibly subordinate to the one above ──
      1  Seção NN + Georgia title      (section)
      2  bold navy sentence case        (group: "O que está incluído")
@@ -5337,7 +5347,23 @@ const DOC_FORMAT = 5;
 // Shown in the sidebar so the running build is always identifiable, and
 // compared against the deployed file so a stale cached copy announces
 // itself instead of silently showing an old proposal format.
-const BUILD = 'v2-2026-09-25-c';
+const BUILD = 'v2-2026-10-07-a';
+
+// Served from /teste/ while v2 is being tested alongside the live version.
+// Same site, so drafts are shared with live; the autosave is kept apart so a
+// test session can never be restored into the live tool (or the reverse).
+const IS_TEST = /\/teste\//.test(location.pathname);
+const AUTOSAVE_KEY = IS_TEST ? 'fgc_autosave_teste' : 'fgc_autosave';
+if (IS_TEST) {
+  document.addEventListener('DOMContentLoaded', function () {
+    const b = document.createElement('div');
+    b.id = 'test-banner';
+    b.textContent = 'VERSÃO DE TESTE: não registra no Notion. Para propostas reais, use a versão atual.';
+    document.body.appendChild(b);
+    document.body.classList.add('is-test');
+    document.title = 'TESTE ' + document.title;
+  });
+}
 
 function showUpdateBanner() {
   if (document.getElementById('update-banner')) return;
@@ -7186,17 +7212,17 @@ function writeAutoSave() {
       cover: coverStatePayload(),
       savedAt: new Date().toISOString(),
     };
-    localStorage.setItem('fgc_autosave', JSON.stringify(snapshot));
+    localStorage.setItem(AUTOSAVE_KEY, JSON.stringify(snapshot));
   } catch(e) {}
 }
 
 function clearAutoSave() {
-  try { localStorage.removeItem('fgc_autosave'); } catch(e) {}
+  try { localStorage.removeItem(AUTOSAVE_KEY); } catch(e) {}
 }
 
 function restoreAutoSave() {
   try {
-    const raw = localStorage.getItem('fgc_autosave');
+    const raw = localStorage.getItem(AUTOSAVE_KEY);
     if (!raw) return;
     const snap = JSON.parse(raw);
     // Reuse loadDraft logic by building a fake draft object
@@ -7248,7 +7274,7 @@ function restoreAutoSave() {
 
 function showAutoSaveBannerIfNeeded() {
   try {
-    const raw = localStorage.getItem('fgc_autosave');
+    const raw = localStorage.getItem(AUTOSAVE_KEY);
     if (!raw) return;
     const snap = JSON.parse(raw);
     if (!snap.client || !snap.savedAt) return;
@@ -9080,12 +9106,14 @@ function checkLogin() {
 //  NOTION AUDIT LOG
 // ═══════════════════════════════════════════════════════════════════
 const MAKE_WEBHOOK = 'https://hook.us2.make.com/8cx5wkgvxkqp5iqijupqs5ttyos8lxy5';
+// The test copy (served from /teste/) never writes to the Notion audit log
 let _lastLoggedClient = null;
 let _generateIsManual = false;
 
 function logProposalToNotion(triva) {
   // Only log on explicit button click — not on auto-updates from debounce
   if (!_generateIsManual) return;
+  if (IS_TEST) return;
   const client = document.getElementById('f-client').value.trim();
   if (!client) return; // never log without a client name
   // Deduplicate: only log once per unique client name per session

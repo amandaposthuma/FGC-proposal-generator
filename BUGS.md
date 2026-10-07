@@ -34,12 +34,17 @@ Sept 10 build. Every bug found in v2 goes here, whoever finds it.
 | B24 | Sep 25 | QA | Custom entity | A custom formation (e.g. "Panama Foundation") printed the template objective with 4 blanks, title just "Constituição" | fixed | "Constituir a sociedade, já em conformidade…", title "Constituição de sociedade" |
 | B25 | Sep 25 | QA | EN/ES | English formations kept the template objective (the check only knew "constitu…"); EN/ES titles lacked "de sociedad" / "Company"; two EN clauses still had em dashes (written as `\u2014`, so text searches missed them) | fixed | Checked 30 proposals (10 combinations × 3 languages): no dashes, no errors |
 
+## Test copy
+
+v2 runs at **https://amandaposthuma.github.io/FGC-proposal-generator/teste/** (Oct 7).
+`IS_TEST` (path contains `/teste/`) shows a copper "VERSÃO DE TESTE" bar, skips the
+Notion log and keeps its own autosave key. Drafts are shared with the live tool (same
+site): deleting one in the test copy deletes it on live too. To refresh the test copy
+after fixing something on `v2`: copy `index.html` from `v2` to `teste/index.html` on
+`main` and push.
+
 ## Open questions
 
-- **Test URL for the team.** Meire wants to test before anything goes live. Options:
-  a `/teste/` copy on the same site (shares drafts with live, so testers use real
-  drafts, but test proposals would also log to Notion unless disabled there), or a
-  separate host. Waiting for Amanda.
 - **Transfer with a person's name** in "Sociedade / cliente" still reads "a
   transferência da Joao Maria". For a transfer the field should hold the company
   name, so this is left as is.
