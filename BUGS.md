@@ -33,6 +33,9 @@ Sept 10 build. Every bug found in v2 goes here, whoever finds it.
 | B23 | Sep 25 | QA | Letter | If the letter text was ever emptied, the fallback greeting used the company's first word ("Prezado Joao,"), the bug CLAUDE.md already warns about | fixed | Fallback uses the same greeting as everywhere else |
 | B24 | Sep 25 | QA | Custom entity | A custom formation (e.g. "Panama Foundation") printed the template objective with 4 blanks, title just "Constituição" | fixed | "Constituir a sociedade, já em conformidade…", title "Constituição de sociedade" |
 | B25 | Sep 25 | QA | EN/ES | English formations kept the template objective (the check only knew "constitu…"); EN/ES titles lacked "de sociedad" / "Company"; two EN clauses still had em dashes (written as `\u2014`, so text searches missed them) | fixed | Checked 30 proposals (10 combinations × 3 languages): no dashes, no errors |
+| B26 | Oct 7 | Amanda | Greeting | With no A/C the letter said "Prezados," even when the client is a person | fixed | No A/C + a person in "Sociedade / cliente": "Prezado(a) Amanda," (N/M/F buttons pick Prezado / Prezada). A company name (Ltd, LLC, Inc, Holdings, Foundation, Trust, Ltda…) still gets "Prezados,". Email uses the same greeting |
+| B27 | Oct 7 | QA | Names | Names typed in lower case printed that way ("para amanda") | fixed | A name typed all lower case prints capitalised ("Joao da Silva"); anything typed with capitals is left as typed |
+| B28 | Oct 7 | QA | Phone layout | On a phone the sidebar fills the screen and the proposal is cut off on the right. Same in the current live version | open | Needs a phone layout (switch between form and document). Ask Amanda |
 
 ## Test copy
 
