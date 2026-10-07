@@ -37,12 +37,14 @@ Sept 10 build. Every bug found in v2 goes here, whoever finds it.
 | B27 | Oct 7 | QA | Names | Names typed in lower case printed that way ("para amanda") | fixed | A name typed all lower case prints capitalised ("Joao da Silva"); anything typed with capitals is left as typed |
 | B28 | Oct 7 | QA | Phone layout | On a phone the sidebar fills the screen and the proposal is cut off on the right. Same in the current live version | open | Needs a phone layout (switch between form and document). Ask Amanda |
 | B29 | Oct 7 | QA | PDF | Save PDF exported a proposal with copper ⟦blanks⟧ still in it (every proposal type tested had 1 to 6 left) | fixed | Save PDF lists the unfilled blanks and asks before exporting; with none left it exports straight away |
+| B30 | Oct 7 | QA | Notion log | The "services" field in the Notion log listed two settings that aren't services ("fsIncludeAFR, maintPayTiming"). Also on the current live version | fixed (v2) | Only selected services are sent |
 
 ## Test copy
 
 v2 runs at **https://amandaposthuma.github.io/FGC-proposal-generator/teste/** (Oct 7).
-`IS_TEST` (path contains `/teste/`) shows a copper "VERSÃO DE TESTE" bar, skips the
-Notion log and keeps its own autosave key. Drafts are shared with the live tool (same
+`IS_TEST` (path contains `/teste/`) shows a copper "VERSÃO DE TESTE" bar (no mention of
+Notion: the team doesn't use it), logs to Notion with "[TESTE]" before the client name,
+and keeps its own autosave key. Drafts are shared with the live tool (same
 site): deleting one in the test copy deletes it on live too. To refresh the test copy
 after fixing something on `v2`: copy `index.html` from `v2` to `teste/index.html` on
 `main` and push.

@@ -5347,7 +5347,7 @@ const DOC_FORMAT = 5;
 // Shown in the sidebar so the running build is always identifiable, and
 // compared against the deployed file so a stale cached copy announces
 // itself instead of silently showing an old proposal format.
-const BUILD = 'v2-2026-10-07-d';
+const BUILD = 'v2-2026-10-07-e';
 
 // Served from /teste/ while v2 is being tested alongside the live version.
 // Same site, so drafts are shared with live; the autosave is kept apart so a
@@ -9135,16 +9135,17 @@ function checkLogin() {
 //  NOTION AUDIT LOG
 // ═══════════════════════════════════════════════════════════════════
 const MAKE_WEBHOOK = 'https://hook.us2.make.com/8cx5wkgvxkqp5iqijupqs5ttyos8lxy5';
-// The test copy (served from /teste/) never writes to the Notion audit log
+// The test copy (served from /teste/) logs too, with "[TESTE]" in front of the
+// client name so test runs are easy to filter out of the audit log
 let _lastLoggedClient = null;
 let _generateIsManual = false;
 
 function logProposalToNotion(triva) {
   // Only log on explicit button click — not on auto-updates from debounce
   if (!_generateIsManual) return;
-  if (IS_TEST) return;
-  const client = document.getElementById('f-client').value.trim();
-  if (!client) return; // never log without a client name
+  const rawClient = document.getElementById('f-client').value.trim();
+  if (!rawClient) return; // never log without a client name
+  const client = IS_TEST ? '[TESTE] ' + rawClient : rawClient;
   // Deduplicate: only log once per unique client name per session
   if (_lastLoggedClient === client) return;
   _lastLoggedClient = client;
@@ -9152,7 +9153,8 @@ function logProposalToNotion(triva) {
     const user = getCurrentUser() || 'Unknown';
     const device = getDeviceName() || 'Unknown device';
     const services = [];
-    Object.keys(state).forEach(k => { if (state[k]) services.push(k); });
+    // Selected services only: fsIncludeAFR / maintPayTiming are settings, not services
+    Object.keys(state).forEach(k => { if (state[k] === true && k !== 'fsIncludeAFR') services.push(k); });
     const payload = {
       client,
       user,
