@@ -5347,7 +5347,7 @@ const DOC_FORMAT = 5;
 // Shown in the sidebar so the running build is always identifiable, and
 // compared against the deployed file so a stale cached copy announces
 // itself instead of silently showing an old proposal format.
-const BUILD = 'v2-2026-10-07-b';
+const BUILD = 'v2-2026-10-07-c';
 
 // Served from /teste/ while v2 is being tested alongside the live version.
 // Same site, so drafts are shared with live; the autosave is kept apart so a
@@ -9005,6 +9005,17 @@ function exportInteractivePDF() {
   if (!proposalEl || proposalEl.style.display === 'none') {
     alert('Please generate a proposal first.');
     return;
+  }
+  // Never send a client a proposal with copper ⟦blanks⟧ still in it
+  const blanks = [...new Set((proposalEl.innerText.match(/⟦[^⟧]*⟧/g) || []).map(t => t.slice(1, -1).split(' — ')[0].trim()))];
+  if (blanks.length) {
+    const head = { pt: 'Ainda há ' + blanks.length + ' campo(s) a preencher na proposta:',
+                   es: 'Todavía hay ' + blanks.length + ' campo(s) por completar en la propuesta:',
+                   en: 'The proposal still has ' + blanks.length + ' blank(s) to fill in:' }[lang];
+    const tail = { pt: 'Preencha em "A preencher" antes de enviar ao cliente.\n\nExportar mesmo assim?',
+                   es: 'Complételos en "A preencher" antes de enviar al cliente.\n\n¿Exportar de todos modos?',
+                   en: 'Fill them in under "A preencher" before sending to the client.\n\nExport anyway?' }[lang];
+    if (!confirm(head + '\n\n' + blanks.map(b => '• ' + b).join('\n') + '\n\n' + tail)) return;
   }
   // Move proposal-doc to a temporary print-only wrapper directly on body,
   // hiding everything else — this is the only reliable way to prevent
