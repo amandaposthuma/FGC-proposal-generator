@@ -5347,7 +5347,7 @@ const DOC_FORMAT = 5;
 // Shown in the sidebar so the running build is always identifiable, and
 // compared against the deployed file so a stale cached copy announces
 // itself instead of silently showing an old proposal format.
-const BUILD = 'v2-2026-10-07-c';
+const BUILD = 'v2-2026-10-07-d';
 
 // Served from /teste/ while v2 is being tested alongside the live version.
 // Same site, so drafts are shared with live; the autosave is kept apart so a
@@ -5358,7 +5358,7 @@ if (IS_TEST) {
   document.addEventListener('DOMContentLoaded', function () {
     const b = document.createElement('div');
     b.id = 'test-banner';
-    b.textContent = 'VERSÃO DE TESTE: não registra no Notion. Para propostas reais, use a versão atual.';
+    b.textContent = 'VERSÃO DE TESTE: para propostas reais, use a versão atual.';
     document.body.appendChild(b);
     document.body.classList.add('is-test');
     document.title = 'TESTE ' + document.title;
