@@ -5347,7 +5347,7 @@ const DOC_FORMAT = 5;
 // Shown in the sidebar so the running build is always identifiable, and
 // compared against the deployed file so a stale cached copy announces
 // itself instead of silently showing an old proposal format.
-const BUILD = 'v2-2026-10-07-a';
+const BUILD = 'v2-2026-10-07-b';
 
 // Served from /teste/ while v2 is being tested alongside the live version.
 // Same site, so drafts are shared with live; the autosave is kept apart so a
@@ -6278,21 +6278,39 @@ function addresseeName(person) {
   return titled ? words[0] + ' ' + words[1] : (words[0] || '');
 }
 // "Prezado Dr. Leone," / "Prezada Ana," / "Prezados," — one rule for the letter and the email
-function currentCareOf() { return ((document.getElementById('f-careof') || {}).value || '').trim(); }
+function currentCareOf() { return displayName((document.getElementById('f-careof') || {}).value); }
+// "amanda" typed in a hurry prints as "Amanda"; anything typed with capitals
+// ("S&W", "McDonald", "BVI") is left exactly as typed
+const NAME_PARTICLES = ['da', 'de', 'do', 'das', 'dos', 'e', 'del', 'la', 'van', 'von'];
+function displayName(raw) {
+  const t = String(raw || '').trim().replace(/\s+/g, ' ');
+  if (!t || t !== t.toLowerCase()) return t;
+  return t.split(' ').map((w, i) => (i > 0 && NAME_PARTICLES.includes(w)) ? w : w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+}
+// A company can't be greeted by name ("Prezado(a) Acme Holdings Ltd,")
+const COMPANY_WORDS = /\b(ltd|limited|inc|llc|l\.l\.c|corp|corporation|company|co|s\.?a|ltda|eireli|holdings?|foundation|funda[çc][ãa]o|trust|group|grupo|partners|investments?|sociedade|empresa|gmbh|plc|pic)\.?$|\b(ltd|llc|inc|holdings?|foundation|trust|company|investments?|corp)\b/i;
+function looksLikeCompany(name) { return COMPANY_WORDS.test(String(name || '').trim()); }
+
+// "Prezado Dr. Leone," / "Prezada Ana," / "Prezado(a) Amanda," / "Prezados,"
+// One rule for the letter and the email. A/C wins; otherwise the client is
+// greeted by name when it's a person (Amanda: "Prezados," read as impersonal).
 function letterGreeting() {
   const person = currentCareOf();
   const name = addresseeName(person);
-  if (!name) return { pt: 'Prezados,', es: 'Estimados,', en: 'Dear Sirs,' }[lang];
+  if (!name) {
+    const client = displayName((document.getElementById('f-client') || {}).value);
+    if (!client || looksLikeCompany(client)) return { pt: 'Prezados,', es: 'Estimados,', en: 'Dear Sirs,' }[lang];
+    return (lang === 'en' ? 'Dear' : getSalutation()) + ' ' + client + ',';
+  }
   const titleGender = NAME_TITLES[(person.split(/\s+/)[0] || '').toLowerCase()];
   const word = (titleGender && name.indexOf(' ') > 0 && gender !== 'M' && gender !== 'F')
     ? (titleGender === 'M' ? T[lang].salutationM : T[lang].salutationF)
     : getSalutation();
   return (lang === 'en' ? 'Dear' : word) + ' ' + name + ',';
 }
-// Email greeting: the A/C person when there is one; otherwise the old behaviour
-// (salutation + the Sociedade / cliente field)
+// Email greeting: same as the letter
 function emailGreeting(sal, client) {
-  return currentCareOf() ? letterGreeting() : sal + ' ' + client + ',';
+  return letterGreeting();
 }
 
 function getSalutation() {
@@ -7351,8 +7369,8 @@ function generateProposal(triva, _fromDebounce) {
   _lastTrivaMode = triva ? true : false;
   // Flag so logProposalToNotion knows whether this was a manual button click or an auto-update
   _generateIsManual = !_fromDebounce;
-  const client = document.getElementById('f-client').value.trim() || '';
-  const careOf = (document.getElementById('f-careof')?.value || '').trim();
+  const client = displayName(document.getElementById('f-client').value);
+  const careOf = displayName(document.getElementById('f-careof')?.value || '');
   const extraLine = (document.getElementById('f-extra')?.value || '').trim();
   const clientEmail = document.getElementById('f-email')?.value?.trim() || '';
   const advisor= document.getElementById('f-advisor').value.trim();
@@ -8855,7 +8873,7 @@ function toggleEmailPanel() {
 function updateEmailPanel() {
   // Email language always matches proposal language
   const emailLang = lang;
-  const client = document.getElementById('f-client').value.trim() || 'Cliente';
+  const client = displayName(document.getElementById('f-client').value) || 'Cliente';
 
   // Build services list using term titles from FGC_CONFIG (same source as proposal)
   function emailTermTitle(k) {
