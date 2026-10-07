@@ -37,6 +37,12 @@ The user has been given false "it's fixed" reports multiple times. **Visual proo
 
 ---
 
+Bugs: every bug goes in `BUGS.md` (v2 branch) AND the Notion database "Gerador de
+Propostas: Feedback da versão de teste" (https://app.notion.com/p/58227b48524a4872bf684da19e929596),
+same ID. Test copy of v2: https://amandaposthuma.github.io/FGC-proposal-generator/teste/
+
+---
+
 ## Overview
 Static single-page HTML tool hosted on GitHub Pages. No backend. All persistence via localStorage.
 
