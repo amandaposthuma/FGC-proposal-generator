@@ -5391,7 +5391,7 @@ const DOC_FORMAT = 6;
 // Shown in the sidebar so the running build is always identifiable, and
 // compared against the deployed file so a stale cached copy announces
 // itself instead of silently showing an old proposal format.
-const BUILD = 'v2-2026-10-21-b';
+const BUILD = 'v2-2026-10-21-c';
 
 // Served from /teste/ while v2 is being tested alongside the live version.
 // Same site, so drafts are shared with live; the autosave is kept apart so a
@@ -6368,7 +6368,7 @@ function getSalutation() {
 document.addEventListener('focusin', function (e) {
   const el = e.target;
   if (!el.classList || !el.classList.contains('price-override-input')) return;
-  if (el.value === '' && el.placeholder) { el.value = el.placeholder; }
+  if (el.value === '' && el.placeholder && !isNaN(Number(el.placeholder))) { el.value = el.placeholder; }
   setTimeout(function () { try { el.select(); } catch (_) {} }, 0);
 });
 document.addEventListener('mouseover', function (e) {
@@ -7056,12 +7056,13 @@ function buildServiceToggle(svc) {
   let extraHTML = '';
   const isReestruSub = false; // no longer used
   // Show price input for services with a known price, complimentary exclusion, OR third-party services
-  if (state[svc.key] && !svcData.complimentary && (currentPrice || is3rd)) {
+  if (state[svc.key] && (svcData.complimentary || currentPrice || is3rd)) {
+    // Administrator-only transfers default to Cortesia but may carry a fee (Meire, B35)
     extraHTML += `
       <div class="price-override-row">
         <span class="price-override-label">USD</span>
         <input type="number" class="price-override-input"
-          placeholder="${currentPrice || ''}"
+          placeholder="${svcData.complimentary ? (lang === 'en' ? 'Complimentary' : 'Cortesia') : (currentPrice || '')}"
           value="${overrideVal}"
           oninput="setPriceOverride('${svc.key}', this.value)"
           onchange="setPriceOverride('${svc.key}', this.value)"
@@ -7512,10 +7513,10 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
   if (state.transCayman)  { const q=getQty('transCayman');  sec1Items.push({ key:'transCayman',  label: (q>1?q+'x ':'')+termTitle('transCayman'),  amount: getPrice('transCayman', FGC_CONFIG.services.transCayman.price)*q,  pay: L.payOnAcceptance, group:'pic', qty:q }); }
   if (state.transNevis)   { const q=getQty('transNevis');   sec1Items.push({ key:'transNevis',   label: (q>1?q+'x ':'')+termTitle('transNevis'),   amount: getPrice('transNevis', FGC_CONFIG.services.transNevis.price)*q,   pay: L.payOnAcceptance, group:'pic', qty:q }); }
   // PIC transfer (no agent change — complimentary)
-  if (state.transBVIRA)     sec1Items.push({ key:'transBVIRA',     label: termTitle('transBVIRA'),     amount: FGC_CONFIG.services.transBVIRA.price,     pay: L.payOnAcceptance, group:'pic', complimentary: true });
-  if (state.transBahamasRA) sec1Items.push({ key:'transBahamasRA', label: termTitle('transBahamasRA'), amount: FGC_CONFIG.services.transBahamasRA.price, pay: L.payOnAcceptance, group:'pic', complimentary: true });
-  if (state.transCaymanRA)  sec1Items.push({ key:'transCaymanRA',  label: termTitle('transCaymanRA'),  amount: FGC_CONFIG.services.transCaymanRA.price,  pay: L.payOnAcceptance, group:'pic', complimentary: true });
-  if (state.transNevisRA)   sec1Items.push({ key:'transNevisRA',   label: termTitle('transNevisRA'),   amount: FGC_CONFIG.services.transNevisRA.price,   pay: L.payOnAcceptance, group:'pic', complimentary: true });
+  if (state.transBVIRA)     sec1Items.push({ key:'transBVIRA',     label: termTitle('transBVIRA'),     amount: getPrice('transBVIRA', 0),     pay: L.payOnAcceptance, group:'pic', complimentary: !(getPrice('transBVIRA', 0) > 0) });
+  if (state.transBahamasRA) sec1Items.push({ key:'transBahamasRA', label: termTitle('transBahamasRA'), amount: getPrice('transBahamasRA', 0), pay: L.payOnAcceptance, group:'pic', complimentary: !(getPrice('transBahamasRA', 0) > 0) });
+  if (state.transCaymanRA)  sec1Items.push({ key:'transCaymanRA',  label: termTitle('transCaymanRA'),  amount: getPrice('transCaymanRA', 0),  pay: L.payOnAcceptance, group:'pic', complimentary: !(getPrice('transCaymanRA', 0) > 0) });
+  if (state.transNevisRA)   sec1Items.push({ key:'transNevisRA',   label: termTitle('transNevisRA'),   amount: getPrice('transNevisRA', 0),   pay: L.payOnAcceptance, group:'pic', complimentary: !(getPrice('transNevisRA', 0) > 0) });
   // US transfer (with qty + price override support)
   if (state.transFL)  { const q=getQty('transFL');  sec1Items.push({ key:'transFL',  label: (q>1?q+'x ':'')+termTitle('transFL'),  amount: getPrice('transFL', FGC_CONFIG.services.transFL.price)*q,  pay: L.payOnAcceptance, group:'us', qty:q }); }
   if (state.transDE)  { const q=getQty('transDE');  sec1Items.push({ key:'transDE',  label: (q>1?q+'x ':'')+termTitle('transDE'),  amount: getPrice('transDE', FGC_CONFIG.services.transDE.price)*q,  pay: L.payOnAcceptance, group:'us', qty:q }); }
@@ -7524,8 +7525,8 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
   if (state.transWI)  { const q=getQty('transWI');  sec1Items.push({ key:'transWI',  label: (q>1?q+'x ':'')+termTitle('transWI'),  amount: getPrice('transWI', FGC_CONFIG.services.transWI.price)*q,  pay: L.payOnAcceptance, group:'us', qty:q }); }
   if (state.transMN)  { const q=getQty('transMN');  sec1Items.push({ key:'transMN',  label: (q>1?q+'x ':'')+termTitle('transMN'),  amount: getPrice('transMN', FGC_CONFIG.services.transMN.price)*q,  pay: L.payOnAcceptance, group:'us', qty:q }); }
   // US transfer (no agent change — complimentary)
-  if (state.transFLRA) sec1Items.push({ key:'transFLRA', label: termTitle('transFLRA'), amount: FGC_CONFIG.services.transFLRA.price, pay: L.payOnAcceptance, group:'us', complimentary: true });
-  if (state.transDERA) sec1Items.push({ key:'transDERA', label: termTitle('transDERA'), amount: FGC_CONFIG.services.transDERA.price, pay: L.payOnAcceptance, group:'us', complimentary: true });
+  if (state.transFLRA) sec1Items.push({ key:'transFLRA', label: termTitle('transFLRA'), amount: getPrice('transFLRA', 0), pay: L.payOnAcceptance, group:'us', complimentary: !(getPrice('transFLRA', 0) > 0) });
+  if (state.transDERA) sec1Items.push({ key:'transDERA', label: termTitle('transDERA'), amount: getPrice('transDERA', 0), pay: L.payOnAcceptance, group:'us', complimentary: !(getPrice('transDERA', 0) > 0) });
   // Apostila
   if (state.apostila) { const q=getQty('apostila'); sec1Items.push({ key:'apostila', label: (q>1?q+'x ':'')+termTitle('apostila'), amount: getPrice('apostila', FGC_CONFIG.services.apostila.price)*q, pay: L.payOnAcceptance, qty:q }); }
 
@@ -8132,6 +8133,14 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
   else if (hasFormation && hasMaint) payText = FGC_CONFIG.paymentText[lang].formation;
   else if (hasTransfer && hasMaint) payText = FGC_CONFIG.paymentText[lang].transfer;
   else if (hasMaint && !hasFormation && !hasTransfer) payText = FGC_CONFIG.paymentText[lang].maintenanceOnly;
+  // No maintenance (accounting only, restructuring, Will…): don't mention annual
+  // maintenance fees the proposal doesn't have (Meire, B38)
+  else if (!hasMaint) {
+    const annualAcct = secAcctItems.some(it => it.pay && it.pay !== L.payOnAcceptance && it.amount != null);
+    payText = { pt: 'Os honorários indicados como "Na Aceitação" são devidos na aceitação desta proposta, previamente ao início dos serviços.' + (annualAcct ? ' Os honorários anuais vencem em 10 de janeiro de cada ano, conforme indicado em cada item.' : ''),
+                es: 'Los honorarios indicados como "Al Aceptar" son pagaderos al aceptar esta propuesta, previamente al inicio de los servicios.' + (annualAcct ? ' Los honorarios anuales vencen el 10 de enero de cada año, según se indica en cada ítem.' : ''),
+                en: 'Fees marked "Upon Acceptance" are due upon acceptance of this proposal, prior to commencement of services.' + (annualAcct ? ' Annual fees fall due on January 10 of each year, as shown for each item.' : '') }[lang];
+  }
   else payText = FGC_CONFIG.paymentText[lang].mixed;
 
   // ── Dynamic timelines items (service-specific instead of generic) ──
@@ -8647,6 +8656,18 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
     const workShort = _autoTokens['o trabalho'] || '';
     const others = _autoTokens['as frentes envolvidas'] || '';
     const whatText = (function () {
+      if (secAcctItems.length && !hasFeeEntity && !sec3Items.length && !hasApostila) {
+        const k = secAcctItems.map(it => it.key);
+        const fs = k.some(x => /^(fs|fsAnterior|priorFS|fs3rd)$/.test(x)), tr = k.some(x => /^(tr|trAnterior|priorTR|tr3rd)$/.test(x));
+        const what = {
+          pt: [fs && 'das demonstrações financeiras anuais', tr && 'da declaração anual de imposto de renda (Tax Return)'].filter(Boolean).join(' e '),
+          es: [fs && 'de los estados financieros anuales', tr && 'de la declaración anual de impuesto a la renta (Tax Return)'].filter(Boolean).join(' y '),
+          en: [fs && 'its annual financial statements', tr && 'its annual Tax Return'].filter(Boolean).join(' and '),
+        }[lang] || { pt: 'dos serviços contábeis e fiscais', es: 'de los servicios contables y fiscales', en: 'accounting and tax services' }[lang];
+        return { pt: '⟦Nome do cliente⟧ precisa ' + what + ' referentes ao exercício de ⟦ano⟧. A contabilidade (bookkeeping) é mantida pelo cliente, que fornece os extratos e a documentação.',
+                 es: '⟦Nombre del cliente⟧ necesita ' + what + ' correspondientes al ejercicio ⟦año⟧. La contabilidad (bookkeeping) la lleva el cliente, que proporciona los extractos y la documentación.',
+                 en: '⟦Client name⟧ needs ' + what + ' for the ⟦year⟧ financial year. The client keeps the books and provides the statements and documents.' }[lang];
+      }
       if (isNotarizationOnly) {
         return { pt: '⟦Nome do cliente⟧ precisa notarizar e apostilar ⟦quais documentos⟧ para uso em ⟦país de destino e finalidade⟧.',
                  es: '⟦Nombre del cliente⟧ necesita notarizar y apostillar ⟦qué documentos⟧ para su uso en ⟦país de destino y finalidad⟧.',
@@ -8685,19 +8706,20 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
             'Esta proposta apresenta o escopo, os documentos necessários e os honorários estimados dos serviços solicitados.\n' +
             'Nas próximas seções: o escopo do trabalho, o investimento' + (secMaintItems.length ? ' (one-off e anual)' : '') + ' e a documentação necessária para dar início ao processo.\n' +
             (secMaintItems.length ? 'Além dos serviços pontuais, a FGC permanece à frente da manutenção anual da sociedade como único ponto de contato e de forma a assegurar que todas as obrigações sejam cumpridas.\n' : '') +
-            'Fica um convite para conduzirmos esse processo com a agilidade e o cuidado que ' + (jurIn && !isNotarizationOnly ? 'a continuidade da sua estrutura ' + jurIn + ' exige' : 'ele exige') + '.\n' +
+            // A dissolution closes the structure, so no "continuidade" (Meire's B34 screenshot)
+            'Fica um convite para conduzirmos esse processo com a agilidade e o cuidado que ' + (jurIn && !isNotarizationOnly && !isDissolutionOnly ? 'a continuidade da sua estrutura ' + jurIn + ' exige' : 'ele exige') + '.\n' +
             'Agradecemos desde já essa oportunidade.',
         es: '⟦saudação⟧\n' +
             'Esta propuesta presenta el alcance, los documentos necesarios y los honorarios estimados de los servicios solicitados.\n' +
             'En las próximas secciones: el alcance del trabajo, la inversión y la documentación necesaria para iniciar el proceso.\n' +
             (secMaintItems.length ? 'Más allá del trabajo puntual, FGC permanece al frente del mantenimiento anual de la estructura como único punto de contacto, de modo que todas las obligaciones se cumplan.\n' : '') +
-            'Queda la invitación para conducir este proceso con la agilidad y el cuidado que ' + (secMaintItems.length ? 'la continuidad de su estructura exige' : 'requiere') + '.\n' +
+            'Queda la invitación para conducir este proceso con la agilidad y el cuidado que ' + (secMaintItems.length && !isDissolutionOnly ? 'la continuidad de su estructura exige' : 'requiere') + '.\n' +
             'Agradecemos desde ya esta oportunidad.',
         en: '⟦saudação⟧\n' +
             'This proposal sets out the scope, the required documents and the estimated fees for the services requested.\n' +
             'In the sections that follow: the scope of work, the investment, and the documentation needed to begin.\n' +
             (secMaintItems.length ? 'Beyond the one-off work, FGC stays ahead of the annual maintenance of the structure as your single point of contact, so that every obligation is met on time.\n' : '') +
-            'We would welcome the chance to run this process with the speed and care ' + (secMaintItems.length ? 'the continuity of your structure requires' : 'it requires') + '.\n' +
+            'We would welcome the chance to run this process with the speed and care ' + (secMaintItems.length && !isDissolutionOnly ? 'the continuity of your structure requires' : 'it requires') + '.\n' +
             'Thank you in advance for the opportunity.',
       }[lang]) : '',
       // Meire (B42): the third-party list must match the work. Government fees
@@ -8942,6 +8964,9 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
             let payItems = clauseSet.payment.items;
             if (isNotarizationOnly) {
               payItems = payItems.filter(i => !paymentKeywordsToRemove[lang].some(kw => i.includes(kw)));
+            } else if (!hasMaint) {
+              // "Caso os valores de manutenção anuais não sejam pagos…" only applies with maintenance
+              payItems = payItems.filter(i => !i.includes(paymentKeywordsToRemove[lang][0]));
             }
             // Meire (B38): AFR only applies to BVI, Tax Return only to US companies,
             // and Financial Statements not to US companies. Name only what applies.
@@ -8969,10 +8994,10 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
             return payItems.map(i => '<li>' + i + '</li>').join('');
           })()}</ul>
         </div>
-        <div class="terms-section">
+        ${timelinesItems.length > 1 ? `<div class="terms-section">
           <div class="terms-section-heading">${clauseSet.timelines.title}</div>
           <ul class="terms-list">${timelinesItems.map(i => '<li>' + i + '</li>').join('')}</ul>
-        </div>
+        </div>` : ''}
         <div class="terms-section">
           <div class="terms-section-heading">${clauseSet.compliance.title}</div>
           <ul class="terms-list">${(isNotarizationOnly ? clauseSet.compliance.items.slice(0, 1) : clauseSet.compliance.items).map(i => '<li>' + i + '</li>').join('')}</ul>
