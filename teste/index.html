@@ -666,6 +666,14 @@
     color: var(--dark); outline: none; text-align: right;
   }
   .price-override-input:focus { border-color: rgba(7,18,16,0.4); }
+  /* Meire read the table price as fixed (B40): a pencil and a dashed edge say
+     "type here"; the table price shows as a pale hint until a new one is typed */
+  .price-override-input {
+    cursor: text; border-style: dashed; padding-left: 18px;
+    background: rgba(226,255,0,0.12) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%23071210' stroke-opacity='.55' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 20h9'/%3E%3Cpath d='M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z'/%3E%3C/svg%3E") no-repeat 5px center;
+  }
+  .price-override-input::placeholder { color: rgba(7,18,16,0.38); font-style: italic; }
+  .price-override-input:not(:placeholder-shown) { border-style: solid; border-color: rgba(7,18,16,0.45); font-weight: 600; }
   .price-override-label { font-size: 9px; color: rgba(7,18,16,0.4); }
 
   .reestru-section-title {
@@ -1488,6 +1496,10 @@
       <input type="text" id="f-careof" class="field-input" placeholder="" oninput="debouncedUpdate()">
     </div>
     <div class="field-group">
+      <label class="field-label" data-key="lblExtra">Linha adicional (opcional)</label>
+      <input type="text" id="f-extra" class="field-input" placeholder="ex: nome da empresa" oninput="debouncedUpdate()">
+    </div>
+    <div class="field-group">
       <label class="field-label" data-key="lblDate">Data</label>
       <input type="date" id="f-date" class="field-input">
     </div>
@@ -1993,6 +2005,7 @@ var FGC_CONFIG = {
       transBVI: {
         title: "Transferência de Agente BVI",
         items: [
+          "Transferência do agente registrado local e da administração da sociedade para a FGC",
           "Revisão e análise da documentação societária",
           "Documentos de transferência",
           "Taxa governamental",
@@ -2003,6 +2016,7 @@ var FGC_CONFIG = {
       transFL: {
         title: "Transferência de Agente Florida LLC",
         items: [
+          "Transferência do agente registrado local e da administração da sociedade para a FGC",
           "Revisão e análise da documentação societária",
           "Documentos de transferência",
           "Fees do Agente Registrado",
@@ -2014,6 +2028,7 @@ var FGC_CONFIG = {
       transDE: {
         title: "Transferência de Agente Delaware LLC",
         items: [
+          "Transferência do agente registrado local e da administração da sociedade para a FGC",
           "Revisão e análise da documentação societária",
           "Documentos de transferência",
           "Fees do Agente Registrado",
@@ -2025,6 +2040,7 @@ var FGC_CONFIG = {
       transBahamas: {
         title: "Transferência de Agente Bahamas",
         items: [
+          "Transferência do agente registrado local e da administração da sociedade para a FGC",
           "Revisão e análise da documentação societária",
           "Documentos de transferência",
           "Taxa governamental",
@@ -2035,6 +2051,7 @@ var FGC_CONFIG = {
       transCayman: {
         title: "Transferência de Agente Cayman",
         items: [
+          "Transferência do agente registrado local e da administração da sociedade para a FGC",
           "Revisão e análise da documentação societária",
           "Documentos de transferência",
           "Taxa governamental",
@@ -2045,6 +2062,7 @@ var FGC_CONFIG = {
       transNevis: {
         title: "Transferência de Agente Nevis",
         items: [
+          "Transferência do agente registrado local e da administração da sociedade para a FGC",
           "Revisão e análise da documentação societária",
           "Documentos de transferência",
           "Taxa governamental",
@@ -2054,37 +2072,38 @@ var FGC_CONFIG = {
       },
       transBVIRA: {
         title: "Transferência BVI (sem troca de agente)",
-        items: ["Transferência administrativa sem alteração de agente registrado"],
+        items: ["Transferência da administração da sociedade para a FGC; o agente registrado local permanece o mesmo"],
         note: "Cortesia"
       },
       transBahamasRA: {
         title: "Transferência Bahamas (sem troca de agente)",
-        items: ["Transferência administrativa sem alteração de agente registrado"],
+        items: ["Transferência da administração da sociedade para a FGC; o agente registrado local permanece o mesmo"],
         note: "Cortesia"
       },
       transCaymanRA: {
         title: "Transferência Cayman (sem troca de agente)",
-        items: ["Transferência administrativa sem alteração de agente registrado"],
+        items: ["Transferência da administração da sociedade para a FGC; o agente registrado local permanece o mesmo"],
         note: "Cortesia"
       },
       transNevisRA: {
         title: "Transferência Nevis (sem troca de agente)",
-        items: ["Transferência administrativa sem alteração de agente registrado"],
+        items: ["Transferência da administração da sociedade para a FGC; o agente registrado local permanece o mesmo"],
         note: "Cortesia"
       },
       transFLRA: {
         title: "Transferência FL LLC (sem troca de agente)",
-        items: ["Transferência administrativa sem alteração de agente registrado"],
+        items: ["Transferência da administração da sociedade para a FGC; o agente registrado local permanece o mesmo"],
         note: "Cortesia"
       },
       transDERA: {
         title: "Transferência DE LLC (sem troca de agente)",
-        items: ["Transferência administrativa sem alteração de agente registrado"],
+        items: ["Transferência da administração da sociedade para a FGC; o agente registrado local permanece o mesmo"],
         note: "Cortesia"
       },
       transNY: {
         title: "Transferência de Agente New York LLC",
         items: [
+          "Transferência do agente registrado local e da administração da sociedade para a FGC",
           "Revisão e análise da documentação societária",
           "Documentos de transferência",
           "Fees do Agente Registrado",
@@ -2096,6 +2115,7 @@ var FGC_CONFIG = {
       transSD: {
         title: "Transferência de Agente South Dakota LLC",
         items: [
+          "Transferência do agente registrado local e da administração da sociedade para a FGC",
           "Revisão e análise da documentação societária",
           "Documentos de transferência",
           "Fees do Agente Registrado",
@@ -2107,6 +2127,7 @@ var FGC_CONFIG = {
       transWI: {
         title: "Transferência de Agente Wisconsin LLC",
         items: [
+          "Transferência do agente registrado local e da administração da sociedade para a FGC",
           "Revisão e análise da documentação societária",
           "Documentos de transferência",
           "Fees do Agente Registrado",
@@ -2118,6 +2139,7 @@ var FGC_CONFIG = {
       transMN: {
         title: "Transferência de Agente Minnesota LLC",
         items: [
+          "Transferência do agente registrado local e da administração da sociedade para a FGC",
           "Revisão e análise da documentação societária",
           "Documentos de transferência",
           "Fees do Agente Registrado",
@@ -2312,14 +2334,14 @@ var FGC_CONFIG = {
         note: null
       },
       dissolucaoFLTR: {
-        title: "Tax Return Final (FL LLC)",
+        title: "Tax Return Final (LLC)",
         items: [
           "Tax Return final referente ao período de operação da empresa até a data de dissolução"
         ],
         note: null
       },
       dissolucaoDEFS: {
-        title: "Demonstrações Financeiras Final (DE)",
+        title: "Demonstrações Financeiras Final (LLC)",
         items: [
           "Demonstrações Financeiras finais referentes ao período de operação da empresa até a data de dissolução"
         ],
@@ -2609,6 +2631,7 @@ var FGC_CONFIG = {
       transBVI: {
         title: "Transferencia de Agente BVI",
         items: [
+          "Transferencia del agente registrado local y de la administración de la sociedad a FGC",
           "Revisión y análisis de la documentación societaria",
           "Documentos de transferencia",
           "Tasa gubernamental",
@@ -2619,6 +2642,7 @@ var FGC_CONFIG = {
       transFL: {
         title: "Transferencia de Agente Florida LLC",
         items: [
+          "Transferencia del agente registrado local y de la administración de la sociedad a FGC",
           "Revisión y análisis de la documentación societaria",
           "Documentos de transferencia",
           "Fees del Agente Registrado",
@@ -2630,6 +2654,7 @@ var FGC_CONFIG = {
       transDE: {
         title: "Transferencia de Agente Delaware LLC",
         items: [
+          "Transferencia del agente registrado local y de la administración de la sociedad a FGC",
           "Revisión y análisis de la documentación societaria",
           "Documentos de transferencia",
           "Fees del Agente Registrado",
@@ -2641,6 +2666,7 @@ var FGC_CONFIG = {
       transBahamas: {
         title: "Transferencia de Agente Bahamas",
         items: [
+          "Transferencia del agente registrado local y de la administración de la sociedad a FGC",
           "Revisión y análisis de la documentación societaria",
           "Documentos de transferencia",
           "Tasa gubernamental",
@@ -2651,6 +2677,7 @@ var FGC_CONFIG = {
       transCayman: {
         title: "Transferencia de Agente Cayman",
         items: [
+          "Transferencia del agente registrado local y de la administración de la sociedad a FGC",
           "Revisión y análisis de la documentación societaria",
           "Documentos de transferencia",
           "Tasa gubernamental",
@@ -2661,6 +2688,7 @@ var FGC_CONFIG = {
       transNevis: {
         title: "Transferencia de Agente Nevis",
         items: [
+          "Transferencia del agente registrado local y de la administración de la sociedad a FGC",
           "Revisión y análisis de la documentación societaria",
           "Documentos de transferencia",
           "Tasa gubernamental",
@@ -2670,37 +2698,38 @@ var FGC_CONFIG = {
       },
       transBVIRA: {
         title: "Transferencia BVI (sin cambio de agente)",
-        items: ["Transferencia administrativa sin cambio de agente registrado"],
+        items: ["Transferencia de la administración de la sociedad a FGC; el agente registrado local se mantiene"],
         note: "Cortesía"
       },
       transBahamasRA: {
         title: "Transferencia Bahamas (sin cambio de agente)",
-        items: ["Transferencia administrativa sin cambio de agente registrado"],
+        items: ["Transferencia de la administración de la sociedad a FGC; el agente registrado local se mantiene"],
         note: "Cortesía"
       },
       transCaymanRA: {
         title: "Transferencia Cayman (sin cambio de agente)",
-        items: ["Transferencia administrativa sin cambio de agente registrado"],
+        items: ["Transferencia de la administración de la sociedad a FGC; el agente registrado local se mantiene"],
         note: "Cortesía"
       },
       transNevisRA: {
         title: "Transferencia Nevis (sin cambio de agente)",
-        items: ["Transferencia administrativa sin cambio de agente registrado"],
+        items: ["Transferencia de la administración de la sociedad a FGC; el agente registrado local se mantiene"],
         note: "Cortesía"
       },
       transFLRA: {
         title: "Transferencia FL LLC (sin cambio de agente)",
-        items: ["Transferencia administrativa sin cambio de agente registrado"],
+        items: ["Transferencia de la administración de la sociedad a FGC; el agente registrado local se mantiene"],
         note: "Cortesía"
       },
       transDERA: {
         title: "Transferencia DE LLC (sin cambio de agente)",
-        items: ["Transferencia administrativa sin cambio de agente registrado"],
+        items: ["Transferencia de la administración de la sociedad a FGC; el agente registrado local se mantiene"],
         note: "Cortesía"
       },
       transNY: {
         title: "Transferencia de Agente New York LLC",
         items: [
+          "Transferencia del agente registrado local y de la administración de la sociedad a FGC",
           "Revisión y análisis de la documentación societaria",
           "Documentos de transferencia",
           "Fees del Agente Registrado",
@@ -2712,6 +2741,7 @@ var FGC_CONFIG = {
       transSD: {
         title: "Transferencia de Agente South Dakota LLC",
         items: [
+          "Transferencia del agente registrado local y de la administración de la sociedad a FGC",
           "Revisión y análisis de la documentación societaria",
           "Documentos de transferencia",
           "Fees del Agente Registrado",
@@ -2723,6 +2753,7 @@ var FGC_CONFIG = {
       transWI: {
         title: "Transferencia de Agente Wisconsin LLC",
         items: [
+          "Transferencia del agente registrado local y de la administración de la sociedad a FGC",
           "Revisión y análisis de la documentación societaria",
           "Documentos de transferencia",
           "Fees del Agente Registrado",
@@ -2734,6 +2765,7 @@ var FGC_CONFIG = {
       transMN: {
         title: "Transferencia de Agente Minnesota LLC",
         items: [
+          "Transferencia del agente registrado local y de la administración de la sociedad a FGC",
           "Revisión y análisis de la documentación societaria",
           "Documentos de transferencia",
           "Fees del Agente Registrado",
@@ -2929,14 +2961,14 @@ var FGC_CONFIG = {
         note: null
       },
       dissolucaoFLTR: {
-        title: "Tax Return Final (FL LLC)",
+        title: "Tax Return Final (LLC)",
         items: [
           "Tax Return final correspondiente al período de operación de la empresa hasta la fecha de disolución"
         ],
         note: null
       },
       dissolucaoDEFS: {
-        title: "Estados Financieros Final (DE)",
+        title: "Estados Financieros Final (LLC)",
         items: [
           "Estados Financieros finales correspondientes al período de operación de la empresa hasta la fecha de disolución"
         ],
@@ -3226,6 +3258,7 @@ var FGC_CONFIG = {
       transBVI: {
         title: "BVI Registered Agent Transfer",
         items: [
+          "Transfer of the local registered agent and of the company administration to FGC",
           "Review and analysis of corporate documentation",
           "Transfer documents",
           "Government fee",
@@ -3236,6 +3269,7 @@ var FGC_CONFIG = {
       transFL: {
         title: "Florida LLC Registered Agent Transfer",
         items: [
+          "Transfer of the local registered agent and of the company administration to FGC",
           "Review and analysis of corporate documentation",
           "Transfer documents",
           "Registered Agent fees",
@@ -3247,6 +3281,7 @@ var FGC_CONFIG = {
       transDE: {
         title: "Delaware LLC Registered Agent Transfer",
         items: [
+          "Transfer of the local registered agent and of the company administration to FGC",
           "Review and analysis of corporate documentation",
           "Transfer documents",
           "Registered Agent fees",
@@ -3258,6 +3293,7 @@ var FGC_CONFIG = {
       transBahamas: {
         title: "Bahamas Registered Agent Transfer",
         items: [
+          "Transfer of the local registered agent and of the company administration to FGC",
           "Review and analysis of corporate documentation",
           "Transfer documents",
           "Government fee",
@@ -3268,6 +3304,7 @@ var FGC_CONFIG = {
       transCayman: {
         title: "Cayman Registered Agent Transfer",
         items: [
+          "Transfer of the local registered agent and of the company administration to FGC",
           "Review and analysis of corporate documentation",
           "Transfer documents",
           "Government fee",
@@ -3278,6 +3315,7 @@ var FGC_CONFIG = {
       transNevis: {
         title: "Nevis Registered Agent Transfer",
         items: [
+          "Transfer of the local registered agent and of the company administration to FGC",
           "Review and analysis of corporate documentation",
           "Transfer documents",
           "Government fee",
@@ -3287,37 +3325,38 @@ var FGC_CONFIG = {
       },
       transBVIRA: {
         title: "BVI Transfer (no agent change)",
-        items: ["Administrative transfer without change of registered agent"],
+        items: ["Transfer of the company administration to FGC; the local registered agent stays the same"],
         note: "Complimentary"
       },
       transBahamasRA: {
         title: "Bahamas Transfer (no agent change)",
-        items: ["Administrative transfer without change of registered agent"],
+        items: ["Transfer of the company administration to FGC; the local registered agent stays the same"],
         note: "Complimentary"
       },
       transCaymanRA: {
         title: "Cayman Transfer (no agent change)",
-        items: ["Administrative transfer without change of registered agent"],
+        items: ["Transfer of the company administration to FGC; the local registered agent stays the same"],
         note: "Complimentary"
       },
       transNevisRA: {
         title: "Nevis Transfer (no agent change)",
-        items: ["Administrative transfer without change of registered agent"],
+        items: ["Transfer of the company administration to FGC; the local registered agent stays the same"],
         note: "Complimentary"
       },
       transFLRA: {
         title: "FL LLC Transfer (no agent change)",
-        items: ["Administrative transfer without change of registered agent"],
+        items: ["Transfer of the company administration to FGC; the local registered agent stays the same"],
         note: "Complimentary"
       },
       transDERA: {
         title: "DE LLC Transfer (no agent change)",
-        items: ["Administrative transfer without change of registered agent"],
+        items: ["Transfer of the company administration to FGC; the local registered agent stays the same"],
         note: "Complimentary"
       },
       transNY: {
         title: "New York LLC Registered Agent Transfer",
         items: [
+          "Transfer of the local registered agent and of the company administration to FGC",
           "Review and analysis of corporate documentation",
           "Transfer documents",
           "Registered Agent fees",
@@ -3329,6 +3368,7 @@ var FGC_CONFIG = {
       transSD: {
         title: "South Dakota LLC Registered Agent Transfer",
         items: [
+          "Transfer of the local registered agent and of the company administration to FGC",
           "Review and analysis of corporate documentation",
           "Transfer documents",
           "Registered Agent fees",
@@ -3340,6 +3380,7 @@ var FGC_CONFIG = {
       transWI: {
         title: "Wisconsin LLC Registered Agent Transfer",
         items: [
+          "Transfer of the local registered agent and of the company administration to FGC",
           "Review and analysis of corporate documentation",
           "Transfer documents",
           "Registered Agent fees",
@@ -3351,6 +3392,7 @@ var FGC_CONFIG = {
       transMN: {
         title: "Minnesota LLC Registered Agent Transfer",
         items: [
+          "Transfer of the local registered agent and of the company administration to FGC",
           "Review and analysis of corporate documentation",
           "Transfer documents",
           "Registered Agent fees",
@@ -3546,14 +3588,14 @@ var FGC_CONFIG = {
         note: null
       },
       dissolucaoFLTR: {
-        title: "Final Tax Return (FL LLC)",
+        title: "Final Tax Return (LLC)",
         items: [
           "Final Tax Return covering the company's operating period up to the dissolution date"
         ],
         note: null
       },
       dissolucaoDEFS: {
-        title: "Final Financial Statements (DE)",
+        title: "Final Financial Statements (LLC)",
         items: [
           "Final Financial Statements covering the company's operating period up to the dissolution date"
         ],
@@ -4266,13 +4308,15 @@ var FGC_CONFIG = {
       { key: 'dissolucaoCayman',   label: 'svcDissolucaoCayman',   standalone: true },
       { key: 'dissolucaoNevis',    label: 'svcDissolucaoNevis',    standalone: true },
       { key: 'dissolucaoFL',       label: 'svcDissolucaoFL',       standalone: true },
-      { key: 'dissolucaoFLTR',     label: 'svcDissolucaoFLTR',     standalone: true, parentKey: 'dissolucaoFL' },
       { key: 'dissolucaoDE',       label: 'svcDissolucaoDE',       standalone: true },
-      { key: 'dissolucaoDEFS',     label: 'svcDissolucaoDEFS',     standalone: true, parentKey: 'dissolucaoDE' },
       { key: 'dissolucaoNY',       label: 'svcDissolucaoNY',       standalone: true },
       { key: 'dissolucaoSD',       label: 'svcDissolucaoSD',       standalone: true },
       { key: 'dissolucaoWI',       label: 'svcDissolucaoWI',       standalone: true },
       { key: 'dissolucaoMN',       label: 'svcDissolucaoMN',       standalone: true },
+      // Final Tax Return / Financial Statements apply to any US dissolution, not
+      // just Florida / Delaware (Meire, B39). Keys kept so saved drafts still load.
+      { key: 'dissolucaoFLTR',     label: 'svcDissolucaoFLTR',     standalone: true, parentAnyOf: ['dissolucaoFL','dissolucaoDE','dissolucaoNY','dissolucaoSD','dissolucaoWI','dissolucaoMN'] },
+      { key: 'dissolucaoDEFS',     label: 'svcDissolucaoDEFS',     standalone: true, parentAnyOf: ['dissolucaoFL','dissolucaoDE','dissolucaoNY','dissolucaoSD','dissolucaoWI','dissolucaoMN'] },
       { key: 'reestru', label: 'svcReestru', standalone: true },
       { key: 'customDissolution', label: 'svcCustomDissolution', standalone: true },
     ]},
@@ -4390,8 +4434,8 @@ const T = {
     svcDissolucaoSD: "Dissolução SD LLC",
     svcDissolucaoWI: "Dissolução WI LLC",
     svcDissolucaoMN: "Dissolução MN LLC",
-    svcDissolucaoFLTR: "Tax Return Final (FL LLC)",
-    svcDissolucaoDEFS: "Demonstrações Financeiras Final (DE)",
+    svcDissolucaoFLTR: "Tax Return Final (LLC)",
+    svcDissolucaoDEFS: "Demonstrações Financeiras Final (LLC)",
     svcReestru:           'Reestruturação Societária',
     svcReestruDiretor:    'Inclusão / Exclusão de Diretor',
     svcReestruMembers:    'Inclusão / Exclusão de Sócio',
@@ -4840,8 +4884,8 @@ contact@fgcadvisors.com`;
     svcDissolucaoSD: "Disolución SD LLC",
     svcDissolucaoWI: "Disolución WI LLC",
     svcDissolucaoMN: "Disolución MN LLC",
-    svcDissolucaoFLTR: "Tax Return Final (FL LLC)",
-    svcDissolucaoDEFS: "Estados Financieros Final (DE)",
+    svcDissolucaoFLTR: "Tax Return Final (LLC)",
+    svcDissolucaoDEFS: "Estados Financieros Final (LLC)",
     svcReestru:           'Reestructuración Societaria',
     svcReestruDiretor:    'Inclusión / Exclusión de Director',
     svcReestruMembers:    'Inclusión / Exclusión de Socio',
@@ -5102,8 +5146,8 @@ contact@fgcadvisors.com`;
     svcDissolucaoSD: "SD LLC Dissolution",
     svcDissolucaoWI: "WI LLC Dissolution",
     svcDissolucaoMN: "MN LLC Dissolution",
-    svcDissolucaoFLTR: "Final Tax Return (FL LLC)",
-    svcDissolucaoDEFS: "Final Financial Statements (DE)",
+    svcDissolucaoFLTR: "Final Tax Return (LLC)",
+    svcDissolucaoDEFS: "Final Financial Statements (LLC)",
     svcReestru:           'Corporate Restructuring',
     svcReestruDiretor:    'Director Appointment / Removal',
     svcReestruMembers:    'Member Appointment / Removal',
@@ -5341,13 +5385,13 @@ let understanding      = { what: '', objective: '', scope: '', recommendation: '
 let requiredDocsIntro  = '';
 // Bump whenever the generated document structure changes. loadDraft replays a
 // draft's stored HTML only when it was produced by this same format.
-const DOC_FORMAT = 5;
+const DOC_FORMAT = 6;
 
 // ── Build stamp ──────────────────────────────────────────────────────
 // Shown in the sidebar so the running build is always identifiable, and
 // compared against the deployed file so a stale cached copy announces
 // itself instead of silently showing an old proposal format.
-const BUILD = 'v2-2026-10-07-e';
+const BUILD = 'v2-2026-10-21-b';
 
 // Served from /teste/ while v2 is being tested alongside the live version.
 // Same site, so drafts are shared with live; the autosave is kept apart so a
@@ -5829,7 +5873,7 @@ function currentJurisdictions() {
   const found = [];
   const offshore = [
     [['cayman','transCayman','transCaymanRA','dissolucaoCayman'], 'Cayman', 'de Cayman', 'em Cayman', 'Registrar of Companies'],
-    [['bvi','transBVI','transBVIRA','dissolucaoBVI'],             'BVI',    'das Ilhas Virgens Britânicas', 'nas Ilhas Virgens Britânicas', 'Registrar of Corporate Affairs'],
+    [['bvi','transBVI','transBVIRA','dissolucaoBVI'],             'BVI',    'das Ilhas Virgens Britânicas', 'nas Ilhas Virgens Britânicas', 'Registry of Corporate Affairs'],
     [['bahamas','transBahamas','transBahamasRA','dissolucaoBahamas'], 'Bahamas', 'das Bahamas', 'nas Bahamas', 'Registrar General'],
     [['nevis','transNevis','transNevisRA','dissolucaoNevis'],      'Nevis',  'de Nevis', 'em Nevis', 'Registrar of Companies'],
   ];
@@ -6319,6 +6363,21 @@ function getSalutation() {
   if (gender === 'F') return L.salutationF;
   return L.salutationNeutral;
 }
+// Price boxes: on focus, an empty box takes the table price (selected), so the
+// advisor sees it is editable and simply types the new amount (Meire, B40)
+document.addEventListener('focusin', function (e) {
+  const el = e.target;
+  if (!el.classList || !el.classList.contains('price-override-input')) return;
+  if (el.value === '' && el.placeholder) { el.value = el.placeholder; }
+  setTimeout(function () { try { el.select(); } catch (_) {} }, 0);
+});
+document.addEventListener('mouseover', function (e) {
+  const el = e.target;
+  if (el.classList && el.classList.contains('price-override-input') && !el.title) {
+    el.title = { pt: 'Clique para alterar o valor nesta proposta', es: 'Haga clic para cambiar el valor en esta propuesta', en: 'Click to change the amount for this proposal' }[lang];
+  }
+});
+
 // ── Bespoke scope functions ──
 function setScopeNote(key, val) {
   if (val.trim()) scopeNotes[key] = val;
@@ -6983,6 +7042,7 @@ function buildServiceToggle(svc) {
   }
   // Hide child services (e.g., dissolution tax) when parent is not selected
   if (svc.parentKey && !state[svc.parentKey]) return '';
+  if (svc.parentAnyOf && !svc.parentAnyOf.some(k => state[k])) return '';
   const checked = state[svc.key] ? 'checked' : '';
   const svcData = FGC_CONFIG.services[svc.key] || {};
   let currentPrice = svcData.price;
@@ -7074,8 +7134,11 @@ function toggleService(key, val) {
     if (key === 'tr3rd') state.tr = false;
   }
   // Auto-toggle dissolution tax services
-  if (key === 'dissolucaoFL') state.dissolucaoFLTR = val;
-  if (key === 'dissolucaoDE') state.dissolucaoDEFS = val;
+  // Florida still ticks the final Tax Return and Delaware the final FS by default;
+  // both stay available for every US dissolution, and clear when none is left
+  if (key === 'dissolucaoFL' && val) state.dissolucaoFLTR = true;
+  if (key === 'dissolucaoDE' && val) state.dissolucaoDEFS = true;
+  if (!['dissolucaoFL','dissolucaoDE','dissolucaoNY','dissolucaoSD','dissolucaoWI','dissolucaoMN'].some(k => state[k])) { state.dissolucaoFLTR = false; state.dissolucaoDEFS = false; }
   // (reestru is now a standalone toggle — no sub-keys)
   // (AFR is no longer auto-selected when BVI is chosen — user selects manually)
   renderServicePicker();
@@ -7213,6 +7276,7 @@ function writeAutoSave() {
       client,
       clientEmail: (document.getElementById('f-email') || {}).value || '',
       careOf: (document.getElementById('f-careof') || {}).value || '',
+      extraLine: (document.getElementById('f-extra') || {}).value || '',
       advisor: (document.getElementById('f-advisor') || {}).value || '',
       date: (document.getElementById('f-date') || {}).value || '',
       lang,
@@ -7278,6 +7342,7 @@ function restoreAutoSave() {
     document.getElementById('f-client').value  = snap.client || '';
     if (document.getElementById('f-email'))   document.getElementById('f-email').value   = snap.clientEmail || '';
     if (document.getElementById('f-careof'))  document.getElementById('f-careof').value  = snap.careOf || '';
+    if (document.getElementById('f-extra'))   document.getElementById('f-extra').value   = snap.extraLine || '';
     document.getElementById('f-advisor').value = snap.advisor || '';
     document.getElementById('f-date').value    = snap.date || '';
     const notesEl = document.getElementById('f-notes');
@@ -7570,7 +7635,8 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
     secMaintItems.forEach(it => {
       augmented.push(it);
       if (it.recurring) {
-        augmented.push({ key: it.key + 'CY', label: it.label + cyLabel, amount: it.amount, pay: L.payOnAcceptance, recurring: false, group: it.group, shareRef: true });
+        // refOf: the current-year row carries its parent's item number (Meire, B36)
+        augmented.push({ key: it.key + 'CY', label: it.label + cyLabel, amount: it.amount, pay: L.payOnAcceptance, recurring: false, group: it.group, shareRef: true, refOf: it });
       }
     });
     secMaintItems = augmented;
@@ -7668,13 +7734,14 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
   if (state.dissolucaoCayman)   { const q=getQty('dissolucaoCayman');   sec3Items.push({ key:'dissolucaoCayman',   label: (q>1?q+'x ':'')+termTitle('dissolucaoCayman'),   amount: getPrice('dissolucaoCayman',   FGC_CONFIG.services.dissolucaoCayman.price)*q,   pay: L.payOnAcceptance, qty:q }); }
   if (state.dissolucaoNevis)    { const q=getQty('dissolucaoNevis');    sec3Items.push({ key:'dissolucaoNevis',    label: (q>1?q+'x ':'')+termTitle('dissolucaoNevis'),    amount: getPrice('dissolucaoNevis',    FGC_CONFIG.services.dissolucaoNevis.price)*q,    pay: L.payOnAcceptance, qty:q }); }
   if (state.dissolucaoFL)       { const q=getQty('dissolucaoFL');       sec3Items.push({ key:'dissolucaoFL',       label: (q>1?q+'x ':'')+termTitle('dissolucaoFL'),       amount: getPrice('dissolucaoFL',       FGC_CONFIG.services.dissolucaoFL.price)*q,       pay: L.payOnAcceptance, qty:q }); }
-  if (state.dissolucaoFLTR)     { const q=getQty('dissolucaoFLTR');     sec3Items.push({ key:'dissolucaoFLTR',     label: (q>1?q+'x ':'')+tl('svcDissolucaoFLTR'),        amount: getPrice('dissolucaoFLTR',     FGC_CONFIG.services.dissolucaoFLTR.price)*q,     pay: L.payOnAcceptance, qty:q }); }
   if (state.dissolucaoDE)       { const q=getQty('dissolucaoDE');       sec3Items.push({ key:'dissolucaoDE',       label: (q>1?q+'x ':'')+termTitle('dissolucaoDE'),       amount: getPrice('dissolucaoDE',       FGC_CONFIG.services.dissolucaoDE.price)*q,       pay: L.payOnAcceptance, qty:q }); }
-  if (state.dissolucaoDEFS)     { const q=getQty('dissolucaoDEFS');     sec3Items.push({ key:'dissolucaoDEFS',     label: (q>1?q+'x ':'')+tl('svcDissolucaoDEFS'),        amount: getPrice('dissolucaoDEFS',     FGC_CONFIG.services.dissolucaoDEFS.price)*q,     pay: L.payOnAcceptance, qty:q }); }
   if (state.dissolucaoNY)       { const q=getQty('dissolucaoNY');       sec3Items.push({ key:'dissolucaoNY',       label: (q>1?q+'x ':'')+termTitle('dissolucaoNY'),       amount: getPrice('dissolucaoNY',       FGC_CONFIG.services.dissolucaoNY.price)*q,       pay: L.payOnAcceptance, qty:q }); }
   if (state.dissolucaoSD)       { const q=getQty('dissolucaoSD');       sec3Items.push({ key:'dissolucaoSD',       label: (q>1?q+'x ':'')+termTitle('dissolucaoSD'),       amount: getPrice('dissolucaoSD',       FGC_CONFIG.services.dissolucaoSD.price)*q,       pay: L.payOnAcceptance, qty:q }); }
   if (state.dissolucaoWI)       { const q=getQty('dissolucaoWI');       sec3Items.push({ key:'dissolucaoWI',       label: (q>1?q+'x ':'')+termTitle('dissolucaoWI'),       amount: getPrice('dissolucaoWI',       FGC_CONFIG.services.dissolucaoWI.price)*q,       pay: L.payOnAcceptance, qty:q }); }
   if (state.dissolucaoMN)       { const q=getQty('dissolucaoMN');       sec3Items.push({ key:'dissolucaoMN',       label: (q>1?q+'x ':'')+termTitle('dissolucaoMN'),       amount: getPrice('dissolucaoMN',       FGC_CONFIG.services.dissolucaoMN.price)*q,       pay: L.payOnAcceptance, qty:q }); }
+  // Final Tax Return / FS follow the dissolutions they belong to (any US state)
+  if (state.dissolucaoFLTR)     { const q=getQty('dissolucaoFLTR');     sec3Items.push({ key:'dissolucaoFLTR',     label: (q>1?q+'x ':'')+tl('svcDissolucaoFLTR'),        amount: getPrice('dissolucaoFLTR',     FGC_CONFIG.services.dissolucaoFLTR.price)*q,     pay: L.payOnAcceptance, qty:q }); }
+  if (state.dissolucaoDEFS)     { const q=getQty('dissolucaoDEFS');     sec3Items.push({ key:'dissolucaoDEFS',     label: (q>1?q+'x ':'')+tl('svcDissolucaoDEFS'),        amount: getPrice('dissolucaoDEFS',     FGC_CONFIG.services.dissolucaoDEFS.price)*q,     pay: L.payOnAcceptance, qty:q }); }
   // Custom dissolution entries
   if (state.customDissolution) {
     customDissolutions.forEach((d) => {
@@ -7704,6 +7771,22 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
       });
     });
   }
+
+  // Meire (B32): item numbers must run in the order the tables show them. Tables
+  // list Private Investment Company rows, then US Company rows, then the rest, so
+  // every list is put in that order (stable) before anything is numbered.
+  // Dissolutions are tagged by jurisdiction so they get the same PIC/US layout.
+  sec3Items.forEach(it => {
+    if (it.group) return;
+    if (/^dissolucao(BVI|Bahamas|Cayman|Nevis)$/.test(it.key)) it.group = 'pic';
+    else if (/^dissolucao(FL|DE|NY|SD|WI|MN|FLTR|DEFS)$/.test(it.key)) it.group = 'us';
+  });
+  const GROUP_ORDER = { pic: 0, us: 1 };
+  const byGroup = arr => arr.map((it, i) => [it, i])
+    .sort((a, b) => ((GROUP_ORDER[a[0].group] ?? 2) - (GROUP_ORDER[b[0].group] ?? 2)) || (a[1] - b[1]))
+    .map(x => x[0]);
+  sec1Items = byGroup(sec1Items); sec3Items = byGroup(sec3Items);
+  secMaintItems = byGroup(secMaintItems); secAcctItems = byGroup(secAcctItems);
 
   // ── Dynamic section numbering ──
   const ROMAN = ['I','II','III','IV','V','VI','VII','VIII','IX','X'];
@@ -7769,15 +7852,38 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
   // (as it did in the previous version, Meire's feedback). Only a proposal with
   // no maintenance keeps it in the one-off section.
   const acctInMaint = secMaintItems.length > 0 && secAcctItems.length > 0;
+  // One-off accounting (prior years, paid on acceptance) belongs with the other
+  // one-off fees in Seção 02; only the recurring part sits with maintenance.
+  const acctOneOff    = acctInMaint ? secAcctItems.filter(it => it.pay === L.payOnAcceptance) : secAcctItems;
+  const acctRecurring = acctInMaint ? secAcctItems.filter(it => it.pay !== L.payOnAcceptance) : [];
   const hasOneOffFees = sec1Items.length > 0 || secSuccItems.length > 0
-                     || (secAcctItems.length > 0 && !acctInMaint) || sec3Items.length > 0;
+                     || acctOneOff.length > 0 || sec3Items.length > 0;
   const _oneOffCandidates = [
     hasSec1Content         ? sec1SubLabel     : '',
     secSuccItems.length    ? secSuccSubLabel  : '',
-    (secAcctItems.length && !acctInMaint) ? secAcctSubLabel : '',
+    acctOneOff.length      ? secAcctSubLabel  : '',
     sec3Items.length       ? sec3SubLabel     : '',
   ].filter(Boolean);
-  const oneOffSecTitle = (oneOffTitle || '').trim() || _oneOffCandidates[0] || feeSecTitle;
+  // Meire (B32): "Constituição e Transferência" sat over a Dissolução too. The
+  // title names every kind of work in the section; past three it says "Serviços".
+  const _sec2Atoms = [];
+  if (hasSec1Content) {
+    if (hasFormation && hasTransfer) _sec2Atoms.push({ pt: 'Constituição', es: 'Constitución', en: 'Formation' }[lang], { pt: 'Transferência', es: 'Transferencia', en: 'Transfer' }[lang]);
+    else _sec2Atoms.push(sec1SubLabel);
+  }
+  if (secSuccItems.length) _sec2Atoms.push(secSuccSubLabel);
+  if (acctOneOff.length) _sec2Atoms.push(secAcctSubLabel);
+  if (sec3Items.length) {
+    const hasR = sec3Items.some(i => i.key === 'reestru'), hasD = sec3Items.some(i => i.key.startsWith('dissolucao') || i.key === 'customDissolution');
+    if (hasR && hasD) _sec2Atoms.push({ pt: 'Dissolução', es: 'Disolución', en: 'Dissolution' }[lang], { pt: 'Reestruturação', es: 'Reestructuración', en: 'Restructuring' }[lang]);
+    else _sec2Atoms.push(sec3SubLabel);
+  }
+  const _and = { pt: ' e ', es: ' y ', en: ' & ' }[lang];
+  const _sec2Joined = _sec2Atoms.length <= 1 ? (_sec2Atoms[0] || '')
+    : _sec2Atoms.length <= 3 ? _sec2Atoms.slice(0, -1).join(', ') + _and + _sec2Atoms[_sec2Atoms.length - 1]
+    : { pt: 'Serviços', es: 'Servicios', en: 'Services' }[lang];
+  const oneOffSecTitle = (oneOffTitle || '').trim() || _sec2Joined || feeSecTitle;
+  const _sec2GroupCount = [hasSec1Content, secSuccItems.length > 0, acctOneOff.length > 0, sec3Items.length > 0].filter(Boolean).length;
   const secNotIncNum = 3;
   const secTCTitle = L.secTCLabel;
   // Section numbers are assigned as the document renders, so optional
@@ -8002,14 +8108,14 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
     en: 'Management of critical deadlines, with proactive alerts to prevent fines or penalties',
   };
   // Accounting terms (here only when they render in the one-off section)
-  if (!acctInMaint) buildTermsForItems(secAcctItems, { partnerKey: 'tr' });
+  if (acctOneOff.length) buildTermsForItems(acctOneOff, { partnerKey: 'tr' });
   // Sec III terms
   buildTermsForItems(sec3Items);
   // Maintenance is built last because it renders last, under Seção 03 — item
   // numbers are assigned here, so build order has to match document order.
   const _termsMarkA = termsHTML.length;
   buildTermsForItems(secMaintItems, state.will ? { extraBullet: { key: 'bviMaint', text: willMaintExtra[lang] } } : null);
-  if (acctInMaint) buildTermsForItems(secAcctItems, { partnerKey: 'tr' });
+  if (acctRecurring.length) buildTermsForItems(acctRecurring, { partnerKey: 'tr' });
   function collapseSingleScopeHeading(html) {
     const count = (html.match(/class="terms-section-heading/g) || []).length;
     if (count !== 1) return html;   // keep headings when they tell services apart
@@ -8173,7 +8279,7 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
       return `
       <tr>
         <td>
-          <div class="row-label">${(!it.noRef && !it.shareRef && (it.termsRef || it.num)) ? (it.termsRef || it.num) + '. ' : ''}${it.label}</div>
+          <div class="row-label">${it.refOf && (it.refOf.termsRef || it.refOf.num) ? (it.refOf.termsRef || it.refOf.num) + '. ' : (!it.noRef && !it.shareRef && (it.termsRef || it.num)) ? (it.termsRef || it.num) + '. ' : ''}${it.label}</div>
         </td>
         <td>
           <div class="row-payment">${(it.pay||'').split('\n')[0]}</div>
@@ -8211,14 +8317,18 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
     const year2Total = items.filter(it => it.recurring || (it.pay !== L.payOnAcceptance && !it.complimentary && it.amount != null)).reduce((s, it) => s + safeAmt(it), 0);
     if (year1Total <= 0 && year2Total <= 0) return '';
     const lblYear2 = { pt: 'Valor anual a partir do 2º ano', es: 'Valor anual a partir del 2º año', en: 'Annual Total from Year 2' }[lang];
+    const lblYear1 = { pt: 'Valor no 1º ano (na aceitação)', es: 'Valor en el 1er año (en la aceptación)', en: 'Year 1 total (on acceptance)' }[lang];
+    // With a current-year row the client pays in year 1 AND from year 2: say both
+    // plainly, as the previous version did (Meire, B36)
+    const hasCurrentYear = kind === 'annual' && items.some(it => it.refOf);
     // Rendered as a ruled row continuing the fee table, matching the source's
     // "Subtotal estimado" / "Total anual estimado" rows.
     const D = dl();
     const rows = [];
-    if (year1Total > 0) rows.push([kind === 'annual' ? D.annualTotalLabel : D.subtotalLabel, kindNote || '', fmt(year1Total)]);
+    if (year1Total > 0) rows.push([hasCurrentYear ? lblYear1 : (kind === 'annual' ? D.annualTotalLabel : D.subtotalLabel), hasCurrentYear ? '' : (kindNote || ''), fmt(year1Total)]);
     // In the annual section the year-2 figure is the same recurring amount, so
     // showing it twice just reads as a duplicate line to the client.
-    const year2Redundant = kind === 'annual' && year2Total === year1Total;
+    const year2Redundant = kind === 'annual' && year2Total === year1Total && !hasCurrentYear;
     if (year2Total > 0 && !year2Redundant) rows.push([lblYear2, '', fmt(year2Total)]);
     if (!rows.length) return '';
     return `<table class="fee-table fee-subtotal-table"><tbody>${rows.map(r => `
@@ -8237,9 +8347,19 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
   const secMaintUS    = secMaintItems.filter(it => it.group === 'us');
   const secMaintOther = secMaintItems.filter(it => !it.group);
 
-  const secAcctPIC   = secAcctItems.filter(it => it.group === 'pic');
-  const secAcctUS    = secAcctItems.filter(it => it.group === 'us');
-  const secAcctOther = secAcctItems.filter(it => !it.group);
+  // Every fee group uses the same layout (Meire, B32): its label when the section
+  // holds more than one group, PIC rows, US rows, the rest, then its subtotal.
+  function feeGroup(label, items, showLabel) {
+    if (!items.length) return '';
+    const pic = items.filter(it => it.group === 'pic');
+    const us = items.filter(it => it.group === 'us');
+    const other = items.filter(it => it.group !== 'pic' && it.group !== 'us');
+    return (showLabel ? `<div class="doc-section-subheader">${label}</div>` : '') +
+      (pic.length ? macroHeader(L.macroPIC) + buildFeeTable(pic) : '') +
+      (us.length ? macroHeader(L.macroUS) + buildFeeTable(us) : '') +
+      (other.length ? buildFeeTable(other) : '') +
+      buildSectionSubtotal(items);
+  }
 
   // (Grand total summary removed — using per-section subtotals instead)
 
@@ -8337,7 +8457,12 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
   // ── Not-included list (hoisted: rendered in Seção 03, or Seção 05 when
   //    there is no annual-maintenance section) ──
       const clauseSet = isDissolutionOnly ? FGC_CONFIG.dissolucaoClauses[lang] : FGC_CONFIG.clauses[lang];
-      let notIncItems = clauseSet.notIncludedItems;
+      let notIncItems = clauseSet.notIncludedItems.slice();
+      // Meire (B41): with accounting in the proposal, say plainly that FGC does not keep the books
+      if (secAcctItems.length) {
+        const bk = { pt: 'Bookkeeping (escrituração contábil)', es: 'Bookkeeping (teneduría de libros)', en: 'Bookkeeping' }[lang];
+        notIncItems = notIncItems.length ? notIncItems.slice(0, -1).concat(bk, notIncItems[notIncItems.length - 1]) : [bk];
+      }
       if (!isDissolutionOnly) {
         const reestruKeywords = { pt: 'Reestruturações', es: 'Reestructuraciones', en: 'Restructurings' };
         if (!hasPICForm && !hasPICTrans) {
@@ -8357,9 +8482,10 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
       // Notarization-only proposals: remove items irrelevant to standalone notarization
       if (isNotarizationOnly) {
         const removeForNotarization = {
-          pt: ['Elaboração de atas (aportes, redução de capital, entre outros)', 'Certificados (Good Standing, Incumbency)', 'Reestruturações', 'Notarizações e apostilamentos', 'Serviços de courier/postagem'],
-          es: ['Elaboración de actas (aportes, reducción de capital, entre otros)', 'Certificados (Good Standing, Incumbency)', 'Reestructuraciones', 'Notarizaciones y apostillados', 'Servicios de courier/correo'],
-          en: ['Preparation of minutes (capital contributions, capital reductions, among others)', 'Certificates (Good Standing, Incumbency)', 'Restructurings', 'Notarizations and apostilles', 'Courier/postage services'],
+          // Courier is NOT removed: Meire wants "Serviços de courier/postagem" listed (B37)
+          pt: ['Elaboração de atas (aportes, redução de capital, entre outros)', 'Certificados (Good Standing, Incumbency)', 'Reestruturações', 'Notarizações e apostilamentos'],
+          es: ['Elaboración de actas (aportes, reducción de capital, entre otros)', 'Certificados (Good Standing, Incumbency)', 'Reestructuraciones', 'Notarizaciones y apostillados'],
+          en: ['Preparation of minutes (capital contributions, capital reductions, among others)', 'Certificates (Good Standing, Incumbency)', 'Restructurings', 'Notarizations and apostilles'],
         };
         notIncItems = notIncItems.filter(i => !removeForNotarization[lang].includes(i));
       }
@@ -8479,6 +8605,9 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
     const cap = t => t ? t.charAt(0).toUpperCase() + t.slice(1) : '';
     // A formation or transfer in the proposal: the entity-level objective applies
     const hasFeeEntity = hasFormation || hasTransfer;
+    // Which kind of transfer: 'full' (agent + administration), 'admin' (agent stays), or 'mixed'
+    const _trans = sec1Items.filter(it => /^trans/.test(it.key) || it.key === 'customTransfer');
+    const transferKind = !_trans.length ? '' : _trans.every(it => /RA$/.test(it.key)) ? 'admin' : _trans.some(it => /RA$/.test(it.key)) ? 'mixed' : 'full';
     const verb = (function () {
       if (/constitu|formation/.test(headline)) return { pt: 'Constituir', es: 'Constituir', en: 'Incorporate' }[lang];
       if (/transfer/.test(headline)) return { pt: 'Transferir', es: 'Transferir', en: 'Transfer' }[lang];
@@ -8491,13 +8620,17 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
     const scopeLines = [];
     if (sec1Items.length) {
       sec1Items.forEach(it => scopeLines.push(it.label.replace(/^\d+x\s*/, '') + '.'));
-    } else if (headline) {
-      scopeLines.push(cap(headline) + { pt: ' da sociedade', es: ' de la sociedad', en: ' of the company' }[lang] + (jur ? { pt: ' junto ao ', es: ' ante el ', en: ' with the ' }[lang] + jur.registry : '') + '.');
     }
     if (secMaintItems.length) scopeLines.push({ pt: 'Manutenção anual (compliance, Economic Substance e demonstrações financeiras).', es: 'Mantenimiento anual (compliance, Economic Substance y estados financieros).', en: 'Annual maintenance (compliance, Economic Substance and financial statements).' }[lang]);
-    if (secAcctItems.length)  scopeLines.push({ pt: 'Contabilidade anual.', es: 'Contabilidad anual.', en: 'Annual accounting.' }[lang]);
+    // Accounting: name each service ("Financial Statements…", "Tax Return…")
+    // instead of "Contabilidade anual", which read as bookkeeping (Meire, B41)
+    [...new Set(secAcctItems.map(it => it.label.replace(/^\d+x\s*/, '')))].forEach(l => scopeLines.push(l + '.'));
     if (secSuccItems.length)  scopeLines.push({ pt: 'Planejamento sucessório.', es: 'Planificación sucesoria.', en: 'Succession planning.' }[lang]);
     sec3Items.forEach(it => scopeLines.push(it.label + '.'));
+    // Only when nothing above applies: a single line from the headline service
+    if (!scopeLines.length && headline) {
+      scopeLines.push(cap(headline) + { pt: ' da sociedade', es: ' de la sociedad', en: ' of the company' }[lang] + (jur ? { pt: ' junto ao ', es: ' ante el ', en: ' with the ' }[lang] + jur.registry : '') + '.');
+    }
 
     // Renewal date is already a config constant used by the fee table
     const renewal = String(L.payJanuary || '').replace(/\s*\(.*\)\s*$/, '').trim();
@@ -8527,7 +8660,7 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
                  en: '⟦Client name⟧ intends to incorporate the structure described in this proposal' + (jurIn ? ' ' + jurIn : '') + '. ⟦Client context and purpose of the structure⟧.' }[lang];
       }
       const dated = !sit || sit.dated;
-      return { pt: 'A ⟦Nome do cliente⟧ encontra-se ⟦situação atual⟧ junto ao ⟦órgão competente⟧ ' + (jurOf || 'de ⟦jurisdição⟧') + (dated ? ' desde ⟦desde quando⟧' : '') + '. Isso significa que ⟦o que esse status implica na prática⟧.',
+      return { pt: 'A ⟦Nome do cliente⟧ encontra-se ⟦situação atual⟧ junto ao ⟦órgão competente⟧ ' + (jurOf || (jurs.length > 1 ? joinJurisdictions(jurs, 'of') : 'de ⟦jurisdição⟧')) + (dated ? ' desde ⟦desde quando⟧' : '') + '. Isso significa que ⟦o que esse status implica na prática⟧.',
                es: 'La ⟦Nombre del cliente⟧ se encuentra ⟦situación actual⟧ ante el ⟦órgano competente⟧ de ⟦jurisdicción⟧' + (dated ? ' desde ⟦desde cuándo⟧' : '') + '. Esto significa que ⟦qué implica ese estado en la práctica⟧.',
                en: '⟦Client name⟧ is currently ⟦current status⟧ with the ⟦competent authority⟧ of ⟦jurisdiction⟧' + (dated ? ', and has been since ⟦since when⟧' : '') + '. This means ⟦what that status implies in practice⟧.' }[lang];
     })();
@@ -8536,7 +8669,10 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
       'f-und-what': whatText,
       // The client's name already sits under "Preparado para"; the title says
       // what the proposal is for (Meire: "Proposta, Joao Maria" read as wrong).
-      'f-subject': headline
+      // Several kinds of work: the cover names them all, like the Seção 02 title
+      'f-subject': _sec2Atoms.length > 1
+        ? _sec2Joined + (jurIn ? ' ' + jurIn : '')
+        : headline
         ? (lang === 'en' && /^(formation|transfer)$/.test(headline) ? 'Company ' + headline : ({ 'contábil e fiscal': 'Serviços contábeis e fiscais', 'contable y fiscal': 'Servicios contables y fiscales', 'accounting & tax': 'Accounting and tax services' }[headline] || cap(headline)))
           // "Transferência em Cayman" read oddly; "Transferência de sociedade em Cayman" doesn't
           + (lang !== 'en' && /^(constitu|transfer)/.test(headline) && !/ [ey] /.test(headline) ? (sec1Items.filter(it => it.key !== 'apostila').reduce((n, it) => n + (it.qty || 1), 0) > 1 ? { pt: ' de sociedades', es: ' de sociedades' }[lang] : { pt: ' de sociedade', es: ' de sociedad' }[lang]) : '')
@@ -8544,24 +8680,44 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
         : '',
       'f-opening': workFull ? ({
         pt: '⟦saudação⟧\n' +
-            'Esta proposta apresenta o escopo, os documentos necessários e os honorários estimados para ' + workFull + (others ? ', incluindo ' + others : '') + '.\n' +
+            // Generic on purpose (Meire, B31): with several services the letter named only
+            // the first. Escopo lists every service, so the letter doesn't repeat them.
+            'Esta proposta apresenta o escopo, os documentos necessários e os honorários estimados dos serviços solicitados.\n' +
             'Nas próximas seções: o escopo do trabalho, o investimento' + (secMaintItems.length ? ' (one-off e anual)' : '') + ' e a documentação necessária para dar início ao processo.\n' +
-            (secMaintItems.length ? 'Mais do que ' + workShort + ' pontual, a FGC permanece à frente da manutenção anual da sociedade como único ponto de contato e de forma a assegurar que todas as obrigações sejam cumpridas.\n' : '') +
+            (secMaintItems.length ? 'Além dos serviços pontuais, a FGC permanece à frente da manutenção anual da sociedade como único ponto de contato e de forma a assegurar que todas as obrigações sejam cumpridas.\n' : '') +
             'Fica um convite para conduzirmos esse processo com a agilidade e o cuidado que ' + (jurIn && !isNotarizationOnly ? 'a continuidade da sua estrutura ' + jurIn + ' exige' : 'ele exige') + '.\n' +
             'Agradecemos desde já essa oportunidade.',
         es: '⟦saudação⟧\n' +
-            'Esta propuesta presenta el alcance, los documentos necesarios y los honorarios estimados para ' + workFull + (others ? ', incluyendo ' + others : '') + '.\n' +
+            'Esta propuesta presenta el alcance, los documentos necesarios y los honorarios estimados de los servicios solicitados.\n' +
             'En las próximas secciones: el alcance del trabajo, la inversión y la documentación necesaria para iniciar el proceso.\n' +
             (secMaintItems.length ? 'Más allá del trabajo puntual, FGC permanece al frente del mantenimiento anual de la estructura como único punto de contacto, de modo que todas las obligaciones se cumplan.\n' : '') +
             'Queda la invitación para conducir este proceso con la agilidad y el cuidado que ' + (secMaintItems.length ? 'la continuidad de su estructura exige' : 'requiere') + '.\n' +
             'Agradecemos desde ya esta oportunidad.',
         en: '⟦saudação⟧\n' +
-            'This proposal sets out the scope, the required documents and the estimated fees for ' + workFull + (others ? ', including ' + others : '') + '.\n' +
+            'This proposal sets out the scope, the required documents and the estimated fees for the services requested.\n' +
             'In the sections that follow: the scope of work, the investment, and the documentation needed to begin.\n' +
             (secMaintItems.length ? 'Beyond the one-off work, FGC stays ahead of the annual maintenance of the structure as your single point of contact, so that every obligation is met on time.\n' : '') +
             'We would welcome the chance to run this process with the speed and care ' + (secMaintItems.length ? 'the continuity of your structure requires' : 'it requires') + '.\n' +
             'Thank you in advance for the opportunity.',
       }[lang]) : '',
+      // Meire (B42): the third-party list must match the work. Government fees
+      // apply to formation, transfer and dissolution; a registered agent to
+      // formation and transfer; a notary to notarization. Accounting has none.
+      'f-sec2intro': (function () {
+        const gov = hasFormation || hasTransfer || hasDissolution;
+        const parts = { pt: [], es: [], en: [] };
+        if (gov) { parts.pt.push('taxas governamentais'); parts.es.push('tasas gubernamentales'); parts.en.push('government fees'); }
+        if (hasFormation || hasTransfer) { parts.pt.push('agente registrado'); parts.es.push('agente registrado'); parts.en.push('registered agent'); }
+        if (hasApostila) { parts.pt.push('cartório'); parts.es.push('notaría'); parts.en.push('notary'); }
+        const p = parts[lang];
+        const and = { pt: ' e ', es: ' y ', en: ' and ' }[lang];
+        const list = p.length > 1 ? p.slice(0, -1).join(', ') + and + p[p.length - 1] : (p[0] || '');
+        const first = { pt: 'Os valores abaixo referem-se aos honorários da FGC.', es: 'Los valores a continuación corresponden a los honorarios de FGC.', en: 'The amounts below are FGC\'s fees.' }[lang];
+        const second = !list ? '' : { pt: ' Custos de terceiros (' + list + ') são repassados ao cliente e permanecem estimados até a confirmação final.',
+                                      es: ' Los costos de terceros (' + list + ') se trasladan al cliente y permanecen estimados hasta la confirmación final.',
+                                      en: ' Third-party costs (' + list + ') are passed through to the client and remain estimates until finally confirmed.' }[lang];
+        return first + second;
+      })(),
       // "em BVI" read as a label; use the jurisdiction's own preposition
       'f-sec3intro': (lang === 'pt' && jurIn)
         ? 'A manutenção da sociedade é apresentada como um valor anual único, que reúne todas as obrigações recorrentes ' + jurIn + ' sob uma só relação.'
@@ -8573,7 +8729,21 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
             en: 'Once ' + workShort + ' is complete, we suggest ⟦a succession planning review⟧ of the structure.' }[lang]
         : '',
       // A custom entity (e.g. "Panama Foundation") has no known registry: say so plainly
-      'f-und-obj': verb
+      // Meire (B35): a standard transfer moves the local registered agent AND the
+      // administration; some move only the administration and the local agent stays.
+      'f-und-obj': (/transfer/.test(headline) && transferKind)
+        ? ({
+            full: { pt: 'Transferir o agente registrado local e a administração da sociedade para a FGC' + (jurIn ? ' ' + jurIn : '') + ' e regularizar as obrigações de compliance e KYC.',
+                    es: 'Transferir el agente registrado local y la administración de la sociedad a FGC' + (jurIn ? ' ' + jurIn : '') + ' y regularizar las obligaciones de compliance y KYC.',
+                    en: 'Transfer the local registered agent and the company administration to FGC' + (jurIn ? ' ' + jurIn : '') + ', and bring compliance and KYC obligations into good standing.' },
+            admin: { pt: 'Transferir a administração da sociedade para a FGC' + (jurIn ? ' ' + jurIn : '') + ', mantendo o agente registrado local, e regularizar as obrigações de compliance e KYC.',
+                     es: 'Transferir la administración de la sociedad a FGC' + (jurIn ? ' ' + jurIn : '') + ', manteniendo el agente registrado local, y regularizar las obligaciones de compliance y KYC.',
+                     en: 'Transfer the company administration to FGC' + (jurIn ? ' ' + jurIn : '') + ', keeping the local registered agent, and bring compliance and KYC obligations into good standing.' },
+            mixed: { pt: 'Transferir para a FGC a administração das sociedades e, onde indicado, o agente registrado local, e regularizar as obrigações de compliance e KYC.',
+                     es: 'Transferir a FGC la administración de las sociedades y, donde se indica, el agente registrado local, y regularizar las obligaciones de compliance y KYC.',
+                     en: 'Transfer the companies\' administration to FGC and, where indicated, the local registered agent, and bring compliance and KYC obligations into good standing.' },
+          })[transferKind][lang]
+        : verb
         ? verb + (!jurs.length
             ? { pt: ' a sociedade', es: ' la sociedad', en: ' the company' }[lang]
             : jurs.length > 1
@@ -8587,10 +8757,25 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
           ? { pt: 'Encerrar formalmente a sociedade junto ao ' + (jur ? jur.registry + ' ' + jur.ofName : 'órgão competente de cada jurisdição') + ', sem pendências de taxas ou obrigações em aberto.',
               es: 'Cerrar formalmente la sociedad ante el ' + (jur ? jur.registry + ' ' + jurPhrase(jur, 'of') : 'órgano competente de cada jurisdicción') + ', sin tasas ni obligaciones pendientes.',
               en: 'Formally close the company with the ' + (jur ? jur.registry + ' ' + jurPhrase(jur, 'of') : 'competent authority in each jurisdiction') + ', with no outstanding fees or obligations.' }[lang]
-        : (hasAccounting && !hasFeeEntity)
-          ? { pt: 'Manter a contabilidade da sociedade em dia e cumprir as obrigações contábeis e fiscais anuais dentro dos prazos.',
-              es: 'Mantener la contabilidad de la sociedad al día y cumplir las obligaciones contables y fiscales anuales en plazo.',
-              en: 'Keep the company\'s accounts up to date and meet its annual accounting and tax obligations on time.' }[lang]
+        : (secAcctItems.length && !hasFeeEntity && !sec3Items.length && !hasApostila)
+          // Meire (B41): say exactly what FGC prepares and from what. FGC does not
+          // keep the client's books; that is listed under "O que não está incluído".
+          ? (function () {
+              const k = secAcctItems.map(it => it.key);
+              const fs  = k.some(x => /^(fs|fsAnterior|priorFS)$/.test(x));
+              const afr = k.some(x => /(Afr|^afr)$/.test(x));
+              const tr  = k.some(x => /^(tr|trAnterior|priorTR)$/.test(x));
+              const prior = k.some(x => /Anterior|^prior/.test(x));
+              const W = {
+                pt: { fs: 'elaborar as demonstrações financeiras anuais', afr: 'submeter o Annual Financial Return (AFR)', tr: 'preparar e submeter o Tax Return (declaração de imposto de renda)', tail: ' da sociedade a partir dos extratos e da documentação fornecidos pelo cliente', prior: ', incluindo os exercícios anteriores indicados', and: ' e ' },
+                es: { fs: 'elaborar los estados financieros anuales', afr: 'presentar el Annual Financial Return (AFR)', tr: 'preparar y presentar el Tax Return (declaración de impuesto a la renta)', tail: ' de la sociedad a partir de los extractos y la documentación proporcionados por el cliente', prior: ', incluidos los ejercicios anteriores indicados', and: ' y ' },
+                en: { fs: 'prepare the annual financial statements', afr: 'file the Annual Financial Return (AFR)', tr: 'prepare and file the Tax Return', tail: ' for the company from the statements and documents the client provides', prior: ', including the prior years listed', and: ' and ' },
+              }[lang];
+              const acts = [fs && W.fs, afr && W.afr, tr && W.tr].filter(Boolean);
+              if (!acts.length) return '';
+              const joined = acts.length > 1 ? acts.slice(0, -1).join(', ') + W.and + acts[acts.length - 1] : acts[0];
+              return cap(joined) + W.tail + (prior ? W.prior : '') + '.';
+            })()
         : (hasReestru && !hasFeeEntity)
           ? { pt: 'Reestruturar a sociedade conforme ⟦alteração proposta⟧, com a documentação societária necessária para a implementação.',
               es: 'Reestructurar la sociedad conforme a ⟦cambio propuesto⟧, con la documentación societaria necesaria para su implementación.',
@@ -8613,7 +8798,7 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
     // Standard text from any language counts as untouched too, so drafts saved
     // before a field became generated still pick up the generated version.
     const DEFAULT_KEY = { 'f-subject': 'subject', 'f-opening': 'opening', 'f-und-what': 'undWhat',
-      'f-und-obj': 'undObjective', 'f-und-scope': 'undScope', 'f-und-rec': 'undRec', 'f-sec3intro': 'sec3Intro', 'f-vencimento': 'vencimento', 'f-timeline': 'timeline' };
+      'f-und-obj': 'undObjective', 'f-und-scope': 'undScope', 'f-und-rec': 'undRec', 'f-sec2intro': 'sec2Intro', 'f-sec3intro': 'sec3Intro', 'f-vencimento': 'vencimento', 'f-timeline': 'timeline' };
     const isStock = (id, cur) => {
       const k = DEFAULT_KEY[id];
       if (k && Object.keys(FGC_DEFAULTS).some(l => (FGC_DEFAULTS[l][k] || '').trim() === cur)) return true;
@@ -8648,6 +8833,7 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
     const val = id => (document.getElementById(id) || {}).value || '';
     coverSubject            = val('f-subject');
     openingNote             = val('f-opening');
+    sec2Intro               = val('f-sec2intro');
     sec3Intro               = val('f-sec3intro');
     understanding.recommendation = val('f-und-rec');
     understanding.what      = val('f-und-what');
@@ -8681,32 +8867,10 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
         ${secHead(nextSecNo(), oneOffSecTitle)}
         ${sec2Intro.trim() ? `<div class="doc-note-body${phClass('f-sec2intro')}">${paras(sec2Intro)}</div>` : ''}
 
-        ${hasSec1Content ? `
-          ${sec1SubLabel === oneOffSecTitle ? '' : `<div class="doc-section-subheader">${sec1SubLabel}</div>`}
-          ${sec1PIC.length > 0   ? macroHeader(L.macroPIC) + buildFeeTable(sec1PIC)   : ''}
-          ${sec1US.length > 0    ? macroHeader(L.macroUS)  + buildFeeTable(sec1US)    : ''}
-          ${sec1Other.length > 0 ? buildFeeTable(sec1Other) : ''}
-          ${buildSectionSubtotal(sec1Items)}
-        ` : ''}
-
-        ${secSuccItems.length > 0 ? `
-          <div class="doc-section-subheader">${secSuccSubLabel}</div>
-          ${buildFeeTable(secSuccItems)}
-          ${buildSectionSubtotal(secSuccItems)}
-        ` : ''}
-
-        ${(secAcctItems.length > 0 && !acctInMaint) ? `
-          <div class="doc-section-subheader">${secAcctSubLabel}</div>
-          ${secAcctPIC.length > 0 ? macroHeader(L.macroPIC) + buildFeeTable(secAcctPIC) : ''}
-          ${secAcctUS.length > 0  ? macroHeader(L.macroUS)  + buildFeeTable(secAcctUS)  : ''}
-          ${secAcctOther.length > 0 ? buildFeeTable(secAcctOther) : ''}
-          ${buildSectionSubtotal(secAcctItems)}
-        ` : ''}
-
-        ${sec3Items.length > 0 ? `
-          <div class="doc-section-subheader">${sec3SubLabel}</div>
-          ${buildFeeTable(sec3Items)}
-        ` : ''}
+        ${feeGroup(sec1SubLabel, sec1Items, _sec2GroupCount > 1)}
+        ${feeGroup(secSuccSubLabel, secSuccItems, _sec2GroupCount > 1)}
+        ${feeGroup(secAcctSubLabel, acctOneOff, _sec2GroupCount > 1)}
+        ${feeGroup(sec3SubLabel, sec3Items, _sec2GroupCount > 1)}
 
         ${(has3rdPartyFS || has3rdPartyTR) ? `
         <div class="doc-thirdparty">
@@ -8736,13 +8900,7 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
         ${secMaintOther.filter(it => it.key === 'trustMaint').length > 0 ? macroHeader({ pt: 'Share Trust', es: 'Share Trust', en: 'Share Trust' }[lang]) + buildFeeTable(secMaintOther.filter(it => it.key === 'trustMaint')) : ''}
         ${secMaintOther.filter(it => it.key !== 'trustMaint').length > 0 ? buildFeeTable(secMaintOther.filter(it => it.key !== 'trustMaint')) : ''}
         ${buildSectionSubtotal(secMaintItems, 'annual', dl().annualNote)}
-        ${acctInMaint ? `
-          <div class="doc-section-subheader">${secAcctSubLabel}</div>
-          ${secAcctPIC.length > 0 ? macroHeader(L.macroPIC) + buildFeeTable(secAcctPIC) : ''}
-          ${secAcctUS.length > 0  ? macroHeader(L.macroUS)  + buildFeeTable(secAcctUS)  : ''}
-          ${secAcctOther.length > 0 ? buildFeeTable(secAcctOther) : ''}
-          ${buildSectionSubtotal(secAcctItems)}
-        ` : ''}
+        ${feeGroup(secAcctSubLabel, acctRecurring, true)}
         ${termsMaintHTML ? `
           <div class="doc-block-label doc-included-label">${dl().annualCoversLabel}</div>
           ${termsMaintHTML}
@@ -8785,6 +8943,29 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
             if (isNotarizationOnly) {
               payItems = payItems.filter(i => !paymentKeywordsToRemove[lang].some(kw => i.includes(kw)));
             }
+            // Meire (B38): AFR only applies to BVI, Tax Return only to US companies,
+            // and Financial Statements not to US companies. Name only what applies.
+            const regDocs = (function () {
+              const bviEnt   = ['bvi','transBVI','transBVIRA'].some(k => state[k]);
+              const otherPic = ['bahamas','cayman','nevis','transBahamas','transCayman','transNevis','transBahamasRA','transCaymanRA','transNevisRA'].some(k => state[k]) || (state.customOffshore && customOffshore.some(o => o.label.trim()));
+              const usEnt    = hasUSEntity || (state.customUS && customStates.some(c => c.name.trim()));
+              const N = { pt: ['Demonstrações Financeiras', 'AFR', 'Tax Return'], es: ['Estados Financieros', 'AFR', 'Tax Return'], en: ['Financial Statements', 'the AFR', 'Tax Return'] }[lang];
+              const out = [];
+              if (bviEnt || otherPic || state.fs || state.fsAnterior) out.push(N[0]);
+              if (bviEnt || state.afr) out.push(N[1]);
+              if (usEnt || state.tr || state.trAnterior) out.push(N[2]);
+              return out;
+            })();
+            const regLine = { pt: 'A FGC não garante a submissão de documentos regulatórios', es: 'FGC no garantiza la presentación de documentos regulatorios', en: 'FGC does not guarantee the submission of regulatory documents' }[lang];
+            payItems = payItems.map(i => {
+              if (i.indexOf(regLine) !== 0) return i;
+              if (!regDocs.length) return null;
+              const and = { pt: ' e ', es: ' y ', en: ' and ' }[lang];
+              const list = regDocs.length > 1 ? regDocs.slice(0, -1).join(', ') + and + regDocs[regDocs.length - 1] : regDocs[0];
+              return { pt: regLine + ', inclusive ' + list + ', caso os pagamentos não sejam realizados previamente.',
+                       es: regLine + ', incluidos ' + list + ', si los pagos no se realizan con anticipación.',
+                       en: regLine + ', including ' + list + ', unless full payment is received by the agreed due date.' }[lang];
+            }).filter(Boolean);
             return payItems.map(i => '<li>' + i + '</li>').join('');
           })()}</ul>
         </div>
@@ -8794,16 +8975,16 @@ const hasStandalone = state.dcbe || state.dissolucaoBVI || state.dissolucaoBaham
         </div>
         <div class="terms-section">
           <div class="terms-section-heading">${clauseSet.compliance.title}</div>
-          <ul class="terms-list">${clauseSet.compliance.items.map(i => '<li>' + i + '</li>').join('')}</ul>
+          <ul class="terms-list">${(isNotarizationOnly ? clauseSet.compliance.items.slice(0, 1) : clauseSet.compliance.items).map(i => '<li>' + i + '</li>').join('')}</ul>
         </div>
-        <div class="terms-section">
+        ${isNotarizationOnly ? '' : `<div class="terms-section">
           <div class="terms-section-heading">${clauseSet.representation.title}</div>
           <ul class="terms-list">${clauseSet.representation.items.map(i => '<li>' + i + '</li>').join('')}</ul>
-        </div>
-        <div class="terms-section">
+        </div>`}
+        ${isNotarizationOnly ? '' : `<div class="terms-section">
           <div class="terms-section-heading">${clauseSet.legalChanges.title}</div>
           <ul class="terms-list">${clauseSet.legalChanges.items.map(i => '<li>' + i + '</li>').join('')}</ul>
-        </div>
+        </div>`}
         ${proposalNotes.trim() ? `
         <div class="terms-section">
           <div class="terms-section-heading">${{ pt: 'Observações', es: 'Observaciones', en: 'Observations' }[lang]}</div>
@@ -9296,6 +9477,7 @@ function saveDraft() {
     client,
     clientEmail: document.getElementById('f-email')?.value?.trim() || '',
     careOf: document.getElementById('f-careof')?.value?.trim() || '',
+    extraLine: document.getElementById('f-extra')?.value?.trim() || '',
     advisor: document.getElementById('f-advisor').value.trim(),
     date: document.getElementById('f-date').value,
     lang,
@@ -9405,6 +9587,16 @@ function loadDraft(id) {
   // applyCoverState resets every field to its default, so they load clean.
   applyCoverState(draft.cover);
   // 10 days was the old default, not a choice: drafts from before format 4 move to 30
+  // Drafts from before format 6 still hold the old generated letter and Seção 02
+  // intro (they named only the first service: Meire B31/B42). If the text is
+  // still the generated one, let it regenerate; anything rewritten by hand stays.
+  if ((draft.docFormat || 0) < 6) {
+    [['f-opening', /^⟦saudação⟧\nEsta proposta apresenta o escopo, os documentos necessários e os honorários estimados para /],
+     ['f-sec2intro', /^Os valores abaixo referem-se aos honorários da FGC para /]].forEach(([id, re]) => {
+      const el = document.getElementById(id);
+      if (el && re.test(el.value || '')) _appliedDefaults[id] = el.value.trim();
+    });
+  }
   if ((draft.docFormat || 0) < 4 && validityDays === 10) {
     validityDays = 30;
     const vEl = document.getElementById('f-validity'); if (vEl) vEl.value = 30;
@@ -9415,6 +9607,7 @@ function loadDraft(id) {
   if (document.getElementById('f-email')) document.getElementById('f-email').value = draft.clientEmail || '';
   // Blank when the draft has none, so a previous client's contact can't carry over
   if (document.getElementById('f-careof')) document.getElementById('f-careof').value = draft.careOf || '';
+  if (document.getElementById('f-extra')) document.getElementById('f-extra').value = draft.extraLine || '';
   document.getElementById('f-advisor').value = draft.advisor || '';
   document.getElementById('f-date').value = draft.date || '';
   renderServicePicker();
