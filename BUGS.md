@@ -53,6 +53,10 @@ Sept 10 build. Every bug found in v2 goes here, whoever finds it.
 | B41 | Oct 20 | Meire | FS/TR only | Objetivo/Escopo for FS or TR alone imply FGC does the client's bookkeeping. Must state the real scope and list "bookkeeping" under "O que não está incluído"; Escopo lines duplicate | fixed | Objetivo states what FGC prepares, from client-provided statements; Escopo names each service; "Bookkeeping (escrituração contábil)" listed as not included. Meire to confirm wording |
 | B42 | Oct 20 | Meire | Seção 02 | Second sentence of the intro ("Custos de terceiros: taxas governamentais, agente registrado e cartório…") doesn't fit accounting and other services | fixed | Third-party list built from the services: government fees (formation/transfer/dissolution), registered agent (formation/transfer), notary (notarization); none for accounting |
 | B43 | Oct 21 | QA | Seção 01 | With two jurisdictions "O que entendemos" said "de BVI e Flórida" | fixed | "das Ilhas Virgens Britânicas e da Flórida" |
+| B44 | Oct 21 | QA (re-check of Meire's B34 screenshot) | Letter | A dissolution letter ended "o cuidado que a continuidade da sua estrutura … exige" | fixed | Dissolution-only: "o cuidado que ele exige" (pt/es/en) |
+| B45 | Oct 21 | QA (re-check of Meire's item 11) | Seção 01 | FS/TR-only "O que entendemos" still described a company status (5 blanks that don't apply) | fixed | "X precisa das demonstrações financeiras anuais [e do Tax Return] referentes ao exercício de ⟦ano⟧. A contabilidade (bookkeeping) é mantida pelo cliente…" Meire to confirm |
+| B46 | Oct 21 | QA (re-check of Meire's item 8) | Pagamentos/Prazos | Proposals without maintenance still said "Os honorários de manutenção anual passam a ser devidos…" and the good-standing line; Prazos said only "Esses prazos…" with no deadline | fixed | No-maintenance payment text; maintenance lines dropped; Prazos hidden when it has no deadline |
+| B47 | Oct 21 | QA (re-check of Meire's item 5) | Transfer | Administrator-only transfer was locked to "Cortesia"; Meire said it *can* be a courtesy | fixed | Price box added: empty = Cortesia, a typed amount is charged |
 
 ## Test copy
 
