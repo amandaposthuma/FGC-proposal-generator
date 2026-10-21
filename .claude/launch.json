@@ -5,7 +5,7 @@
       "name": "proposal-generator",
       "runtimeExecutable": "node",
       "runtimeArgs": [
-        "/private/tmp/claude-501/-Users-amandaposthumacoelho-Desktop-Clients-FGC-Tools-Proposal-Generator-v2/0f13f141-e30d-4c50-8e8d-0029c1662d93/scratchpad/serve.js"
+        ".claude/serve.js"
       ],
       "port": 4173
     }

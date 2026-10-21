@@ -40,6 +40,18 @@ Sept 10 build. Every bug found in v2 goes here, whoever finds it.
 | B28 | Oct 7 | QA | Phone layout | On a phone the sidebar fills the screen and the proposal is cut off on the right. Same in the current live version | open | Needs a phone layout (switch between form and document). Ask Amanda |
 | B29 | Oct 7 | QA | PDF | Save PDF exported a proposal with copper ⟦blanks⟧ still in it (every proposal type tested had 1 to 6 left) | fixed | Save PDF lists the unfilled blanks and asks before exporting; with none left it exports straight away |
 | B30 | Oct 7 | QA | Notion log | The "services" field in the Notion log listed two settings that aren't services ("fsIncludeAFR, maintPayTiming"). Also on the current live version | fixed (v2) | Only selected services are sent |
+| B31 | Oct 20 | Meire | Letter | Several services (e.g. BVI formation + dissolution): the opening note mentions only the first. Wants it generic, since Escopo lists everything | open | |
+| B32 | Oct 20 | Meire | Seção 02 | Mixed services: title says "Constituição e Transferência" but the section also holds Dissolução; groups formatted differently (PIC/US labels, subtotal in the middle); item numbers out of order (6, 8, 7) and one-off "anos anteriores" mixed with annual accounting | open | |
+| B33 | Oct 20 | Meire | Sidebar | "Linha adicional (opcional)" field is missing (removed Sept 18). Wants it back | open | |
+| B34 | Oct 20 | Meire | Wording | Is "Registrar of Corporate Affairs" correct? Appears in many places | open | |
+| B35 | Oct 20 | Meire | Transfer | Standard transfer = local RA + administrator. Some cases transfer only the administrator and the local RA stays; then the transfer fee can be a courtesy. Text must reflect which case | open | |
+| B36 | Oct 20 | Meire | Seção 03 | "Manutenção anual (ano corrente)" row has no item number and the totals are unclear; compare with current system (1º ano vs a partir do 2º ano) | open | |
+| B37 | Oct 20 | Meire | Notarization | Notarization-only proposal includes clauses outside its scope (Compliance, Representação, Alterações). "Serviços de courier/postagem" missing from "O que não está incluído" (also in current system) | open | |
+| B38 | Oct 20 | Meire | Pagamentos | "A FGC não garante a submissão… Demonstrações Financeiras, AFR e Tax Return" is the same on every proposal. Should name only what applies: AFR only BVI; Tax Return only US; FS not for US | open | |
+| B39 | Oct 20 | Meire | Dissolution | US dissolutions: "Tax Return Final" exists only for Florida and "FS Final" only for Delaware. Needs both for every state (or one separate option) | open | |
+| B40 | Oct 20 | Meire | Prices | Thinks prices can't be changed (BVI dissolution went down from 5,500). The price box does work (checked: 4,000 applied), but it looks read-only. Table price also needs updating | open | |
+| B41 | Oct 20 | Meire | FS/TR only | Objetivo/Escopo for FS or TR alone imply FGC does the client's bookkeeping. Must state the real scope and list "bookkeeping" under "O que não está incluído"; Escopo lines duplicate | open | |
+| B42 | Oct 20 | Meire | Seção 02 | Second sentence of the intro ("Custos de terceiros: taxas governamentais, agente registrado e cartório…") doesn't fit accounting and other services | open | |
 
 ## Test copy
 
